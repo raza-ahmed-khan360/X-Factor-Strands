@@ -10,7 +10,7 @@ export const productData = [
     shortDesc: "A research compound studied for its role in metabolic signalling pathways.",
     longDesc: "This compound is currently being studied in laboratory settings for its potential role in lipolytic and metabolic pathways. As with all research peptides, this product is strictly for research purposes.",
     specs: { purity: ">99%", format: "Lyophilised", storage: "-20°C", mw: "1.2kDa" },
-    imageUrl: "https://images.unsplash.com/photo-1583324113626-70df0f4deaab?q=80&w=800&auto=format&fit=crop",
+    imageUrl: "/products/MB-1.png",
     reviews: { rating: 4.8, count: 124 }
   },
   {
@@ -21,7 +21,7 @@ export const productData = [
     shortDesc: "Laboratory peptide investigated for cellular repair and regeneration research.",
     longDesc: "This compound is currently being studied in laboratory settings for its potential role in tissue repair mechanisms and cellular regeneration. As with all research peptides, this product is strictly for research purposes.",
     specs: { purity: ">98.5%", format: "Lyophilised", storage: "-20°C", mw: "2.4kDa" },
-    imageUrl: "https://images.unsplash.com/photo-1532187863486-abf9dbad1b69?q=80&w=800&auto=format&fit=crop",
+    imageUrl: "/products/RC-2.png",
     reviews: { rating: 4.9, count: 89 }
   },
   {
@@ -32,7 +32,7 @@ export const productData = [
     shortDesc: "Research compound studied for physiological performance markers.",
     longDesc: "This compound is currently being studied in laboratory settings for its potential role in muscular endurance and physiological performance markers. As with all research peptides, this product is strictly for research purposes.",
     specs: { purity: ">99%", format: "Lyophilised", storage: "-20°C", mw: "1.8kDa" },
-    imageUrl: "https://images.unsplash.com/photo-1618042164219-62c820f10723?q=80&w=800&auto=format&fit=crop",
+    imageUrl: "/products/PF-3.png",
     reviews: { rating: 4.7, count: 210 }
   },
   {
@@ -43,7 +43,7 @@ export const productData = [
     shortDesc: "Compound investigated for circadian rhythm and sleep architecture research.",
     longDesc: "This compound is currently being studied in laboratory settings for its potential role in circadian rhythm regulation and deep sleep architecture. As with all research peptides, this product is strictly for research purposes.",
     specs: { purity: ">99.2%", format: "Lyophilised", storage: "-20°C", mw: "1.5kDa" },
-    imageUrl: "https://images.unsplash.com/photo-1579154204601-01588f351e67?q=80&w=800&auto=format&fit=crop",
+    imageUrl: "/products/SL-4.png",
     reviews: { rating: 4.9, count: 156 }
   },
   {
@@ -54,7 +54,7 @@ export const productData = [
     shortDesc: "Research peptide studied for neurological cognitive function pathways.",
     longDesc: "This compound is currently being studied in laboratory settings for its potential role in neurological pathways associated with cognitive function and focus. As with all research peptides, this product is strictly for research purposes.",
     specs: { purity: ">98%", format: "Lyophilised", storage: "-20°C", mw: "3.1kDa" },
-    imageUrl: "https://images.unsplash.com/photo-1532187863486-abf9dbad1b69?q=80&w=800&auto=format&fit=crop",
+    imageUrl: "/products/FC-5.png",
     reviews: { rating: 4.8, count: 92 }
   },
   {
@@ -65,7 +65,7 @@ export const productData = [
     shortDesc: "Compound explored for mitochondrial function and cellular energy research.",
     longDesc: "This compound is currently being studied in laboratory settings for its potential role in mitochondrial function and energy metabolism. As with all research peptides, this product is strictly for research purposes.",
     specs: { purity: ">99%", format: "Lyophilised", storage: "-20°C", mw: "2.1kDa" },
-    imageUrl: "https://images.unsplash.com/photo-1579154204601-01588f351e67?q=80&w=800&auto=format&fit=crop",
+    imageUrl: "/products/EN-6.png",
     reviews: { rating: 4.6, count: 74 }
   }
 ];

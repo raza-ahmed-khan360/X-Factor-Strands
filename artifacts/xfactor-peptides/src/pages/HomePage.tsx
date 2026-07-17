@@ -66,19 +66,19 @@ export default function HomePage() {
         </section>
 
         {/* TRUST BAR */}
-        <section className="bg-[#E7ECF3] dark:bg-card border-b border-border py-8">
+        <section className="bg-[#E7ECF3] border-b border-border py-8">
           <div className="container mx-auto px-4 lg:px-8">
             <div className="flex flex-wrap justify-center md:justify-between items-center gap-6 text-center md:text-left">
               {[
-                { icon: FlaskConical, label: 'High Purity Standards', color: 'text-secondary' },
-                { icon: Microscope, label: 'Research Use Only', color: 'text-foreground' },
-                { icon: Zap, label: 'Fast Dispatch', color: 'text-foreground' },
-                { icon: Headset, label: 'Personal Support', color: 'text-foreground' },
-                { icon: ShieldCheck, label: 'Secure Ordering', color: 'text-foreground' },
+                { icon: FlaskConical, label: 'High Purity Standards' },
+                { icon: Microscope, label: 'Research Use Only' },
+                { icon: Zap, label: 'Fast Dispatch' },
+                { icon: Headset, label: 'Personal Support' },
+                { icon: ShieldCheck, label: 'Secure Ordering' },
               ].map((item, i) => (
                 <div key={i} className="flex items-center gap-3 group">
-                  <item.icon className={cn("w-6 h-6 group-hover:text-accent transition-colors", item.color)} />
-                  <span className="font-display font-medium text-sm text-foreground/80 group-hover:text-foreground transition-colors">{item.label}</span>
+                  <item.icon className="w-6 h-6 text-primary group-hover:text-accent transition-colors" />
+                  <span className="font-display font-medium text-sm text-background/80 group-hover:text-background transition-colors">{item.label}</span>
                 </div>
               ))}
             </div>

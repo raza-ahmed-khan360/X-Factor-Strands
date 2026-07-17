@@ -1,14 +1,17 @@
 import * as React from 'react';
 import { Header } from '@/components/shared/Header';
 import { Footer } from '@/components/shared/Footer';
-import { productData, AbstractMoleculeIcon, ProductCard } from '@/components/products/ProductData';
+import { productData, ProductCard } from '@/components/products/ProductData';
 import { useRoute, Link } from 'wouter';
-import { AlertTriangle, ChevronLeft } from 'lucide-react';
+import { AlertTriangle, ChevronLeft, Star } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { useCartStore } from '@/store/useCartStore';
+import { toast } from 'sonner';
 
 export default function ProductDetailPage() {
   const [match, params] = useRoute('/products/:id');
   const productId = params?.id;
+  const addItem = useCartStore((state) => state.addItem);
   
   const product = productData.find(p => p.id === productId);
   const relatedProducts = productData.filter(p => p.id !== productId).slice(0, 3);
@@ -21,6 +24,15 @@ export default function ProductDetailPage() {
       </div>
     );
   }
+
+  const handleAddToCart = () => {
+    addItem({
+      id: product.id,
+      name: product.name,
+      price: product.price,
+    });
+    toast.success(`${product.name} added to cart`);
+  };
 
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col">
@@ -35,25 +47,25 @@ export default function ProductDetailPage() {
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16">
             
-            {/* Product Image / Abstract Art */}
+            {/* Product Image */}
             <div className="bg-card border border-border rounded-2xl aspect-square flex items-center justify-center relative overflow-hidden group">
-              <div className="absolute inset-0 bg-gradient-to-br from-background via-card to-background" />
-              <div className="absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-accent to-transparent" />
+              <img src={product.imageUrl} alt={product.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
               
-              <AbstractMoleculeIcon 
-                color={product.iconColor} 
-                className="w-1/2 h-1/2 relative z-10 drop-shadow-[0_0_30px_rgba(34,211,238,0.4)] group-hover:scale-105 transition-transform duration-700" 
-              />
-              
-              <div className="absolute bottom-6 left-6 right-6 flex justify-between items-end">
-                <span className="font-mono text-xs text-muted-foreground/50 tracking-widest">{product.id.toUpperCase()}</span>
-                <span className="font-mono text-xs text-muted-foreground/50 tracking-widest">{product.specs.mw}</span>
+              <div className="absolute bottom-6 left-6 right-6 flex justify-between items-end z-10">
+                <span className="font-mono text-xs text-white tracking-widest bg-black/50 px-2 py-1 rounded backdrop-blur-sm">{product.id.toUpperCase()}</span>
+                <span className="font-mono text-xs text-white tracking-widest bg-black/50 px-2 py-1 rounded backdrop-blur-sm">{product.specs.mw}</span>
               </div>
             </div>
 
             {/* Product Info */}
             <div className="flex flex-col">
-              <span className="eyebrow mb-3">{product.category}</span>
+              <div className="flex items-center gap-4 mb-3">
+                <span className="eyebrow m-0">{product.category}</span>
+                <div className="flex items-center gap-1 text-yellow-500">
+                  <Star className="w-4 h-4 fill-current" />
+                  <span className="text-sm font-medium text-muted-foreground">{product.reviews.rating} ({product.reviews.count} reviews)</span>
+                </div>
+              </div>
               <h1 className="text-4xl md:text-5xl font-display font-bold mb-4">{product.name}</h1>
               <p className="text-2xl font-display font-semibold text-accent mb-6">{product.price}</p>
               
@@ -92,7 +104,7 @@ export default function ProductDetailPage() {
                   </p>
                 </div>
                 
-                <Button size="lg" className="w-full h-14 text-lg bg-primary hover:bg-primary/90 text-white mt-4 shadow-[0_0_20px_rgba(11,95,255,0.3)]">
+                <Button onClick={handleAddToCart} size="lg" className="w-full h-14 text-lg bg-primary hover:bg-primary/90 text-white mt-4 shadow-[0_0_20px_rgba(11,95,255,0.3)]">
                   Add to Cart
                 </Button>
               </div>

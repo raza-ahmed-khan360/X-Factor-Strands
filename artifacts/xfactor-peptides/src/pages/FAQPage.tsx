@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Header } from '@/components/shared/Header';
 import { Footer } from '@/components/shared/Footer';
-import { ChevronDown } from 'lucide-react';
+import { HoverAccordion } from '@/components/HoverAccordion';
 
 export default function FAQPage() {
   const faqs = [
@@ -49,15 +49,7 @@ export default function FAQPage() {
                 <h2 className="text-2xl font-display font-bold mb-6 text-accent">{group.category}</h2>
                 <div className="space-y-4">
                   {group.questions.map((faq, i) => (
-                    <details key={i} className="group bg-card border border-border rounded-lg overflow-hidden [&_summary::-webkit-details-marker]:hidden">
-                      <summary className="flex items-center justify-between cursor-pointer p-6 font-display font-medium text-lg list-none group-open:border-l-4 group-open:border-l-secondary transition-all">
-                        {faq.q}
-                        <ChevronDown className="w-5 h-5 text-muted-foreground group-open:rotate-180 transition-transform" />
-                      </summary>
-                      <div className="p-6 pt-0 text-muted-foreground border-l-4 border-l-secondary bg-card leading-relaxed">
-                        {faq.a}
-                      </div>
-                    </details>
+                    <HoverAccordion key={i} question={faq.q} answer={faq.a} />
                   ))}
                 </div>
               </div>

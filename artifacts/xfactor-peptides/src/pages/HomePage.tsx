@@ -1,14 +1,16 @@
 import * as React from 'react';
 import { Link } from 'wouter';
+import { motion , Variants} from 'framer-motion';
 import { Header } from '@/components/shared/Header';
 import { Footer } from '@/components/shared/Footer';
 import { TheStrand } from '@/components/shared/TheStrand';
 import { VialIllustration } from '@/components/illustrations/VialIllustration';
-import { ProductCard, productData, AbstractMoleculeIcon } from '@/components/products/ProductData';
+import { ProductCard, productData } from '@/components/products/ProductData';
 import { FlaskConical, Microscope, Zap, Headset, ShieldCheck, ArrowRight, CheckCircle2, ChevronDown, Activity, Brain, Moon, Dumbbell, Droplet, Battery } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { useState, useEffect } from 'react';
+import { HoverAccordion } from '@/components/HoverAccordion';
 
 const SECTIONS = [
   { id: 'hero', label: 'Hero' },
@@ -21,6 +23,22 @@ const SECTIONS = [
   { id: 'mission', label: 'Mission' },
 ];
 
+const containerVariants: Variants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: { staggerChildren: 0.15 }
+  }
+};
+
+const itemVariants: Variants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: { 
+    opacity: 1, y: 0,
+    transition: { duration: 0.5, ease: "easeOut" }
+  }
+};
+
 export default function HomePage() {
   return (
     <div className="min-h-screen bg-background text-foreground selection:bg-secondary/30">
@@ -31,43 +49,58 @@ export default function HomePage() {
         {/* HERO SECTION */}
         <section id="hero" className="min-h-[100dvh] relative flex items-center pt-20 pb-12 overflow-hidden bg-particle border-b border-border">
           <div className="absolute inset-0 bg-gradient-to-b from-transparent to-background/90 pointer-events-none" />
-          <div className="container mx-auto px-4 lg:px-8 relative z-10">
+          <motion.div 
+            variants={containerVariants}
+            initial="hidden"
+            animate="visible"
+            className="container mx-auto px-4 lg:px-8 relative z-10"
+          >
             <div className="flex flex-col lg:flex-row items-center gap-12">
               <div className="flex-1 space-y-6 text-center lg:text-left">
-                <span className="eyebrow inline-block">Premium Research Peptides</span>
-                <h1 className="text-5xl md:text-6xl lg:text-7xl font-display font-bold leading-[1.1] text-white">
+                <motion.span variants={itemVariants} className="eyebrow inline-block">Premium Research Peptides</motion.span>
+                <motion.h1 variants={itemVariants} className="text-5xl md:text-6xl lg:text-7xl font-display font-bold leading-[1.1] text-white">
                   Research Peptides <br />
                   <span className="text-transparent bg-clip-text bg-gradient-to-r from-accent to-secondary">You Can Trust</span>
-                </h1>
-                <p className="text-lg text-muted-foreground max-w-xl mx-auto lg:mx-0 leading-relaxed font-sans">
+                </motion.h1>
+                <motion.p variants={itemVariants} className="text-lg text-muted-foreground max-w-xl mx-auto lg:mx-0 leading-relaxed font-sans">
                   Premium quality research peptides backed by exceptional customer support and a genuinely hands-on approach to every order.
-                </p>
-                <div className="flex flex-col sm:flex-row items-center gap-4 justify-center lg:justify-start pt-4">
-                  <Link href="/shop">
-                    <Button size="lg" className="bg-primary hover:bg-primary/90 text-white w-full sm:w-auto text-lg h-14 px-8 shadow-[0_0_20px_rgba(11,95,255,0.4)] hover:scale-[1.03] transition-all">
-                      Shop Research Peptides
-                    </Button>
-                  </Link>
-                  <Link href="/contact">
-                    <Button size="lg" variant="outline" className="border-secondary text-secondary hover:bg-secondary/10 w-full sm:w-auto text-lg h-14 px-8">
-                      Contact Our Team
-                    </Button>
-                  </Link>
-                </div>
-                <p className="text-xs text-muted-foreground/60 uppercase tracking-wide mt-4">
+                </motion.p>
+                <motion.div variants={itemVariants} className="flex flex-col sm:flex-row items-center gap-4 justify-center lg:justify-start pt-4">
+                  <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="w-full sm:w-auto">
+                    <Link href="/shop">
+                      <Button size="lg" className="bg-primary hover:bg-primary/90 text-white w-full sm:w-auto text-lg h-14 px-8 shadow-[0_0_20px_rgba(11,95,255,0.4)] transition-all">
+                        Shop Research Peptides
+                      </Button>
+                    </Link>
+                  </motion.div>
+                  <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="w-full sm:w-auto">
+                    <Link href="/contact">
+                      <Button size="lg" variant="outline" className="border-secondary text-secondary hover:bg-secondary/10 w-full sm:w-auto text-lg h-14 px-8">
+                        Contact Our Team
+                      </Button>
+                    </Link>
+                  </motion.div>
+                </motion.div>
+                <motion.p variants={itemVariants} className="text-xs text-muted-foreground/60 uppercase tracking-wide mt-4">
                   For laboratory research purposes only. Not for human consumption.
-                </p>
+                </motion.p>
               </div>
-              <div className="flex-1 w-full max-w-lg lg:max-w-none">
+              <motion.div variants={itemVariants} className="flex-1 w-full max-w-lg lg:max-w-none">
                 <VialIllustration />
-              </div>
+              </motion.div>
             </div>
-          </div>
+          </motion.div>
         </section>
 
         {/* TRUST BAR */}
         <section className="bg-[#E7ECF3] border-b border-border py-8">
-          <div className="container mx-auto px-4 lg:px-8">
+          <motion.div 
+            variants={containerVariants}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-100px" }}
+            className="container mx-auto px-4 lg:px-8"
+          >
             <div className="flex flex-wrap justify-center md:justify-between items-center gap-6 text-center md:text-left">
               {[
                 { icon: FlaskConical, label: 'High Purity Standards' },
@@ -76,49 +109,63 @@ export default function HomePage() {
                 { icon: Headset, label: 'Personal Support' },
                 { icon: ShieldCheck, label: 'Secure Ordering' },
               ].map((item, i) => (
-                <div key={i} className="flex items-center gap-3 group">
+                <motion.div variants={itemVariants} key={i} className="flex items-center gap-3 group">
                   <item.icon className="w-6 h-6 text-primary group-hover:text-accent transition-colors" />
                   <span className="font-display font-medium text-sm text-background/80 group-hover:text-background transition-colors">{item.label}</span>
-                </div>
+                </motion.div>
               ))}
             </div>
-          </div>
+          </motion.div>
         </section>
 
         {/* ABOUT SECTION */}
         <section id="about" className="py-24 bg-background relative border-b border-border">
-          <div className="container mx-auto px-4 lg:px-8">
+          <motion.div 
+            variants={containerVariants}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-100px" }}
+            className="container mx-auto px-4 lg:px-8"
+          >
             <div className="max-w-3xl mx-auto text-center space-y-8">
-              <span className="eyebrow">The X Factor Approach</span>
-              <h2 className="text-4xl md:text-5xl font-display font-bold text-white">Research-Driven.<br/>Customer-Focused.</h2>
+              <motion.span variants={itemVariants} className="eyebrow block">The X Factor Approach</motion.span>
+              <motion.h2 variants={itemVariants} className="text-4xl md:text-5xl font-display font-bold text-white">Research-Driven.<br/>Customer-Focused.</motion.h2>
               <div className="space-y-6 text-muted-foreground text-lg leading-relaxed font-sans">
-                <p>
+                <motion.p variants={itemVariants}>
                   Founded in 2026, X Factor Peptides was established to bring high-quality research compounds to serious researchers across the UK.
-                </p>
-                <p>
+                </motion.p>
+                <motion.p variants={itemVariants}>
                   Unlike large automated operations where you're just an order number, we give every customer genuine personal attention. We believe that quality research deserves quality products—and quality people behind them.
-                </p>
-                <p>
+                </motion.p>
+                <motion.p variants={itemVariants}>
                   With rigorous quality-verified products, transparent practices, and a team that genuinely cares about your research outcomes, we are building the new standard for research peptide supply.
-                </p>
+                </motion.p>
               </div>
-              <div className="pt-8">
-                <Link href="/about">
-                  <Button variant="outline" className="border-border hover:bg-white/5 hover:text-accent h-12 px-8">
-                    Learn More About Us <ArrowRight className="ml-2 w-4 h-4" />
-                  </Button>
-                </Link>
-              </div>
+              <motion.div variants={itemVariants} className="pt-8 flex justify-center">
+                <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                  <Link href="/about">
+                    <Button variant="outline" className="border-border hover:bg-white/5 hover:text-accent h-12 px-8">
+                      Learn More About Us <ArrowRight className="ml-2 w-4 h-4" />
+                    </Button>
+                  </Link>
+                </motion.div>
+              </motion.div>
             </div>
-          </div>
+          </motion.div>
         </section>
 
         {/* RESEARCH CATEGORIES */}
         <section id="research" className="py-24 bg-card border-b border-border">
-          <div className="container mx-auto px-4 lg:px-8">
+          <motion.div 
+            variants={containerVariants}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-100px" }}
+            className="container mx-auto px-4 lg:px-8"
+          >
             <div className="text-center mb-16">
-              <span className="eyebrow">Explore By Field</span>
-              <h2 className="text-4xl font-display font-bold text-white mt-4">Explore Research Areas</h2>
+              <motion.span variants={itemVariants} className="eyebrow block">Explore By Field</motion.span>
+              <motion.h2 variants={itemVariants} className="text-4xl font-display font-bold text-white mt-4">Explore Research Areas</motion.h2>
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -130,7 +177,7 @@ export default function HomePage() {
                 { title: 'Focus & Cognitive', icon: Brain, desc: 'Peptides studied for neurological pathways associated with cognitive function and focus.' },
                 { title: 'Energy Research', icon: Battery, desc: 'Research compounds explored for their role in mitochondrial function and energy metabolism.' },
               ].map((cat, i) => (
-                <div key={i} className="bg-background border border-border rounded-xl p-8 group hover:-translate-y-1 hover:border-accent/50 transition-all duration-300">
+                <motion.div variants={itemVariants} key={i} className="bg-background border border-border rounded-xl p-8 group hover:-translate-y-1 hover:border-accent/50 transition-all duration-300">
                   <div className="w-12 h-12 rounded-full bg-accent/10 flex items-center justify-center text-accent mb-6 group-hover:scale-110 transition-transform">
                     <cat.icon className="w-6 h-6" />
                   </div>
@@ -139,25 +186,33 @@ export default function HomePage() {
                   <Link href="/shop" className="text-secondary font-medium text-sm flex items-center hover:text-accent transition-colors">
                     Explore <ArrowRight className="ml-1 w-4 h-4" />
                   </Link>
-                </div>
+                </motion.div>
               ))}
             </div>
             
-            <div className="mt-16 text-center">
-              <Link href="/shop">
-                <Button size="lg" className="bg-primary text-white hover:bg-primary/90 h-14 px-10 shadow-lg shadow-primary/20">
-                  Browse All Products
-                </Button>
-              </Link>
-            </div>
-          </div>
+            <motion.div variants={itemVariants} className="mt-16 flex justify-center">
+              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                <Link href="/shop">
+                  <Button size="lg" className="bg-primary text-white hover:bg-primary/90 h-14 px-10 shadow-lg shadow-primary/20">
+                    Browse All Products
+                  </Button>
+                </Link>
+              </motion.div>
+            </motion.div>
+          </motion.div>
         </section>
 
         {/* WHY CHOOSE US */}
         <section id="why-us" className="py-24 bg-background overflow-hidden border-b border-border">
-          <div className="container mx-auto px-4 lg:px-8">
+          <motion.div 
+            variants={containerVariants}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-100px" }}
+            className="container mx-auto px-4 lg:px-8"
+          >
             <div className="flex flex-col lg:flex-row gap-16 items-center">
-              <div className="flex-1 w-full relative">
+              <motion.div variants={itemVariants} className="flex-1 w-full relative">
                 {/* Abstract Molecular Illustration */}
                 <div className="aspect-square max-w-md mx-auto relative group">
                   <div className="absolute inset-0 bg-accent/10 rounded-full blur-[80px]" />
@@ -199,11 +254,11 @@ export default function HomePage() {
                     </defs>
                   </svg>
                 </div>
-              </div>
+              </motion.div>
               <div className="flex-1 space-y-8">
                 <div>
-                  <span className="eyebrow">Why Choose Us</span>
-                  <h2 className="text-4xl md:text-5xl font-display font-bold mt-4">The X Factor Difference</h2>
+                  <motion.span variants={itemVariants} className="eyebrow block">Why Choose Us</motion.span>
+                  <motion.h2 variants={itemVariants} className="text-4xl md:text-5xl font-display font-bold mt-4">The X Factor Difference</motion.h2>
                 </div>
                 <div className="space-y-6">
                   {[
@@ -214,7 +269,7 @@ export default function HomePage() {
                     { title: 'Growing Community', desc: 'A community of researchers who value quality and transparency.' },
                     { title: 'Simple Ordering', desc: 'Straightforward, secure ordering process from browsing to delivery.' },
                   ].map((feat, i) => (
-                    <div key={i} className="flex gap-4">
+                    <motion.div variants={itemVariants} key={i} className="flex gap-4">
                       <div className="mt-1">
                         <CheckCircle2 className={cn("w-6 h-6", i === 0 ? "text-accent" : (i % 2 === 0 ? "text-secondary" : "text-primary"))} />
                       </div>
@@ -222,47 +277,65 @@ export default function HomePage() {
                         <h4 className="font-display font-semibold text-lg">{feat.title}</h4>
                         <p className="text-muted-foreground text-sm mt-1">{feat.desc}</p>
                       </div>
-                    </div>
+                    </motion.div>
                   ))}
                 </div>
               </div>
             </div>
-          </div>
+          </motion.div>
         </section>
 
         {/* FEATURED PRODUCTS */}
         <section id="products" className="py-24 bg-background border-b border-border">
-          <div className="container mx-auto px-4 lg:px-8">
+          <motion.div 
+            variants={containerVariants}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-100px" }}
+            className="container mx-auto px-4 lg:px-8"
+          >
             <div className="flex justify-between items-end mb-12">
               <div>
-                <span className="eyebrow">Our Catalogue</span>
-                <h2 className="text-4xl font-display font-bold mt-4">Featured Research Products</h2>
+                <motion.span variants={itemVariants} className="eyebrow block">Our Catalogue</motion.span>
+                <motion.h2 variants={itemVariants} className="text-4xl font-display font-bold mt-4">Featured Research Products</motion.h2>
               </div>
-              <Link href="/shop" className="hidden md:flex text-secondary hover:text-accent font-medium items-center transition-colors">
-                View All <ArrowRight className="ml-2 w-4 h-4" />
-              </Link>
+              <motion.div variants={itemVariants}>
+                <Link href="/shop" className="hidden md:flex text-secondary hover:text-accent font-medium items-center transition-colors">
+                  View All <ArrowRight className="ml-2 w-4 h-4" />
+                </Link>
+              </motion.div>
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {productData.map(product => (
-                <Link key={product.id} href={`/products/${product.id}`}>
-                  <ProductCard product={product} />
-                </Link>
+              {productData.map((product) => (
+                <motion.div variants={itemVariants} key={product.id}>
+                  <Link href={`/products/${product.id}`}>
+                    <ProductCard product={product} />
+                  </Link>
+                </motion.div>
               ))}
             </div>
-            <div className="mt-8 md:hidden text-center">
-               <Link href="/shop">
-                 <Button variant="outline" className="w-full">View All Products</Button>
-               </Link>
-            </div>
-          </div>
+            <motion.div variants={itemVariants} className="mt-8 md:hidden text-center">
+              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                 <Link href="/shop">
+                   <Button variant="outline" className="w-full">View All Products</Button>
+                 </Link>
+              </motion.div>
+            </motion.div>
+          </motion.div>
         </section>
 
         {/* HOW IT WORKS */}
         <section id="how-it-works" className="py-24 bg-card border-b border-border relative">
-          <div className="container mx-auto px-4 lg:px-8">
+          <motion.div 
+            variants={containerVariants}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-100px" }}
+            className="container mx-auto px-4 lg:px-8"
+          >
             <div className="text-center mb-16">
-              <h2 className="text-4xl font-display font-bold">Simple. Reliable. Research-Ready.</h2>
+              <motion.h2 variants={itemVariants} className="text-4xl font-display font-bold">Simple. Reliable. Research-Ready.</motion.h2>
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-3 gap-12 relative">
@@ -276,24 +349,30 @@ export default function HomePage() {
                 { num: '2', title: 'Place Your Order', desc: 'Simple, secure checkout process with multiple payment options.' },
                 { num: '3', title: 'Receive Your Products', desc: 'Fast dispatch, tracked delivery, and personal support throughout.' },
               ].map((step, i) => (
-                <div key={i} className="relative z-10 text-center flex flex-col items-center">
+                <motion.div variants={itemVariants} key={i} className="relative z-10 text-center flex flex-col items-center">
                   <div className="w-24 h-24 rounded-full bg-background border-2 border-accent flex items-center justify-center text-3xl font-display font-bold text-accent shadow-[0_0_20px_rgba(34,211,238,0.2)] mb-6">
                     {step.num}
                   </div>
                   <h3 className="text-xl font-display font-semibold mb-3">{step.title}</h3>
                   <p className="text-muted-foreground">{step.desc}</p>
-                </div>
+                </motion.div>
               ))}
             </div>
-          </div>
+          </motion.div>
         </section>
 
         {/* TESTIMONIALS */}
         <section id="trust" className="py-24 bg-background border-b border-border">
-          <div className="container mx-auto px-4 lg:px-8">
+          <motion.div 
+            variants={containerVariants}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-100px" }}
+            className="container mx-auto px-4 lg:px-8"
+          >
             <div className="text-center mb-16">
-              <span className="eyebrow">Community</span>
-              <h2 className="text-4xl font-display font-bold mt-4">Trusted by Researchers</h2>
+              <motion.span variants={itemVariants} className="eyebrow block">Community</motion.span>
+              <motion.h2 variants={itemVariants} className="text-4xl font-display font-bold mt-4">Trusted by Researchers</motion.h2>
             </div>
             
             <div className="max-w-4xl mx-auto">
@@ -304,7 +383,7 @@ export default function HomePage() {
                   { quote: "High quality products and fast shipping. I appreciate the transparency around research-only use — it's clearly stated throughout.", author: "Sarah K.", title: "PhD Student" },
                   { quote: "Ordering was simple and delivery was prompt. Will definitely be ordering again for ongoing research.", author: "Michael R.", title: "Independent Researcher" },
                 ].map((t, i) => (
-                  <div key={i} className="bg-card p-8 rounded-xl border border-border flex flex-col">
+                  <motion.div variants={itemVariants} key={i} className="bg-card p-8 rounded-xl border border-border flex flex-col">
                     <div className="flex gap-1 mb-4">
                       {[1,2,3,4,5].map(s => <span key={s} className="text-accent">★</span>)}
                     </div>
@@ -313,23 +392,29 @@ export default function HomePage() {
                       <p className="font-display font-semibold">{t.author}</p>
                       <p className="text-xs text-muted-foreground">{t.title}</p>
                     </div>
-                  </div>
+                  </motion.div>
                 ))}
               </div>
             </div>
-          </div>
+          </motion.div>
         </section>
 
         {/* MISSION STATEMENT */}
         <section id="mission" className="py-24 bg-background border-b border-border">
-          <div className="container mx-auto px-4 lg:px-8">
+          <motion.div 
+            variants={containerVariants}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-100px" }}
+            className="container mx-auto px-4 lg:px-8"
+          >
             <div className="max-w-4xl mx-auto text-center">
-              <h2 className="text-4xl md:text-5xl font-display font-bold mb-8">Our Mission</h2>
-              <p className="text-xl md:text-2xl text-muted-foreground leading-relaxed font-sans font-light">
+              <motion.h2 variants={itemVariants} className="text-4xl md:text-5xl font-display font-bold mb-8">Our Mission</motion.h2>
+              <motion.p variants={itemVariants} className="text-xl md:text-2xl text-muted-foreground leading-relaxed font-sans font-light">
                 "At X Factor Peptides, our mission is to provide researchers with access to premium quality research compounds, supported by transparent practices and genuinely personal customer service. We believe that quality research deserves quality products — and quality people behind them. Every order we fulfil reflects our commitment to the researchers who trust us."
-              </p>
+              </motion.p>
             </div>
-          </div>
+          </motion.div>
         </section>
 
         {/* FAQ ACCORDION */}
@@ -339,7 +424,13 @@ export default function HomePage() {
               <h2 className="text-4xl font-display font-bold">Frequently Asked Questions</h2>
             </div>
             
-            <div className="space-y-4">
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-100px" }}
+              transition={{ duration: 0.5, staggerChildren: 0.15 }}
+              className="space-y-4"
+            >
               {[
                 { q: "Are your products for research purposes only?", a: "Yes. All products sold by X Factor Peptides are strictly for laboratory and scientific research purposes only. They are not intended for human consumption, veterinary use, or any other purpose." },
                 { q: "How are products shipped?", a: "We dispatch all orders promptly using tracked courier services. Orders are packaged securely and discreetly." },
@@ -347,17 +438,14 @@ export default function HomePage() {
                 { q: "What payment methods do you accept?", a: "We accept major credit and debit cards and bank transfer. All transactions are processed securely." },
                 { q: "How long does shipping take?", a: "Standard delivery typically takes 2-3 business days within the UK. Express options are available at checkout." },
               ].map((faq, i) => (
-                <details key={i} className="group bg-background border border-border rounded-lg overflow-hidden [&_summary::-webkit-details-marker]:hidden">
-                  <summary className="flex items-center justify-between cursor-pointer p-6 font-display font-medium text-lg list-none group-open:border-l-4 group-open:border-l-accent transition-all">
-                    {faq.q}
-                    <ChevronDown className="w-5 h-5 text-muted-foreground group-open:rotate-180 transition-transform" />
-                  </summary>
-                  <div className="p-6 pt-0 text-muted-foreground border-l-4 border-l-accent bg-background">
-                    {faq.a}
-                  </div>
-                </details>
+                <motion.div 
+                  key={i}
+                  variants={itemVariants}
+                >
+                  <HoverAccordion question={faq.q} answer={faq.a} />
+                </motion.div>
               ))}
-            </div>
+            </motion.div>
           </div>
         </section>
 
@@ -366,24 +454,34 @@ export default function HomePage() {
           <div className="absolute inset-0 bg-accent/5 pointer-events-none" />
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-accent/10 rounded-full blur-[120px] pointer-events-none" />
           
-          <div className="container mx-auto px-4 lg:px-8 relative z-10 text-center max-w-3xl">
-            <h2 className="text-4xl md:text-5xl font-display font-bold mb-6">Need Help Choosing the Right Research Products?</h2>
-            <p className="text-lg text-muted-foreground mb-10">
+          <motion.div 
+            variants={containerVariants}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-100px" }}
+            className="container mx-auto px-4 lg:px-8 relative z-10 text-center max-w-3xl"
+          >
+            <motion.h2 variants={itemVariants} className="text-4xl md:text-5xl font-display font-bold mb-6">Need Help Choosing the Right Research Products?</motion.h2>
+            <motion.p variants={itemVariants} className="text-lg text-muted-foreground mb-10">
               Our team is here to help. Whether you have questions about specific research compounds or need guidance on what might suit your research, get in touch.
-            </p>
-            <div className="flex flex-col sm:flex-row justify-center gap-4">
-              <Link href="/contact">
-                <Button size="lg" className="bg-primary hover:bg-primary/90 text-white w-full sm:w-auto text-lg h-14 px-10">
-                  Contact Us
-                </Button>
-              </Link>
-              <Link href="/shop">
-                <Button size="lg" variant="outline" className="border-secondary text-secondary hover:bg-secondary/10 w-full sm:w-auto text-lg h-14 px-10">
-                  Browse Products
-                </Button>
-              </Link>
-            </div>
-          </div>
+            </motion.p>
+            <motion.div variants={itemVariants} className="flex flex-col sm:flex-row justify-center gap-4">
+              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="w-full sm:w-auto">
+                <Link href="/contact">
+                  <Button size="lg" className="bg-primary hover:bg-primary/90 text-white w-full sm:w-auto text-lg h-14 px-10">
+                    Contact Us
+                  </Button>
+                </Link>
+              </motion.div>
+              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="w-full sm:w-auto">
+                <Link href="/shop">
+                  <Button size="lg" variant="outline" className="border-secondary text-secondary hover:bg-secondary/10 w-full sm:w-auto text-lg h-14 px-10">
+                    Browse Products
+                  </Button>
+                </Link>
+              </motion.div>
+            </motion.div>
+          </motion.div>
         </section>
 
       </main>

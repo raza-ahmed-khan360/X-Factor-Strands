@@ -9,6 +9,7 @@ interface StrandProps {
 export function TheStrand({ sections }: StrandProps) {
   const [activeNodes, setActiveNodes] = useState<Set<string>>(new Set(['Hero']));
   const [lineHeight, setLineHeight] = useState(0);
+  const [strandOpacity, setStrandOpacity] = useState(1);
   const containerRef = useRef<HTMLDivElement>(null);
   
   useEffect(() => {
@@ -18,6 +19,7 @@ export function TheStrand({ sections }: StrandProps) {
       // Calculate how far down the page we've scrolled relative to the document
       const scrollY = window.scrollY;
       const windowH = window.innerHeight;
+      const documentH = document.body.scrollHeight;
       
       const newActive = new Set<string>();
       let lowestActiveY = 0;
@@ -33,6 +35,14 @@ export function TheStrand({ sections }: StrandProps) {
         }
       });
       
+      // Fade out when within 600px of the bottom (approx footer area)
+      const distanceToBottom = documentH - (scrollY + windowH);
+      if (distanceToBottom < 600) {
+        setStrandOpacity(Math.max(0, distanceToBottom / 600));
+      } else {
+        setStrandOpacity(1);
+      }
+
       // Calculate line height based on active nodes
       // To keep it simple, we just draw down to the current scroll position + offset
       const drawHeight = Math.min(
@@ -59,7 +69,8 @@ export function TheStrand({ sections }: StrandProps) {
   return (
     <div 
       ref={containerRef}
-      className="hidden md:block fixed left-8 lg:left-16 top-0 bottom-0 w-32 z-40 pointer-events-none"
+      className="hidden md:block fixed left-8 lg:left-16 top-0 bottom-0 w-32 z-40 pointer-events-none transition-opacity duration-100"
+      style={{ opacity: strandOpacity }}
     >
       {/* The Line */}
       <div className="absolute left-[11px] top-0 bottom-0 w-[2px] bg-border/40" />

@@ -17,9 +17,9 @@ export default function FAQPage() {
       category: "Ordering & Shipping",
       questions: [
         { q: "How are products shipped?", a: "We dispatch all orders promptly using tracked courier services. Orders are packaged securely and discreetly to ensure product integrity during transit." },
-        { q: "How long does shipping take?", a: "Standard delivery typically takes 2-3 business days within the UK. Express options are available at checkout." },
+        { q: "How long does shipping take?", a: "Standard delivery typically takes 2-3 business days within the USA. Express options are available at checkout." },
         { q: "Can I track my order?", a: "Yes. Once your order is dispatched, you will receive tracking information by email so you can monitor your delivery." },
-        { q: "What countries do you ship to?", a: "Currently, we supply exclusively to researchers and laboratories based within the United Kingdom." },
+        { q: "What countries do you ship to?", a: "Currently, we supply exclusively to researchers and laboratories based within the USA." },
         { q: "Are there minimum order quantities?", a: "No, we do not impose minimum order quantities. We cater to both individual independent researchers and larger laboratory facilities." },
       ]
     },

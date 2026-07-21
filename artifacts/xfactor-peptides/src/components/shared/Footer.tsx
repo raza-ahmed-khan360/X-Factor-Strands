@@ -9,7 +9,7 @@ export function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
           <div className="space-y-4">
             <Link href="/" className="flex items-center group mb-6 inline-flex">
-              <img src="/logo.jpg" alt="X Factor Peptides Logo" className="h-14 w-auto object-contain transition-transform group-hover:scale-105" />
+              <img src="/logo.png" alt="X Factor Peptides Logo" className="h-16 w-auto object-contain transition-transform group-hover:scale-105" />
             </Link>
             <p className="text-muted-foreground text-sm leading-relaxed max-w-xs">
               Premium quality research peptides for laboratory and scientific use, backed by rigorous verification standards.

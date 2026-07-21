@@ -50,8 +50,8 @@ export default function ShopPage() {
             <div className="absolute right-1/3 top-1/2 -translate-y-1/2 w-4 h-4 rounded-full bg-white border-2 border-secondary cursor-pointer transform translate-x-1/2" />
           </div>
           <div className="flex justify-between text-xs text-muted-foreground mt-4 font-display">
-            <span>£20.00</span>
-            <span>£50.00</span>
+            <span>$20.00</span>
+            <span>$50.00</span>
           </div>
         </div>
       </div>

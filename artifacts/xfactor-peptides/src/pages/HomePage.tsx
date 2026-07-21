@@ -132,7 +132,7 @@ export default function HomePage() {
               <motion.h2 variants={itemVariants} className="text-4xl md:text-5xl font-display font-bold text-white">Research-Driven.<br/>Customer-Focused.</motion.h2>
               <div className="space-y-6 text-muted-foreground text-lg leading-relaxed font-sans">
                 <motion.p variants={itemVariants}>
-                  Founded in 2026, X Factor Peptides was established to bring high-quality research compounds to serious researchers across the UK.
+                  Founded in 2026, X Factor Peptides was established to bring high-quality research compounds to serious researchers across the USA.
                 </motion.p>
                 <motion.p variants={itemVariants}>
                   Unlike large automated operations where you're just an order number, we give every customer genuine personal attention. We believe that quality research deserves quality products—and quality people behind them.
@@ -436,7 +436,7 @@ export default function HomePage() {
                 { q: "How are products shipped?", a: "We dispatch all orders promptly using tracked courier services. Orders are packaged securely and discreetly." },
                 { q: "How do I contact support?", a: "You can reach our team via the Contact page, by email, or by phone. We aim to respond to all enquiries within a few hours during business hours." },
                 { q: "What payment methods do you accept?", a: "We accept major credit and debit cards and bank transfer. All transactions are processed securely." },
-                { q: "How long does shipping take?", a: "Standard delivery typically takes 2-3 business days within the UK. Express options are available at checkout." },
+                { q: "How long does shipping take?", a: "Standard delivery typically takes 2-3 business days within the USA. Express options are available at checkout." },
               ].map((faq, i) => (
                 <motion.div 
                   key={i}

@@ -15,7 +15,7 @@ export default function AboutPage() {
             <span className="eyebrow mb-4 inline-block">Our Story</span>
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-display font-bold mb-6">About X Factor Peptides</h1>
             <p className="text-xl text-muted-foreground leading-relaxed">
-              Setting a new standard for quality and transparency in the UK research peptide industry.
+              Setting a new standard for quality and transparency in the US research peptide industry.
             </p>
           </div>
         </div>
@@ -24,7 +24,7 @@ export default function AboutPage() {
           <div className="prose prose-invert prose-lg max-w-none">
             <h2 className="font-display text-3xl font-bold text-foreground">The Origins</h2>
             <p>
-              Founded in 2026, X Factor Peptides was established with a singular vision: to provide the UK research community with access to genuinely high-quality research compounds, backed by a level of customer service that the industry was previously lacking.
+              Founded in 2026, X Factor Peptides was established with a singular vision: to provide the US research community with access to genuinely high-quality research compounds, backed by a level of customer service that the industry was previously lacking.
             </p>
             <p>
               We observed that the market was dominated by faceless, automated suppliers where researchers were treated as mere order numbers. When questions arose or guidance was needed regarding compound specifications, researchers were often met with automated responses or silence.

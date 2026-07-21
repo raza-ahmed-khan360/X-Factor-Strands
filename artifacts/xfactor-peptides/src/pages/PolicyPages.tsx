@@ -43,11 +43,11 @@ export const ShippingPolicyPage = () => (
         <p>We aim to dispatch all orders placed before 2:00 PM GMT on the same business day. Orders placed after this time or on weekends/public holidays will be dispatched on the next business day.</p>
         
         <h2>Delivery Options</h2>
-        <p>We offer the following delivery options within the UK:</p>
+        <p>We offer the following delivery options within the USA:</p>
         <ul>
-          <li><strong>Standard Tracked:</strong> 2-3 business days (£4.99)</li>
-          <li><strong>Express Tracked:</strong> 1-2 business days (£7.99)</li>
-          <li><strong>Free Shipping:</strong> Available on orders over £150</li>
+          <li><strong>Standard Tracked:</strong> 2-3 business days ($4.99)</li>
+          <li><strong>Express Tracked:</strong> 1-2 business days ($7.99)</li>
+          <li><strong>Free Shipping:</strong> Available on orders over $150</li>
         </ul>
         
         <h2>Packaging</h2>

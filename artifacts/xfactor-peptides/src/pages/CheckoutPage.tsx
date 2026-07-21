@@ -117,16 +117,16 @@ export default function CheckoutPage() {
                   <div className="space-y-4 mb-6">
                     <div className="flex justify-between text-muted-foreground">
                       <span>Subtotal</span>
-                      <span>£{getTotalPrice().toFixed(2)}</span>
+                      <span>${getTotalPrice().toFixed(2)}</span>
                     </div>
                     <div className="flex justify-between text-muted-foreground">
                       <span>Shipping (Next Day)</span>
-                      <span>£5.99</span>
+                      <span>$5.99</span>
                     </div>
                     <div className="h-px bg-border my-4" />
                     <div className="flex justify-between text-xl font-display font-bold">
                       <span>Total</span>
-                      <span className="text-accent">£{(getTotalPrice() + 5.99).toFixed(2)}</span>
+                      <span className="text-accent">${(getTotalPrice() + 5.99).toFixed(2)}</span>
                     </div>
                   </div>
                   

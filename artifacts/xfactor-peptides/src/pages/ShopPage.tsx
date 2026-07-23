@@ -12,10 +12,12 @@ import {
   SheetTrigger,
 } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
+import { Slider } from '@/components/ui/slider';
 
 export default function ShopPage() {
   const [selectedCategories, setSelectedCategories] = React.useState<string[]>([]);
   const [searchQuery, setSearchQuery] = React.useState('');
+  const [priceRange, setPriceRange] = React.useState<[number, number]>([0, 150]);
 
   const toggleCategory = (cat: string) => {
     setSelectedCategories(prev => 
@@ -26,7 +28,9 @@ export default function ShopPage() {
   const filteredProducts = productData.filter(p => {
     const matchesCategory = selectedCategories.length === 0 || selectedCategories.includes(p.category);
     const matchesSearch = p.name.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchesCategory && matchesSearch;
+    const matchesPrice = p.variants.some(v => v.price >= priceRange[0] && v.price <= priceRange[1]);
+    
+    return matchesCategory && matchesSearch && matchesPrice;
   });
 
   const categories = [
@@ -38,7 +42,7 @@ export default function ShopPage() {
     'Energy'
   ];
 
-  const FilterContent = () => (
+  const renderFilterContent = () => (
     <div className="space-y-8">
       <div>
         <h3 className="font-display font-semibold text-lg mb-4 flex items-center justify-between">
@@ -60,17 +64,18 @@ export default function ShopPage() {
       </div>
 
       <div>
-        <h3 className="font-display font-semibold text-lg mb-4">Price Range</h3>
-        <div className="pt-4 px-2">
-          <div className="h-1 bg-border rounded-full relative">
-            <div className="absolute left-0 right-1/3 h-full bg-secondary rounded-full" />
-            <div className="absolute left-0 top-1/2 -translate-y-1/2 w-4 h-4 rounded-full bg-white border-2 border-secondary cursor-pointer" />
-            <div className="absolute right-1/3 top-1/2 -translate-y-1/2 w-4 h-4 rounded-full bg-white border-2 border-secondary cursor-pointer transform translate-x-1/2" />
-          </div>
-          <div className="flex justify-between text-xs text-muted-foreground mt-4 font-display">
-            <span>$20.00</span>
-            <span>$50.00</span>
-          </div>
+        <h3 className="font-display font-semibold text-lg mb-4 flex items-center justify-between">
+          Price Range
+          <span className="text-sm font-normal text-muted-foreground">${priceRange[0]} - ${priceRange[1]}</span>
+        </h3>
+        <div className="pt-4 px-2 pb-2">
+          <Slider 
+            min={0} 
+            max={200} 
+            step={5} 
+            value={priceRange} 
+            onValueChange={(val) => setPriceRange(val as [number, number])} 
+          />
         </div>
       </div>
       
@@ -113,14 +118,14 @@ export default function ShopPage() {
                 <SheetHeader className="mb-6 text-left">
                   <SheetTitle className="text-2xl font-display">Filters</SheetTitle>
                 </SheetHeader>
-                <FilterContent />
+                {renderFilterContent()}
               </SheetContent>
             </Sheet>
           </div>
 
           {/* Sidebar Filters (Desktop) */}
           <aside className="hidden lg:block w-full lg:w-64 flex-shrink-0">
-            <FilterContent />
+            {renderFilterContent()}
           </aside>
 
           {/* Product Grid */}

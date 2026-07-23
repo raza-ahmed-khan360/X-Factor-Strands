@@ -366,7 +366,7 @@ export function ProductCard({ product }: { product: Product }) {
            className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-700" 
          />
          <div className="absolute top-4 right-4 bg-background/80 backdrop-blur-md px-3 py-1.5 rounded-lg border border-border shadow-sm z-10">
-           <span className="text-sm font-display font-bold text-foreground">From $${startingPrice.toFixed(2)}</span>
+           <span className="text-sm font-display font-bold text-foreground">From ${startingPrice.toFixed(2)}</span>
          </div>
       </div>
 

@@ -137,12 +137,6 @@
     @apply font-display;
   }
 
-  /* Hide default cursor on desktop where custom cursor is active */
-  @media (min-width: 768px) {
-    *, *::before, *::after {
-      cursor: none !important;
-    }
-  }
 }
 
 .eyebrow {

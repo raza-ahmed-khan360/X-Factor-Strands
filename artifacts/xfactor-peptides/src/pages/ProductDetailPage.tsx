@@ -15,6 +15,12 @@ export default function ProductDetailPage() {
   
   const product = productData.find(p => p.id === productId);
   const relatedProducts = productData.filter(p => p.id !== productId).slice(0, 3);
+  const [selectedVariantIndex, setSelectedVariantIndex] = React.useState(0);
+
+  // Reset variant selection when product changes
+  React.useEffect(() => {
+    setSelectedVariantIndex(0);
+  }, [productId]);
 
   if (!product) {
     return (
@@ -26,10 +32,14 @@ export default function ProductDetailPage() {
   }
 
   const handleAddToCart = () => {
+    if (!product) return;
+    const variant = product.variants[selectedVariantIndex];
     addItem({
       id: product.id,
+      cartItemId: `${product.id}-${variant.size}`,
       name: product.name,
-      price: product.price,
+      price: variant.price,
+      size: variant.size,
     });
     toast.success(`${product.name} added to cart`);
   };
@@ -67,7 +77,25 @@ export default function ProductDetailPage() {
                 </div>
               </div>
               <h1 className="text-4xl md:text-5xl font-display font-bold mb-4">{product.name}</h1>
-              <p className="text-2xl font-display font-semibold text-accent mb-6">{product.price}</p>
+              <p className="text-2xl font-display font-semibold text-accent mb-6">${product.variants[selectedVariantIndex].price.toFixed(2)}</p>
+              
+              {product.variants.length > 1 && (
+                <div className="mb-6">
+                  <h3 className="text-sm font-semibold mb-2">Select Size</h3>
+                  <div className="flex flex-wrap gap-2">
+                    {product.variants.map((v, i) => (
+                      <Button
+                        key={v.size}
+                        variant={i === selectedVariantIndex ? "default" : "outline"}
+                        className={i === selectedVariantIndex ? "bg-accent hover:bg-accent/90" : ""}
+                        onClick={() => setSelectedVariantIndex(i)}
+                      >
+                        {v.size}
+                      </Button>
+                    ))}
+                  </div>
+                </div>
+              )}
               
               <div className="prose prose-invert border-b border-border/50 pb-8 mb-8">
                 <p className="text-lg text-foreground/90">{product.shortDesc}</p>

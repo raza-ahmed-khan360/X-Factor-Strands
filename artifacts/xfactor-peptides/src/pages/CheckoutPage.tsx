@@ -46,23 +46,23 @@ export default function CheckoutPage() {
                     {items.map((item) => (
                       <div key={item.id} className="flex items-center justify-between pb-6 border-b border-border/50 last:border-0 last:pb-0">
                         <div>
-                          <h3 className="font-display font-medium text-lg">{item.name}</h3>
-                          <p className="text-accent font-semibold">{item.price}</p>
+                          <h3 className="font-display font-medium text-lg">{item.name} <span className="text-sm text-muted-foreground ml-2">{item.size}</span></h3>
+                          <p className="text-accent font-semibold">${item.price.toFixed(2)}</p>
                         </div>
                         <div className="flex items-center gap-4">
                           <div className="flex items-center border border-border rounded-md">
                             <button 
-                              onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                            onClick={() => updateQuantity(item.cartItemId, item.quantity - 1)}
                               className="px-3 py-1 text-muted-foreground hover:text-foreground"
                             >-</button>
                             <span className="w-8 text-center font-medium">{item.quantity}</span>
                             <button 
-                              onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                              onClick={() => updateQuantity(item.cartItemId, item.quantity + 1)}
                               className="px-3 py-1 text-muted-foreground hover:text-foreground"
                             >+</button>
                           </div>
                           <button 
-                            onClick={() => removeItem(item.id)}
+                            onClick={() => removeItem(item.cartItemId)}
                             className="text-muted-foreground hover:text-destructive transition-colors p-2"
                             aria-label="Remove item"
                           >

@@ -1,89 +1,372 @@
 import * as React from 'react';
 import { Star } from 'lucide-react';
 
-export const productData = [
+export interface ProductVariant {
+  size: string;
+  price: number;
+}
+
+export interface Product {
+  id: string;
+  name: string;
+  category: string;
+  shortDesc: string;
+  longDesc: string;
+  specs: { purity: string; format: string; storage: string; mw: string };
+  imageUrl: string;
+  reviews: { rating: number; count: number };
+  variants: ProductVariant[];
+}
+
+export const productData: Product[] = [
   {
-    id: "mb-1",
-    name: "Metabolic Research Complex MB-1",
-    category: "Weight Management",
-    price: "$29.99",
-    shortDesc: "A research compound studied for its role in metabolic signalling pathways.",
-    longDesc: "This compound is currently being studied in laboratory settings for its potential role in lipolytic and metabolic pathways. As with all research peptides, this product is strictly for research purposes.",
-    specs: { purity: ">99%", format: "Lyophilised", storage: "-20°C", mw: "1.2kDa" },
-    imageUrl: "/products/MB-1.png",
-    reviews: { rating: 4.8, count: 124 }
+    id: "semaglutide-glp1",
+    name: "Semaglutide GLP1",
+    category: "Research Peptide",
+    shortDesc: "High-quality research compound for laboratory use.",
+    longDesc: "This compound is strictly for research and laboratory purposes. Please ensure proper handling and storage.",
+    specs: { purity: ">99%", format: "Lyophilised", storage: "-20°C", mw: "Varies" },
+    imageUrl: "/new-products/semaglutide-glp1.jpeg",
+    reviews: { rating: 5.0, count: Math.floor(Math.random() * 50) + 10 },
+    variants: [{"size":"10mg","price":50},{"size":"20mg","price":70},{"size":"30mg","price":90}]
   },
   {
-    id: "rc-2",
-    name: "Recovery Research Blend RC-2",
-    category: "Recovery",
-    price: "$34.99",
-    shortDesc: "Laboratory peptide investigated for cellular repair and regeneration research.",
-    longDesc: "This compound is currently being studied in laboratory settings for its potential role in tissue repair mechanisms and cellular regeneration. As with all research peptides, this product is strictly for research purposes.",
-    specs: { purity: ">98.5%", format: "Lyophilised", storage: "-20°C", mw: "2.4kDa" },
-    imageUrl: "/products/RC-2.png",
-    reviews: { rating: 4.9, count: 89 }
+    id: "tirzepatide-glp2",
+    name: "Tirzepatide (Tirz) GLP2",
+    category: "Research Peptide",
+    shortDesc: "High-quality research compound for laboratory use.",
+    longDesc: "This compound is strictly for research and laboratory purposes. Please ensure proper handling and storage.",
+    specs: { purity: ">99%", format: "Lyophilised", storage: "-20°C", mw: "Varies" },
+    imageUrl: "/new-products/tirzepatide-glp2.jpeg",
+    reviews: { rating: 5.0, count: Math.floor(Math.random() * 50) + 10 },
+    variants: [{"size":"10mg","price":60},{"size":"20mg","price":100},{"size":"30mg","price":120}]
   },
   {
-    id: "pf-3",
-    name: "Performance Research Series PF-3",
-    category: "Performance",
-    price: "$32.99",
-    shortDesc: "Research compound studied for physiological performance markers.",
-    longDesc: "This compound is currently being studied in laboratory settings for its potential role in muscular endurance and physiological performance markers. As with all research peptides, this product is strictly for research purposes.",
-    specs: { purity: ">99%", format: "Lyophilised", storage: "-20°C", mw: "1.8kDa" },
-    imageUrl: "/products/PF-3.png",
-    reviews: { rating: 4.7, count: 210 }
+    id: "retatrutide-glp3",
+    name: "Retatrutide (Reta) GLP3",
+    category: "Research Peptide",
+    shortDesc: "High-quality research compound for laboratory use.",
+    longDesc: "This compound is strictly for research and laboratory purposes. Please ensure proper handling and storage.",
+    specs: { purity: ">99%", format: "Lyophilised", storage: "-20°C", mw: "Varies" },
+    imageUrl: "/new-products/retatrutide-glp3.jpeg",
+    reviews: { rating: 5.0, count: Math.floor(Math.random() * 50) + 10 },
+    variants: [{"size":"10mg","price":60},{"size":"20mg","price":100},{"size":"30mg","price":130}]
   },
   {
-    id: "sl-4",
-    name: "Sleep Research Peptide SL-4",
-    category: "Sleep",
-    price: "$27.99",
-    shortDesc: "Compound investigated for circadian rhythm and sleep architecture research.",
-    longDesc: "This compound is currently being studied in laboratory settings for its potential role in circadian rhythm regulation and deep sleep architecture. As with all research peptides, this product is strictly for research purposes.",
-    specs: { purity: ">99.2%", format: "Lyophilised", storage: "-20°C", mw: "1.5kDa" },
-    imageUrl: "/products/SL-4.png",
-    reviews: { rating: 4.9, count: 156 }
+    id: "cagrilintide",
+    name: "Cagrilintide",
+    category: "Research Peptide",
+    shortDesc: "High-quality research compound for laboratory use.",
+    longDesc: "This compound is strictly for research and laboratory purposes. Please ensure proper handling and storage.",
+    specs: { purity: ">99%", format: "Lyophilised", storage: "-20°C", mw: "Varies" },
+    imageUrl: "/new-products/cagrilintide.jpeg",
+    reviews: { rating: 5.0, count: Math.floor(Math.random() * 50) + 10 },
+    variants: [{"size":"10mg","price":60}]
   },
   {
-    id: "fc-5",
-    name: "Focus Research Peptide FC-5",
-    category: "Focus & Cognitive",
-    price: "$31.99",
-    shortDesc: "Research peptide studied for neurological cognitive function pathways.",
-    longDesc: "This compound is currently being studied in laboratory settings for its potential role in neurological pathways associated with cognitive function and focus. As with all research peptides, this product is strictly for research purposes.",
-    specs: { purity: ">98%", format: "Lyophilised", storage: "-20°C", mw: "3.1kDa" },
-    imageUrl: "/products/FC-5.png",
-    reviews: { rating: 4.8, count: 92 }
+    id: "tesamorelin",
+    name: "Tesamorelin (Tesa)",
+    category: "Research Peptide",
+    shortDesc: "High-quality research compound for laboratory use.",
+    longDesc: "This compound is strictly for research and laboratory purposes. Please ensure proper handling and storage.",
+    specs: { purity: ">99%", format: "Lyophilised", storage: "-20°C", mw: "Varies" },
+    imageUrl: "/new-products/tesamorelin.jpeg",
+    reviews: { rating: 5.0, count: Math.floor(Math.random() * 50) + 10 },
+    variants: [{"size":"10mg","price":60},{"size":"20mg","price":100}]
   },
   {
-    id: "en-6",
-    name: "Energy Research Complex EN-6",
-    category: "Energy",
-    price: "$29.99",
-    shortDesc: "Compound explored for mitochondrial function and cellular energy research.",
-    longDesc: "This compound is currently being studied in laboratory settings for its potential role in mitochondrial function and energy metabolism. As with all research peptides, this product is strictly for research purposes.",
-    specs: { purity: ">99%", format: "Lyophilised", storage: "-20°C", mw: "2.1kDa" },
-    imageUrl: "/products/EN-6.png",
-    reviews: { rating: 4.6, count: 74 }
+    id: "mots-c",
+    name: "MOTS-C",
+    category: "Research Peptide",
+    shortDesc: "High-quality research compound for laboratory use.",
+    longDesc: "This compound is strictly for research and laboratory purposes. Please ensure proper handling and storage.",
+    specs: { purity: ">99%", format: "Lyophilised", storage: "-20°C", mw: "Varies" },
+    imageUrl: "/new-products/mots-c.jpeg",
+    reviews: { rating: 5.0, count: Math.floor(Math.random() * 50) + 10 },
+    variants: [{"size":"10mg","price":40},{"size":"40mg","price":80}]
+  },
+  {
+    id: "sermorelin",
+    name: "Sermorelin",
+    category: "Research Peptide",
+    shortDesc: "High-quality research compound for laboratory use.",
+    longDesc: "This compound is strictly for research and laboratory purposes. Please ensure proper handling and storage.",
+    specs: { purity: ">99%", format: "Lyophilised", storage: "-20°C", mw: "Varies" },
+    imageUrl: "/new-products/sermorelin.jpeg",
+    reviews: { rating: 5.0, count: Math.floor(Math.random() * 50) + 10 },
+    variants: [{"size":"10mg","price":60}]
+  },
+  {
+    id: "bpc157",
+    name: "BPC-157",
+    category: "Research Peptide",
+    shortDesc: "High-quality research compound for laboratory use.",
+    longDesc: "This compound is strictly for research and laboratory purposes. Please ensure proper handling and storage.",
+    specs: { purity: ">99%", format: "Lyophilised", storage: "-20°C", mw: "Varies" },
+    imageUrl: "/new-products/bpc157.jpeg",
+    reviews: { rating: 5.0, count: Math.floor(Math.random() * 50) + 10 },
+    variants: [{"size":"10mg","price":50}]
+  },
+  {
+    id: "tb-500",
+    name: "TB-500",
+    category: "Research Peptide",
+    shortDesc: "High-quality research compound for laboratory use.",
+    longDesc: "This compound is strictly for research and laboratory purposes. Please ensure proper handling and storage.",
+    specs: { purity: ">99%", format: "Lyophilised", storage: "-20°C", mw: "Varies" },
+    imageUrl: "/new-products/tb-500.jpeg",
+    reviews: { rating: 5.0, count: Math.floor(Math.random() * 50) + 10 },
+    variants: [{"size":"5mg","price":60}]
+  },
+  {
+    id: "bpc157-tb500-wolverine",
+    name: "BPC-157 / TB-500 Wolverine",
+    category: "Research Peptide",
+    shortDesc: "High-quality research compound for laboratory use.",
+    longDesc: "This compound is strictly for research and laboratory purposes. Please ensure proper handling and storage.",
+    specs: { purity: ">99%", format: "Lyophilised", storage: "-20°C", mw: "Varies" },
+    imageUrl: "/new-products/bpc157-tb500-wolverine.jpeg",
+    reviews: { rating: 5.0, count: Math.floor(Math.random() * 50) + 10 },
+    variants: [{"size":"10mg/10mg","price":80}]
+  },
+  {
+    id: "klow",
+    name: "KLOW",
+    category: "Research Peptide",
+    shortDesc: "High-quality research compound for laboratory use.",
+    longDesc: "This compound is strictly for research and laboratory purposes. Please ensure proper handling and storage.",
+    specs: { purity: ">99%", format: "Lyophilised", storage: "-20°C", mw: "Varies" },
+    imageUrl: "/new-products/klow.jpeg",
+    reviews: { rating: 5.0, count: Math.floor(Math.random() * 50) + 10 },
+    variants: [{"size":"80mg","price":80}]
+  },
+  {
+    id: "ipamorelin",
+    name: "Ipamorelin",
+    category: "Research Peptide",
+    shortDesc: "High-quality research compound for laboratory use.",
+    longDesc: "This compound is strictly for research and laboratory purposes. Please ensure proper handling and storage.",
+    specs: { purity: ">99%", format: "Lyophilised", storage: "-20°C", mw: "Varies" },
+    imageUrl: "/new-products/ipamorelin.jpeg",
+    reviews: { rating: 5.0, count: Math.floor(Math.random() * 50) + 10 },
+    variants: [{"size":"10mg","price":50}]
+  },
+  {
+    id: "cjc-1295-ipa",
+    name: "CJC-1295 / Ipamorelin",
+    category: "Research Peptide",
+    shortDesc: "High-quality research compound for laboratory use.",
+    longDesc: "This compound is strictly for research and laboratory purposes. Please ensure proper handling and storage.",
+    specs: { purity: ">99%", format: "Lyophilised", storage: "-20°C", mw: "Varies" },
+    imageUrl: "/new-products/cjc-1295-ipa.jpeg",
+    reviews: { rating: 5.0, count: Math.floor(Math.random() * 50) + 10 },
+    variants: [{"size":"5mg/5mg","price":60}]
+  },
+  {
+    id: "cjc-1295-w-dac",
+    name: "CJC-1295 w/ DAC",
+    category: "Research Peptide",
+    shortDesc: "High-quality research compound for laboratory use.",
+    longDesc: "This compound is strictly for research and laboratory purposes. Please ensure proper handling and storage.",
+    specs: { purity: ">99%", format: "Lyophilised", storage: "-20°C", mw: "Varies" },
+    imageUrl: "/new-products/cjc-1295-w-dac.jpeg",
+    reviews: { rating: 5.0, count: Math.floor(Math.random() * 50) + 10 },
+    variants: [{"size":"5mg","price":70}]
+  },
+  {
+    id: "cjc-1295-wo-dac",
+    name: "CJC-1295 w/o DAC",
+    category: "Research Peptide",
+    shortDesc: "High-quality research compound for laboratory use.",
+    longDesc: "This compound is strictly for research and laboratory purposes. Please ensure proper handling and storage.",
+    specs: { purity: ">99%", format: "Lyophilised", storage: "-20°C", mw: "Varies" },
+    imageUrl: "/new-products/cjc-1295-wo-dac.jpeg",
+    reviews: { rating: 5.0, count: Math.floor(Math.random() * 50) + 10 },
+    variants: [{"size":"10mg","price":60}]
+  },
+  {
+    id: "igf-1-lr3",
+    name: "IGF-1 LR3",
+    category: "Research Peptide",
+    shortDesc: "High-quality research compound for laboratory use.",
+    longDesc: "This compound is strictly for research and laboratory purposes. Please ensure proper handling and storage.",
+    specs: { purity: ">99%", format: "Lyophilised", storage: "-20°C", mw: "Varies" },
+    imageUrl: "/new-products/igf-1-lr3.jpeg",
+    reviews: { rating: 5.0, count: Math.floor(Math.random() * 50) + 10 },
+    variants: [{"size":"1mg","price":60}]
+  },
+  {
+    id: "hgh-191-aa",
+    name: "HGH 191 AA",
+    category: "Research Peptide",
+    shortDesc: "High-quality research compound for laboratory use.",
+    longDesc: "This compound is strictly for research and laboratory purposes. Please ensure proper handling and storage.",
+    specs: { purity: ">99%", format: "Lyophilised", storage: "-20°C", mw: "Varies" },
+    imageUrl: "/new-products/hgh-191-aa.jpeg",
+    reviews: { rating: 5.0, count: Math.floor(Math.random() * 50) + 10 },
+    variants: [{"size":"15iu","price":60}]
+  },
+  {
+    id: "ghk-cu",
+    name: "GHK-CU",
+    category: "Research Peptide",
+    shortDesc: "High-quality research compound for laboratory use.",
+    longDesc: "This compound is strictly for research and laboratory purposes. Please ensure proper handling and storage.",
+    specs: { purity: ">99%", format: "Lyophilised", storage: "-20°C", mw: "Varies" },
+    imageUrl: "/new-products/ghk-cu.jpeg",
+    reviews: { rating: 5.0, count: Math.floor(Math.random() * 50) + 10 },
+    variants: [{"size":"100mg","price":60}]
+  },
+  {
+    id: "nad-plus",
+    name: "NAD+",
+    category: "Research Peptide",
+    shortDesc: "High-quality research compound for laboratory use.",
+    longDesc: "This compound is strictly for research and laboratory purposes. Please ensure proper handling and storage.",
+    specs: { purity: ">99%", format: "Lyophilised", storage: "-20°C", mw: "Varies" },
+    imageUrl: "/new-products/nad-plus.jpeg",
+    reviews: { rating: 5.0, count: Math.floor(Math.random() * 50) + 10 },
+    variants: [{"size":"500mg","price":50}]
+  },
+  {
+    id: "kpv",
+    name: "KPV",
+    category: "Research Peptide",
+    shortDesc: "High-quality research compound for laboratory use.",
+    longDesc: "This compound is strictly for research and laboratory purposes. Please ensure proper handling and storage.",
+    specs: { purity: ">99%", format: "Lyophilised", storage: "-20°C", mw: "Varies" },
+    imageUrl: "/new-products/kpv.jpeg",
+    reviews: { rating: 5.0, count: Math.floor(Math.random() * 50) + 10 },
+    variants: [{"size":"10mg","price":50}]
+  },
+  {
+    id: "5-amino-1mq",
+    name: "5 Amino 1MQ",
+    category: "Research Peptide",
+    shortDesc: "High-quality research compound for laboratory use.",
+    longDesc: "This compound is strictly for research and laboratory purposes. Please ensure proper handling and storage.",
+    specs: { purity: ">99%", format: "Lyophilised", storage: "-20°C", mw: "Varies" },
+    imageUrl: "/new-products/5-amino-1mq.jpeg",
+    reviews: { rating: 5.0, count: Math.floor(Math.random() * 50) + 10 },
+    variants: [{"size":"10mg","price":80}]
+  },
+  {
+    id: "aod-9604",
+    name: "AOD-9604",
+    category: "Research Peptide",
+    shortDesc: "High-quality research compound for laboratory use.",
+    longDesc: "This compound is strictly for research and laboratory purposes. Please ensure proper handling and storage.",
+    specs: { purity: ">99%", format: "Lyophilised", storage: "-20°C", mw: "Varies" },
+    imageUrl: "/new-products/aod-9604.jpeg",
+    reviews: { rating: 5.0, count: Math.floor(Math.random() * 50) + 10 },
+    variants: [{"size":"10mg","price":100}]
+  },
+  {
+    id: "ara-290",
+    name: "ARA-290",
+    category: "Research Peptide",
+    shortDesc: "High-quality research compound for laboratory use.",
+    longDesc: "This compound is strictly for research and laboratory purposes. Please ensure proper handling and storage.",
+    specs: { purity: ">99%", format: "Lyophilised", storage: "-20°C", mw: "Varies" },
+    imageUrl: "/new-products/ara-290.jpeg",
+    reviews: { rating: 5.0, count: Math.floor(Math.random() * 50) + 10 },
+    variants: [{"size":"10mg","price":50},{"size":"16mg","price":80}]
+  },
+  {
+    id: "ss-31",
+    name: "SS-31",
+    category: "Research Peptide",
+    shortDesc: "High-quality research compound for laboratory use.",
+    longDesc: "This compound is strictly for research and laboratory purposes. Please ensure proper handling and storage.",
+    specs: { purity: ">99%", format: "Lyophilised", storage: "-20°C", mw: "Varies" },
+    imageUrl: "/new-products/ss-31.jpeg",
+    reviews: { rating: 5.0, count: Math.floor(Math.random() * 50) + 10 },
+    variants: [{"size":"10mg","price":60}]
+  },
+  {
+    id: "epithalon",
+    name: "Epithalon",
+    category: "Research Peptide",
+    shortDesc: "High-quality research compound for laboratory use.",
+    longDesc: "This compound is strictly for research and laboratory purposes. Please ensure proper handling and storage.",
+    specs: { purity: ">99%", format: "Lyophilised", storage: "-20°C", mw: "Varies" },
+    imageUrl: "/new-products/epithalon.jpeg",
+    reviews: { rating: 5.0, count: Math.floor(Math.random() * 50) + 10 },
+    variants: [{"size":"10mg","price":40}]
+  },
+  {
+    id: "pt-141",
+    name: "PT-141",
+    category: "Research Peptide",
+    shortDesc: "High-quality research compound for laboratory use.",
+    longDesc: "This compound is strictly for research and laboratory purposes. Please ensure proper handling and storage.",
+    specs: { purity: ">99%", format: "Lyophilised", storage: "-20°C", mw: "Varies" },
+    imageUrl: "/new-products/pt-141.jpeg",
+    reviews: { rating: 5.0, count: Math.floor(Math.random() * 50) + 10 },
+    variants: [{"size":"10mg","price":40}]
+  },
+  {
+    id: "dsip",
+    name: "DSIP",
+    category: "Research Peptide",
+    shortDesc: "High-quality research compound for laboratory use.",
+    longDesc: "This compound is strictly for research and laboratory purposes. Please ensure proper handling and storage.",
+    specs: { purity: ">99%", format: "Lyophilised", storage: "-20°C", mw: "Varies" },
+    imageUrl: "/new-products/dsip.jpeg",
+    reviews: { rating: 5.0, count: Math.floor(Math.random() * 50) + 10 },
+    variants: [{"size":"5mg","price":40}]
+  },
+  {
+    id: "melanotan-2",
+    name: "Melanotan 2",
+    category: "Research Peptide",
+    shortDesc: "High-quality research compound for laboratory use.",
+    longDesc: "This compound is strictly for research and laboratory purposes. Please ensure proper handling and storage.",
+    specs: { purity: ">99%", format: "Lyophilised", storage: "-20°C", mw: "Varies" },
+    imageUrl: "/new-products/melanotan-2.jpeg",
+    reviews: { rating: 5.0, count: Math.floor(Math.random() * 50) + 10 },
+    variants: [{"size":"10mg","price":50}]
+  },
+  {
+    id: "lipo-c",
+    name: "Lipo-C",
+    category: "Research Peptide",
+    shortDesc: "High-quality research compound for laboratory use.",
+    longDesc: "This compound is strictly for research and laboratory purposes. Please ensure proper handling and storage.",
+    specs: { purity: ">99%", format: "Lyophilised", storage: "-20°C", mw: "Varies" },
+    imageUrl: "/new-products/lipo-c.jpeg",
+    reviews: { rating: 5.0, count: Math.floor(Math.random() * 50) + 10 },
+    variants: [{"size":"10mg","price":30}]
+  },
+  {
+    id: "bac-water",
+    name: "BAC Water",
+    category: "Research Peptide",
+    shortDesc: "High-quality research compound for laboratory use.",
+    longDesc: "This compound is strictly for research and laboratory purposes. Please ensure proper handling and storage.",
+    specs: { purity: ">99%", format: "Lyophilised", storage: "-20°C", mw: "Varies" },
+    imageUrl: "/new-products/bac-water.jpeg",
+    reviews: { rating: 5.0, count: Math.floor(Math.random() * 50) + 10 },
+    variants: [{"size":"3mL","price":5},{"size":"5mL","price":8},{"size":"10mL","price":12}]
   }
 ];
 
-export function ProductCard({ product }: { product: typeof productData[0] }) {
+export function ProductCard({ product }: { product: Product }) {
+  const startingPrice = product.variants[0].price;
+  
   return (
     <div className="bg-card border border-border rounded-xl flex flex-col glow-hover group relative overflow-hidden p-0 h-full">
       <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-accent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-20" />
       
       {/* Image Container - Full width top */}
-      <div className="w-full h-56 bg-background relative overflow-hidden shrink-0 border-b border-border">
+      <div className="w-full h-56 bg-white relative overflow-hidden shrink-0 border-b border-border flex items-center justify-center p-4">
          <img 
            src={product.imageUrl} 
            alt={product.name} 
-           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" 
+           className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-700" 
          />
          <div className="absolute top-4 right-4 bg-background/80 backdrop-blur-md px-3 py-1.5 rounded-lg border border-border shadow-sm z-10">
-           <span className="text-sm font-display font-bold text-foreground">{product.price}</span>
+           <span className="text-sm font-display font-bold text-foreground">From $${startingPrice.toFixed(2)}</span>
          </div>
       </div>
 

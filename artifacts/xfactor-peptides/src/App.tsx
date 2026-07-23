@@ -52,6 +52,7 @@ function Router() {
   );
 }
 import { CustomCursor } from '@/components/CustomCursor';
+import { WhatsAppButton } from '@/components/shared/WhatsAppButton';
 
 function App() {
   return (
@@ -63,6 +64,7 @@ function App() {
           <Router />
         </WouterRouter>
         <Toaster />
+        <WhatsAppButton />
       </TooltipProvider>
     </QueryClientProvider>
   );

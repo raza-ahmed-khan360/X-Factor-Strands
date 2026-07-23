@@ -42,7 +42,7 @@ export function Header() {
         <div className="container mx-auto px-4 lg:px-8 h-20 flex items-center justify-between">
           <div className="flex items-center gap-6">
             <WouterLink href="/" className="flex items-center group">
-              <img src="/logo.png" alt="X Factor Peptides Logo" className="h-28 w-auto object-contain transition-transform group-hover:scale-105" />
+              <img src="/logo.png" alt="X Factor Peptides Logo" className="h-22 w-auto object-contain transition-transform group-hover:scale-105" />
             </WouterLink>
             <div className="hidden md:flex items-center gap-1.5 px-3 py-1 rounded-full border border-accent/30 bg-accent/5">
               <ShieldAlert className="w-3.5 h-3.5 text-accent" />

@@ -22,7 +22,7 @@ export const productData: Product[] = [
   {
     id: "semaglutide-glp1",
     name: "Semaglutide GLP1",
-    category: "Research Peptide",
+    category: "Weight Management",
     shortDesc: "High-quality research compound for laboratory use.",
     longDesc: "This compound is strictly for research and laboratory purposes. Please ensure proper handling and storage.",
     specs: { purity: ">99%", format: "Lyophilised", storage: "-20°C", mw: "Varies" },
@@ -33,7 +33,7 @@ export const productData: Product[] = [
   {
     id: "tirzepatide-glp2",
     name: "Tirzepatide (Tirz) GLP2",
-    category: "Research Peptide",
+    category: "Weight Management",
     shortDesc: "High-quality research compound for laboratory use.",
     longDesc: "This compound is strictly for research and laboratory purposes. Please ensure proper handling and storage.",
     specs: { purity: ">99%", format: "Lyophilised", storage: "-20°C", mw: "Varies" },
@@ -44,7 +44,7 @@ export const productData: Product[] = [
   {
     id: "retatrutide-glp3",
     name: "Retatrutide (Reta) GLP3",
-    category: "Research Peptide",
+    category: "Weight Management",
     shortDesc: "High-quality research compound for laboratory use.",
     longDesc: "This compound is strictly for research and laboratory purposes. Please ensure proper handling and storage.",
     specs: { purity: ">99%", format: "Lyophilised", storage: "-20°C", mw: "Varies" },
@@ -55,7 +55,7 @@ export const productData: Product[] = [
   {
     id: "cagrilintide",
     name: "Cagrilintide",
-    category: "Research Peptide",
+    category: "Weight Management",
     shortDesc: "High-quality research compound for laboratory use.",
     longDesc: "This compound is strictly for research and laboratory purposes. Please ensure proper handling and storage.",
     specs: { purity: ">99%", format: "Lyophilised", storage: "-20°C", mw: "Varies" },
@@ -66,7 +66,7 @@ export const productData: Product[] = [
   {
     id: "tesamorelin",
     name: "Tesamorelin (Tesa)",
-    category: "Research Peptide",
+    category: "Weight Management",
     shortDesc: "High-quality research compound for laboratory use.",
     longDesc: "This compound is strictly for research and laboratory purposes. Please ensure proper handling and storage.",
     specs: { purity: ">99%", format: "Lyophilised", storage: "-20°C", mw: "Varies" },
@@ -77,7 +77,7 @@ export const productData: Product[] = [
   {
     id: "mots-c",
     name: "MOTS-C",
-    category: "Research Peptide",
+    category: "Energy",
     shortDesc: "High-quality research compound for laboratory use.",
     longDesc: "This compound is strictly for research and laboratory purposes. Please ensure proper handling and storage.",
     specs: { purity: ">99%", format: "Lyophilised", storage: "-20°C", mw: "Varies" },
@@ -88,7 +88,7 @@ export const productData: Product[] = [
   {
     id: "sermorelin",
     name: "Sermorelin",
-    category: "Research Peptide",
+    category: "Sleep",
     shortDesc: "High-quality research compound for laboratory use.",
     longDesc: "This compound is strictly for research and laboratory purposes. Please ensure proper handling and storage.",
     specs: { purity: ">99%", format: "Lyophilised", storage: "-20°C", mw: "Varies" },
@@ -99,7 +99,7 @@ export const productData: Product[] = [
   {
     id: "bpc157",
     name: "BPC-157",
-    category: "Research Peptide",
+    category: "Recovery",
     shortDesc: "High-quality research compound for laboratory use.",
     longDesc: "This compound is strictly for research and laboratory purposes. Please ensure proper handling and storage.",
     specs: { purity: ">99%", format: "Lyophilised", storage: "-20°C", mw: "Varies" },
@@ -110,7 +110,7 @@ export const productData: Product[] = [
   {
     id: "tb-500",
     name: "TB-500",
-    category: "Research Peptide",
+    category: "Recovery",
     shortDesc: "High-quality research compound for laboratory use.",
     longDesc: "This compound is strictly for research and laboratory purposes. Please ensure proper handling and storage.",
     specs: { purity: ">99%", format: "Lyophilised", storage: "-20°C", mw: "Varies" },
@@ -121,7 +121,7 @@ export const productData: Product[] = [
   {
     id: "bpc157-tb500-wolverine",
     name: "BPC-157 / TB-500 Wolverine",
-    category: "Research Peptide",
+    category: "Recovery",
     shortDesc: "High-quality research compound for laboratory use.",
     longDesc: "This compound is strictly for research and laboratory purposes. Please ensure proper handling and storage.",
     specs: { purity: ">99%", format: "Lyophilised", storage: "-20°C", mw: "Varies" },
@@ -132,7 +132,7 @@ export const productData: Product[] = [
   {
     id: "klow",
     name: "KLOW",
-    category: "Research Peptide",
+    category: "Weight Management",
     shortDesc: "High-quality research compound for laboratory use.",
     longDesc: "This compound is strictly for research and laboratory purposes. Please ensure proper handling and storage.",
     specs: { purity: ">99%", format: "Lyophilised", storage: "-20°C", mw: "Varies" },
@@ -143,7 +143,7 @@ export const productData: Product[] = [
   {
     id: "ipamorelin",
     name: "Ipamorelin",
-    category: "Research Peptide",
+    category: "Recovery",
     shortDesc: "High-quality research compound for laboratory use.",
     longDesc: "This compound is strictly for research and laboratory purposes. Please ensure proper handling and storage.",
     specs: { purity: ">99%", format: "Lyophilised", storage: "-20°C", mw: "Varies" },
@@ -154,7 +154,7 @@ export const productData: Product[] = [
   {
     id: "cjc-1295-ipa",
     name: "CJC-1295 / Ipamorelin",
-    category: "Research Peptide",
+    category: "Recovery",
     shortDesc: "High-quality research compound for laboratory use.",
     longDesc: "This compound is strictly for research and laboratory purposes. Please ensure proper handling and storage.",
     specs: { purity: ">99%", format: "Lyophilised", storage: "-20°C", mw: "Varies" },
@@ -165,7 +165,7 @@ export const productData: Product[] = [
   {
     id: "cjc-1295-w-dac",
     name: "CJC-1295 w/ DAC",
-    category: "Research Peptide",
+    category: "Performance",
     shortDesc: "High-quality research compound for laboratory use.",
     longDesc: "This compound is strictly for research and laboratory purposes. Please ensure proper handling and storage.",
     specs: { purity: ">99%", format: "Lyophilised", storage: "-20°C", mw: "Varies" },
@@ -176,7 +176,7 @@ export const productData: Product[] = [
   {
     id: "cjc-1295-wo-dac",
     name: "CJC-1295 w/o DAC",
-    category: "Research Peptide",
+    category: "Performance",
     shortDesc: "High-quality research compound for laboratory use.",
     longDesc: "This compound is strictly for research and laboratory purposes. Please ensure proper handling and storage.",
     specs: { purity: ">99%", format: "Lyophilised", storage: "-20°C", mw: "Varies" },
@@ -187,7 +187,7 @@ export const productData: Product[] = [
   {
     id: "igf-1-lr3",
     name: "IGF-1 LR3",
-    category: "Research Peptide",
+    category: "Performance",
     shortDesc: "High-quality research compound for laboratory use.",
     longDesc: "This compound is strictly for research and laboratory purposes. Please ensure proper handling and storage.",
     specs: { purity: ">99%", format: "Lyophilised", storage: "-20°C", mw: "Varies" },
@@ -198,7 +198,7 @@ export const productData: Product[] = [
   {
     id: "hgh-191-aa",
     name: "HGH 191 AA",
-    category: "Research Peptide",
+    category: "Performance",
     shortDesc: "High-quality research compound for laboratory use.",
     longDesc: "This compound is strictly for research and laboratory purposes. Please ensure proper handling and storage.",
     specs: { purity: ">99%", format: "Lyophilised", storage: "-20°C", mw: "Varies" },
@@ -209,7 +209,7 @@ export const productData: Product[] = [
   {
     id: "ghk-cu",
     name: "GHK-CU",
-    category: "Research Peptide",
+    category: "Recovery",
     shortDesc: "High-quality research compound for laboratory use.",
     longDesc: "This compound is strictly for research and laboratory purposes. Please ensure proper handling and storage.",
     specs: { purity: ">99%", format: "Lyophilised", storage: "-20°C", mw: "Varies" },
@@ -220,7 +220,7 @@ export const productData: Product[] = [
   {
     id: "nad-plus",
     name: "NAD+",
-    category: "Research Peptide",
+    category: "Focus & Cognitive",
     shortDesc: "High-quality research compound for laboratory use.",
     longDesc: "This compound is strictly for research and laboratory purposes. Please ensure proper handling and storage.",
     specs: { purity: ">99%", format: "Lyophilised", storage: "-20°C", mw: "Varies" },
@@ -231,7 +231,7 @@ export const productData: Product[] = [
   {
     id: "kpv",
     name: "KPV",
-    category: "Research Peptide",
+    category: "Recovery",
     shortDesc: "High-quality research compound for laboratory use.",
     longDesc: "This compound is strictly for research and laboratory purposes. Please ensure proper handling and storage.",
     specs: { purity: ">99%", format: "Lyophilised", storage: "-20°C", mw: "Varies" },
@@ -242,7 +242,7 @@ export const productData: Product[] = [
   {
     id: "5-amino-1mq",
     name: "5 Amino 1MQ",
-    category: "Research Peptide",
+    category: "Weight Management",
     shortDesc: "High-quality research compound for laboratory use.",
     longDesc: "This compound is strictly for research and laboratory purposes. Please ensure proper handling and storage.",
     specs: { purity: ">99%", format: "Lyophilised", storage: "-20°C", mw: "Varies" },
@@ -253,7 +253,7 @@ export const productData: Product[] = [
   {
     id: "aod-9604",
     name: "AOD-9604",
-    category: "Research Peptide",
+    category: "Weight Management",
     shortDesc: "High-quality research compound for laboratory use.",
     longDesc: "This compound is strictly for research and laboratory purposes. Please ensure proper handling and storage.",
     specs: { purity: ">99%", format: "Lyophilised", storage: "-20°C", mw: "Varies" },
@@ -264,7 +264,7 @@ export const productData: Product[] = [
   {
     id: "ara-290",
     name: "ARA-290",
-    category: "Research Peptide",
+    category: "Recovery",
     shortDesc: "High-quality research compound for laboratory use.",
     longDesc: "This compound is strictly for research and laboratory purposes. Please ensure proper handling and storage.",
     specs: { purity: ">99%", format: "Lyophilised", storage: "-20°C", mw: "Varies" },
@@ -275,7 +275,7 @@ export const productData: Product[] = [
   {
     id: "ss-31",
     name: "SS-31",
-    category: "Research Peptide",
+    category: "Energy",
     shortDesc: "High-quality research compound for laboratory use.",
     longDesc: "This compound is strictly for research and laboratory purposes. Please ensure proper handling and storage.",
     specs: { purity: ">99%", format: "Lyophilised", storage: "-20°C", mw: "Varies" },
@@ -286,7 +286,7 @@ export const productData: Product[] = [
   {
     id: "epithalon",
     name: "Epithalon",
-    category: "Research Peptide",
+    category: "Sleep",
     shortDesc: "High-quality research compound for laboratory use.",
     longDesc: "This compound is strictly for research and laboratory purposes. Please ensure proper handling and storage.",
     specs: { purity: ">99%", format: "Lyophilised", storage: "-20°C", mw: "Varies" },
@@ -297,7 +297,7 @@ export const productData: Product[] = [
   {
     id: "pt-141",
     name: "PT-141",
-    category: "Research Peptide",
+    category: "Performance",
     shortDesc: "High-quality research compound for laboratory use.",
     longDesc: "This compound is strictly for research and laboratory purposes. Please ensure proper handling and storage.",
     specs: { purity: ">99%", format: "Lyophilised", storage: "-20°C", mw: "Varies" },
@@ -308,7 +308,7 @@ export const productData: Product[] = [
   {
     id: "dsip",
     name: "DSIP",
-    category: "Research Peptide",
+    category: "Sleep",
     shortDesc: "High-quality research compound for laboratory use.",
     longDesc: "This compound is strictly for research and laboratory purposes. Please ensure proper handling and storage.",
     specs: { purity: ">99%", format: "Lyophilised", storage: "-20°C", mw: "Varies" },
@@ -319,7 +319,7 @@ export const productData: Product[] = [
   {
     id: "melanotan-2",
     name: "Melanotan 2",
-    category: "Research Peptide",
+    category: "Performance",
     shortDesc: "High-quality research compound for laboratory use.",
     longDesc: "This compound is strictly for research and laboratory purposes. Please ensure proper handling and storage.",
     specs: { purity: ">99%", format: "Lyophilised", storage: "-20°C", mw: "Varies" },
@@ -330,7 +330,7 @@ export const productData: Product[] = [
   {
     id: "lipo-c",
     name: "Lipo-C",
-    category: "Research Peptide",
+    category: "Weight Management",
     shortDesc: "High-quality research compound for laboratory use.",
     longDesc: "This compound is strictly for research and laboratory purposes. Please ensure proper handling and storage.",
     specs: { purity: ">99%", format: "Lyophilised", storage: "-20°C", mw: "Varies" },
@@ -341,7 +341,7 @@ export const productData: Product[] = [
   {
     id: "bac-water",
     name: "BAC Water",
-    category: "Research Peptide",
+    category: "Recovery",
     shortDesc: "High-quality research compound for laboratory use.",
     longDesc: "This compound is strictly for research and laboratory purposes. Please ensure proper handling and storage.",
     specs: { purity: ">99%", format: "Lyophilised", storage: "-20°C", mw: "Varies" },

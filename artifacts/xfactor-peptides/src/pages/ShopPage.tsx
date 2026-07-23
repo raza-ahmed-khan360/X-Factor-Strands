@@ -14,6 +14,21 @@ import {
 import { Button } from '@/components/ui/button';
 
 export default function ShopPage() {
+  const [selectedCategories, setSelectedCategories] = React.useState<string[]>([]);
+  const [searchQuery, setSearchQuery] = React.useState('');
+
+  const toggleCategory = (cat: string) => {
+    setSelectedCategories(prev => 
+      prev.includes(cat) ? prev.filter(c => c !== cat) : [...prev, cat]
+    );
+  };
+
+  const filteredProducts = productData.filter(p => {
+    const matchesCategory = selectedCategories.length === 0 || selectedCategories.includes(p.category);
+    const matchesSearch = p.name.toLowerCase().includes(searchQuery.toLowerCase());
+    return matchesCategory && matchesSearch;
+  });
+
   const categories = [
     'Weight Management',
     'Recovery',
@@ -30,14 +45,17 @@ export default function ShopPage() {
           Categories
         </h3>
         <div className="space-y-3">
-          {categories.map((cat, i) => (
-            <label key={i} className="flex items-center gap-3 group cursor-pointer">
-              <div className="w-5 h-5 rounded border border-border flex items-center justify-center group-hover:border-accent transition-colors">
-                <div className="w-3 h-3 bg-transparent rounded-sm" />
+          {categories.map((cat, i) => {
+            const isSelected = selectedCategories.includes(cat);
+            return (
+            <label key={i} className="flex items-center gap-3 group cursor-pointer" onClick={() => toggleCategory(cat)}>
+              <div className={`w-5 h-5 rounded border flex items-center justify-center transition-colors ${isSelected ? 'bg-accent border-accent' : 'border-border group-hover:border-accent'}`}>
+                {isSelected && <div className="w-2.5 h-2.5 bg-white rounded-sm" />}
               </div>
-              <span className="text-sm text-muted-foreground group-hover:text-foreground transition-colors">{cat}</span>
+              <span className={`text-sm transition-colors ${isSelected ? 'text-foreground font-medium' : 'text-muted-foreground group-hover:text-foreground'}`}>{cat}</span>
             </label>
-          ))}
+            );
+          })}
         </div>
       </div>
 
@@ -83,7 +101,7 @@ export default function ShopPage() {
         <div className="container mx-auto px-4 lg:px-8 mt-12 flex flex-col lg:flex-row gap-8">
           {/* Mobile Filter Button */}
           <div className="lg:hidden flex items-center justify-between mb-4">
-            <p className="text-sm text-muted-foreground">Showing {productData.length} products</p>
+            <p className="text-sm text-muted-foreground">Showing {filteredProducts.length} products</p>
             <Sheet>
               <SheetTrigger asChild>
                 <Button variant="outline" size="sm" className="flex items-center gap-2">
@@ -108,19 +126,21 @@ export default function ShopPage() {
           {/* Product Grid */}
           <div className="flex-1">
             <div className="hidden lg:flex justify-between items-center mb-6">
-              <p className="text-sm text-muted-foreground">Showing {productData.length} products</p>
+              <p className="text-sm text-muted-foreground">Showing {filteredProducts.length} products</p>
               <div className="relative w-64 hidden sm:block">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                 <input 
                   type="text" 
                   placeholder="Search products..." 
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
                   className="w-full bg-card border border-border rounded-md pl-9 pr-4 py-2 text-sm focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent"
                 />
               </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-              {productData.map(product => (
+              {filteredProducts.map(product => (
                 <Link key={product.id} href={`/products/${product.id}`}>
                   <ProductCard product={product} />
                 </Link>

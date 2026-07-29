@@ -143,7 +143,7 @@ export default function ContactPage() {
                    backgroundSize: '20px 20px'
                  }} />
                  <MapPin className="w-8 h-8 text-accent mb-2 relative z-10" />
-                 <span className="font-display font-medium text-foreground relative z-10">London, United Kingdom</span>
+                 <span className="font-display font-medium text-foreground relative z-10">United States</span>
               </div>
             </div>
           </div>

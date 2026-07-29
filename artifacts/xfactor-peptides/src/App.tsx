@@ -26,6 +26,7 @@ import ResearchDisclaimerPage from '@/pages/ResearchDisclaimerPage';
 import CheckoutPage from '@/pages/CheckoutPage';
 import OrderConfirmationPage from '@/pages/OrderConfirmationPage';
 import { ShippingPolicyPage, ReturnsPolicyPage, PrivacyPolicyPage, TermsPage } from '@/pages/PolicyPages';
+import COAsPage from '@/pages/COAsPage';
 
 const queryClient = new QueryClient();
 
@@ -41,6 +42,8 @@ function Router() {
       <Route path="/research-disclaimer" component={ResearchDisclaimerPage} />
       <Route path="/checkout" component={CheckoutPage} />
       <Route path="/order-confirmation" component={OrderConfirmationPage} />
+      <Route path="/COAS" component={COAsPage} />
+      <Route path="/coas" component={COAsPage} />
       
       <Route path="/shipping" component={ShippingPolicyPage} />
       <Route path="/returns" component={ReturnsPolicyPage} />

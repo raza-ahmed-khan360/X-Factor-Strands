@@ -88,7 +88,7 @@ export function SearchDialog({ open, onOpenChange }: SearchDialogProps) {
                         {product.name}
                       </h4>
                       <span className="text-sm font-medium text-foreground ml-4 shrink-0">
-                        {product.price}
+                        {product.variants?.[0]?.price ? `$${product.variants[0].price.toFixed(2)}` : ''}
                       </span>
                     </div>
                     <p className="text-xs text-muted-foreground truncate">

@@ -16,7 +16,7 @@ if (!supabaseUrl || !supabaseKey || !stripeSecret) {
 }
 
 const supabase = createClient(supabaseUrl, supabaseKey);
-const stripe = new Stripe(stripeSecret, { apiVersion: '2023-10-16' });
+const stripe = new Stripe(stripeSecret, { apiVersion: '2026-07-29.dahlia' as any });
 
 async function seed() {
   console.log('Starting seed process...');

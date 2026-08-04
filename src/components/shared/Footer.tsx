@@ -1,5 +1,6 @@
 import * as React from 'react';
 import Link from 'next/link';
+import { FaXTwitter, FaInstagram, FaLinkedinIn } from 'react-icons/fa6';
 
 
 
@@ -25,13 +26,13 @@ export function Footer() {
             </div>
             <div className="flex items-center gap-4 pt-2">
               <a href="#" className="w-8 h-8 rounded-full bg-background flex items-center justify-center text-muted-foreground hover:text-accent hover:bg-accent/10 transition-colors">
-                <span className="text-xs font-bold">X</span>
+                <FaXTwitter className="w-4 h-4" />
               </a>
               <a href="#" className="w-8 h-8 rounded-full bg-background flex items-center justify-center text-muted-foreground hover:text-accent hover:bg-accent/10 transition-colors">
-                <span className="text-xs font-bold">IG</span>
+                <FaInstagram className="w-4 h-4" />
               </a>
               <a href="#" className="w-8 h-8 rounded-full bg-background flex items-center justify-center text-muted-foreground hover:text-accent hover:bg-accent/10 transition-colors">
-                <span className="text-xs font-bold">IN</span>
+                <FaLinkedinIn className="w-4 h-4" />
               </a>
             </div>
           </div>
@@ -63,7 +64,6 @@ export function Footer() {
                 { label: 'About Us', href: '/about' },
                 { label: 'FAQ', href: '/faq' },
                 { label: 'Contact', href: '/contact' },
-                { label: 'Careers', href: '/about' },
               ].map((link) => (
                 <li key={link.label}>
                   <Link href={link.href} className="text-muted-foreground text-sm hover:text-accent transition-colors">

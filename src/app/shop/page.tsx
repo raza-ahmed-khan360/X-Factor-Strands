@@ -22,6 +22,7 @@ export default function ShopPage() {
   const [selectedCategories, setSelectedCategories] = React.useState<string[]>([]);
   const [searchQuery, setSearchQuery] = React.useState('');
   const [priceRange, setPriceRange] = React.useState<[number, number]>([0, 150]);
+  const [visibleCount, setVisibleCount] = React.useState(10);
 
   React.useEffect(() => {
     async function loadProducts() {
@@ -168,13 +169,26 @@ export default function ShopPage() {
                   No products found matching your filters.
                 </div>
               ) : (
-                filteredProducts.map(product => (
+                filteredProducts.slice(0, visibleCount).map(product => (
                   <Link key={product.id} href={`/products/${product.id}`}>
                     <ProductCard product={product} />
                   </Link>
                 ))
               )}
             </div>
+
+            {filteredProducts.length > visibleCount && (
+              <div className="mt-12 flex justify-center">
+                <Button 
+                  onClick={() => setVisibleCount(prev => prev + 10)}
+                  variant="outline"
+                  size="lg"
+                  className="px-8 border-border hover:bg-white/5 hover:text-accent"
+                >
+                  Load More Products
+                </Button>
+              </div>
+            )}
           </div>
         </div>
       </main>

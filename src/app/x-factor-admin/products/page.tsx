@@ -3,7 +3,7 @@
 import * as React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Package, Plus, Trash2, Image as ImageIcon, Loader2 } from 'lucide-react';
+import { Package, Plus, Trash2, Image as ImageIcon, Loader2, Search } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { addProduct, deleteProduct, updateProduct } from './actions';
 import { toast } from 'sonner';
@@ -12,11 +12,13 @@ import { Pencil } from 'lucide-react';
 export default function AdminProductsPage() {
   const [products, setProducts] = React.useState<any[]>([]);
   const [loading, setLoading] = React.useState(true);
+  const [searchQuery, setSearchQuery] = React.useState('');
   
   // Form State
   const [isAdding, setIsAdding] = React.useState(false);
   const [isEditing, setIsEditing] = React.useState(false);
   const [submitting, setSubmitting] = React.useState(false);
+  const [formError, setFormError] = React.useState<string | null>(null);
   const [formData, setFormData] = React.useState({
     id: '',
     name: '',
@@ -71,10 +73,11 @@ export default function AdminProductsPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitting(true);
+    setFormError(null);
 
     try {
       const data = new FormData();
-      data.append('id', formData.id.toLowerCase().replace(/[^a-z0-9-]/g, '-'));
+      data.append('id', isEditing ? formData.id : formData.id.toLowerCase().replace(/[^a-z0-9-]/g, '-'));
       data.append('name', formData.name);
       data.append('category', formData.category);
       data.append('description', formData.description);
@@ -96,10 +99,13 @@ export default function AdminProductsPage() {
         setVariants([{ size: '10mg', price: 0 }]);
         fetchProducts(); // Refresh list
       } else {
-        toast.error(res.error || (isEditing ? 'Failed to update product' : 'Failed to add product'));
+        const errorMsg = res.error || (isEditing ? 'Failed to update product' : 'Failed to add product');
+        toast.error(errorMsg);
+        setFormError(errorMsg);
       }
     } catch (err: any) {
       toast.error(err.message || 'An unexpected error occurred');
+      setFormError(err.message || 'An unexpected error occurred');
     } finally {
       setSubmitting(false);
     }
@@ -115,6 +121,7 @@ export default function AdminProductsPage() {
     });
     setVariants(product.variants && product.variants.length > 0 ? product.variants : [{ size: '10mg', price: 0 }]);
     setImageFile(null);
+    setFormError(null);
     setIsEditing(true);
     setIsAdding(true);
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -148,6 +155,7 @@ export default function AdminProductsPage() {
             setIsAdding(!isAdding);
             if (isAdding) {
               setIsEditing(false);
+              setFormError(null);
               setFormData({ id: '', name: '', category: '', description: '', existingImageUrl: '' });
               setVariants([{ size: '10mg', price: 0 }]);
             }
@@ -172,7 +180,13 @@ export default function AdminProductsPage() {
                     type="text"
                     required
                     value={formData.name}
-                    onChange={(e) => setFormData({ ...formData, name: e.target.value, id: e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, '-') })}
+                    onChange={(e) => {
+                      if (isEditing) {
+                        setFormData({ ...formData, name: e.target.value });
+                      } else {
+                        setFormData({ ...formData, name: e.target.value, id: e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, '-') });
+                      }
+                    }}
                     className="w-full bg-background border border-border rounded-lg px-4 py-2 text-white focus:outline-none focus:border-accent"
                     placeholder="e.g. BPC-157"
                   />
@@ -198,9 +212,12 @@ export default function AdminProductsPage() {
                     className="w-full bg-background border border-border rounded-lg px-4 py-2 text-white focus:outline-none focus:border-accent appearance-none"
                   >
                     <option value="">Select a category</option>
-                    <option value="Peptides">Peptides</option>
-                    <option value="Research Chemicals">Research Chemicals</option>
-                    <option value="Accessories">Accessories</option>
+                    <option value="Weight Management">Weight Management</option>
+                    <option value="Recovery">Recovery</option>
+                    <option value="Performance">Performance</option>
+                    <option value="Sleep">Sleep</option>
+                    <option value="Focus & Cognitive">Focus & Cognitive</option>
+                    <option value="Energy">Energy</option>
                   </select>
                 </div>
                 <div className="space-y-2">
@@ -288,8 +305,13 @@ export default function AdminProductsPage() {
                 </div>
               </div>
 
-              <div className="flex justify-end pt-4 border-t border-border">
-                <Button type="submit" disabled={submitting} className="bg-primary hover:bg-primary/90 text-white min-w-[150px]">
+              <div className="flex flex-col sm:flex-row sm:justify-end sm:items-center gap-4 pt-4 border-t border-border">
+                {formError && (
+                  <div className="text-red-500 bg-red-500/10 border border-red-500/20 px-4 py-2 rounded-lg text-sm sm:flex-1 text-left">
+                    {formError}
+                  </div>
+                )}
+                <Button type="submit" disabled={submitting} className="bg-primary hover:bg-primary/90 text-white min-w-[150px] shrink-0">
                   {submitting ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
                   {submitting ? 'Saving...' : (isEditing ? 'Update Product' : 'Save Product')}
                 </Button>
@@ -300,6 +322,19 @@ export default function AdminProductsPage() {
       )}
 
       <Card className="bg-card border-border">
+        <div className="p-6 border-b border-border flex items-center justify-between">
+          <CardTitle className="text-white">Product Catalog</CardTitle>
+          <div className="relative max-w-xs w-full">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+            <input 
+              type="text" 
+              placeholder="Search products..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full bg-background border border-border rounded-lg pl-9 pr-4 py-2 text-sm text-white focus:outline-none focus:border-accent transition-colors"
+            />
+          </div>
+        </div>
         <CardContent className="p-0">
           {loading ? (
             <div className="p-8 text-center text-muted-foreground">Loading products...</div>
@@ -322,7 +357,9 @@ export default function AdminProductsPage() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-border">
-                  {products.map((product) => {
+                  {products
+                    .filter(p => p.name.toLowerCase().includes(searchQuery.toLowerCase()) || p.id.toLowerCase().includes(searchQuery.toLowerCase()) || p.category.toLowerCase().includes(searchQuery.toLowerCase()))
+                    .map((product) => {
                     const sortedVariants = [...(product.variants || [])].sort((a, b) => Number(a.price) - Number(b.price));
                     const basePrice = sortedVariants.length > 0 ? sortedVariants[0].price : 0;
                     

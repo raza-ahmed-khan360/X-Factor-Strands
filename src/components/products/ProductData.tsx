@@ -348,6 +348,50 @@ export const productData: Product[] = [
     imageUrl: "/new-products/bac-water.jpeg",
     reviews: { rating: 5.0, count: Math.floor(Math.random() * 50) + 10 },
     variants: [{"size":"3mL","price":5},{"size":"5mL","price":8},{"size":"10mL","price":12}]
+  },
+  {
+    id: "kisspeptin",
+    name: "Kisspeptin",
+    category: "Performance",
+    shortDesc: "High-quality research compound for laboratory use.",
+    longDesc: "This compound is strictly for research and laboratory purposes. Please ensure proper handling and storage.",
+    specs: { purity: ">99%", format: "Lyophilised", storage: "-20°C", mw: "Varies" },
+    imageUrl: "/new-products/kisspeptin.jpeg",
+    reviews: { rating: 5.0, count: Math.floor(Math.random() * 50) + 10 },
+    variants: [{"size":"10mg","price":60}]
+  },
+  {
+    id: "glow-pro",
+    name: "GLOW PRO",
+    category: "Recovery",
+    shortDesc: "High-quality research compound for laboratory use.",
+    longDesc: "This compound is strictly for research and laboratory purposes. Please ensure proper handling and storage.",
+    specs: { purity: ">99%", format: "Lyophilised", storage: "-20°C", mw: "Varies" },
+    imageUrl: "/new-products/glow-pro.jpeg",
+    reviews: { rating: 5.0, count: Math.floor(Math.random() * 50) + 10 },
+    variants: [{"size":"70mg","price":100}]
+  },
+  {
+    id: "slu-pp-332",
+    name: "SLU-PP-332",
+    category: "Performance",
+    shortDesc: "High-quality research compound for laboratory use.",
+    longDesc: "This compound is strictly for research and laboratory purposes. Please ensure proper handling and storage.",
+    specs: { purity: ">99%", format: "Lyophilised", storage: "-20°C", mw: "Varies" },
+    imageUrl: "/new-products/slu-pp-332.jpeg",
+    reviews: { rating: 5.0, count: Math.floor(Math.random() * 50) + 10 },
+    variants: [{"size":"50mg","price":120}]
+  },
+  {
+    id: "retatrutide",
+    name: "Retatrutide",
+    category: "Weight Management",
+    shortDesc: "High-quality research compound for laboratory use.",
+    longDesc: "This compound is strictly for research and laboratory purposes. Please ensure proper handling and storage.",
+    specs: { purity: ">99%", format: "Lyophilised", storage: "-20°C", mw: "Varies" },
+    imageUrl: "/new-products/retatrutide.jpeg",
+    reviews: { rating: 5.0, count: Math.floor(Math.random() * 50) + 10 },
+    variants: [{"size":"20mg","price":100}]
   }
 ];
 

@@ -2,7 +2,7 @@
 import * as React from 'react';
 import { Header } from '@/components/shared/Header';
 import { Footer } from '@/components/shared/Footer';
-import { productData, ProductCard } from '@/components/products/ProductData';
+import { Product, ProductCard } from '@/components/products/ProductData';
 import Link from 'next/link';
 
 import { Search, Filter } from 'lucide-react';
@@ -17,9 +17,21 @@ import { Button } from '@/components/ui/button';
 import { Slider } from '@/components/ui/slider';
 
 export default function ShopPage() {
+  const [products, setProducts] = React.useState<Product[]>([]);
+  const [loading, setLoading] = React.useState(true);
   const [selectedCategories, setSelectedCategories] = React.useState<string[]>([]);
   const [searchQuery, setSearchQuery] = React.useState('');
   const [priceRange, setPriceRange] = React.useState<[number, number]>([0, 150]);
+
+  React.useEffect(() => {
+    async function loadProducts() {
+      const { getProducts } = await import('@/lib/api');
+      const data = await getProducts();
+      setProducts(data);
+      setLoading(false);
+    }
+    loadProducts();
+  }, []);
 
   const toggleCategory = (cat: string) => {
     setSelectedCategories(prev => 
@@ -27,7 +39,7 @@ export default function ShopPage() {
     );
   };
 
-  const filteredProducts = productData.filter(p => {
+  const filteredProducts = products.filter(p => {
     const matchesCategory = selectedCategories.length === 0 || selectedCategories.includes(p.category);
     const matchesSearch = p.name.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesPrice = p.variants.some(v => v.price >= priceRange[0] && v.price <= priceRange[1]);
@@ -147,11 +159,21 @@ export default function ShopPage() {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-              {filteredProducts.map(product => (
-                <Link key={product.id} href={`/products/${product.id}`}>
-                  <ProductCard product={product} />
-                </Link>
-              ))}
+              {loading ? (
+                <div className="col-span-full py-20 text-center text-muted-foreground">
+                  Loading products...
+                </div>
+              ) : filteredProducts.length === 0 ? (
+                <div className="col-span-full py-20 text-center text-muted-foreground">
+                  No products found matching your filters.
+                </div>
+              ) : (
+                filteredProducts.map(product => (
+                  <Link key={product.id} href={`/products/${product.id}`}>
+                    <ProductCard product={product} />
+                  </Link>
+                ))
+              )}
             </div>
           </div>
         </div>

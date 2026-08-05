@@ -2,7 +2,7 @@
 import * as React from 'react';
 import { Header } from '@/components/shared/Header';
 import { Footer } from '@/components/shared/Footer';
-import { productData, ProductCard } from '@/components/products/ProductData';
+import { Product, ProductCard } from '@/components/products/ProductData';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import { AlertTriangle, ChevronLeft, Star } from 'lucide-react';
@@ -15,14 +15,35 @@ export default function ProductDetailPage() {
   const productId = params?.id as string;
   const addItem = useCartStore((state) => state.addItem);
   
-  const product = productData.find(p => p.id === productId);
-  const relatedProducts = productData.filter(p => p.id !== productId).slice(0, 3);
+  const [product, setProduct] = React.useState<Product | null>(null);
+  const [relatedProducts, setRelatedProducts] = React.useState<Product[]>([]);
+  const [loading, setLoading] = React.useState(true);
   const [selectedVariantIndex, setSelectedVariantIndex] = React.useState(0);
+
+  React.useEffect(() => {
+    async function loadData() {
+      const { getProductById, getProducts } = await import('@/lib/api');
+      const data = await getProductById(productId);
+      const allProducts = await getProducts();
+      setProduct(data);
+      setRelatedProducts(allProducts.filter(p => p.id !== productId).slice(0, 3));
+      setLoading(false);
+    }
+    if (productId) loadData();
+  }, [productId]);
 
   // Reset variant selection when product changes
   React.useEffect(() => {
     setSelectedVariantIndex(0);
   }, [productId]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center flex-col gap-4">
+        <h1 className="text-2xl font-display font-bold">Loading product...</h1>
+      </div>
+    );
+  }
 
   if (!product) {
     return (

@@ -23,7 +23,7 @@ export const metadata: Metadata = {
   authors: [{ name: "X Factor Peptides" }],
 };
 
-import WhatsAppButton from "@/components/WhatsAppButton";
+import WhatsAppWrapper from "@/components/WhatsAppWrapper";
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
@@ -34,7 +34,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       <body className="min-h-full flex flex-col">
         <CustomCursor />
         {children}
-        <WhatsAppButton />
+        <WhatsAppWrapper />
       </body>
     </html>
   );

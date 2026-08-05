@@ -7,7 +7,7 @@ import { Header } from '@/components/shared/Header';
 import { Footer } from '@/components/shared/Footer';
 import { TheStrand } from '@/components/shared/TheStrand';
 import { VialIllustration } from '@/components/illustrations/VialIllustration';
-import { ProductCard, productData } from '@/components/products/ProductData';
+import { Product, ProductCard } from '@/components/products/ProductData';
 import { FlaskConical, Microscope, Zap, Headset, ShieldCheck, ArrowRight, CheckCircle2, ChevronDown, Activity, Brain, Moon, Dumbbell, Droplet, Battery } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
@@ -42,6 +42,18 @@ const itemVariants: Variants = {
 };
 
 export default function HomePage() {
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function loadProducts() {
+      const { getProducts } = await import('@/lib/api');
+      const data = await getProducts();
+      setProducts(data.slice(0, 3)); // Only show top 3 featured products
+      setLoading(false);
+    }
+    loadProducts();
+  }, []);
   return (
     <div className="min-h-screen bg-background text-foreground selection:bg-secondary/30">
       <Header />
@@ -309,13 +321,19 @@ export default function HomePage() {
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {productData.map((product) => (
-                <motion.div variants={itemVariants} key={product.id}>
-                  <Link href={`/products/${product.id}`}>
-                    <ProductCard product={product} />
-                  </Link>
-                </motion.div>
-              ))}
+              {loading ? (
+                <div className="col-span-full text-center text-muted-foreground py-12">
+                  Loading featured products...
+                </div>
+              ) : (
+                products.map((product) => (
+                  <motion.div variants={itemVariants} key={product.id}>
+                    <Link href={`/products/${product.id}`}>
+                      <ProductCard product={product} />
+                    </Link>
+                  </motion.div>
+                ))
+              )}
             </div>
             <motion.div variants={itemVariants} className="mt-8 md:hidden text-center">
               <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>

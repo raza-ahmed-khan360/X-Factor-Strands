@@ -6,12 +6,11 @@ import { Button } from '@/components/ui/button';
 import { Package, Plus, Trash2, Image as ImageIcon, Loader2 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { addProduct, deleteProduct, updateProduct } from './actions';
-import { Product } from '@/lib/api';
 import { toast } from 'sonner';
 import { Pencil } from 'lucide-react';
 
 export default function AdminProductsPage() {
-  const [products, setProducts] = React.useState<Product[]>([]);
+  const [products, setProducts] = React.useState<any[]>([]);
   const [loading, setLoading] = React.useState(true);
   
   // Form State

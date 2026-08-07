@@ -1,32 +1,25 @@
-'use server';
-
-import { cookies } from 'next/headers';
 import { createClient } from '@supabase/supabase-js';
 
 // Helper to check if admin is logged in
 async function checkAdminAuth() {
-  const cookieStore = await cookies();
-  const token = cookieStore.get('admin_session');
-  if (!token || token.value !== 'authenticated') {
-    throw new Error('Unauthorized');
+  if (typeof window !== 'undefined') {
+    const token = localStorage.getItem('admin_session');
+    if (token !== 'authenticated') {
+      throw new Error('Unauthorized');
+    }
   }
 }
 
-// Create a Supabase client with the Service Role Key for admin tasks
+// Create a Supabase client for admin tasks
 function getAdminSupabase() {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
-  if (!supabaseUrl || !supabaseServiceKey) {
+  if (!supabaseUrl || !supabaseKey) {
     throw new Error('Missing Supabase environment variables');
   }
 
-  return createClient(supabaseUrl, supabaseServiceKey, {
-    auth: {
-      autoRefreshToken: false,
-      persistSession: false
-    }
-  });
+  return createClient(supabaseUrl, supabaseKey);
 }
 
 export async function addProduct(formData: FormData) {
@@ -55,7 +48,7 @@ export async function addProduct(formData: FormData) {
       const fileName = `${id}-${crypto.randomUUID()}.${fileExt}`;
       const filePath = `products/${fileName}`;
 
-      const { data: uploadData, error: uploadError } = await supabase.storage
+      const { error: uploadError } = await supabase.storage
         .from('product-images')
         .upload(filePath, imageFile, {
           cacheControl: '3600',

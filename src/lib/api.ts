@@ -1,58 +1,63 @@
 import { supabase } from './supabase';
-import { Product, ProductVariant } from '../components/products/ProductData';
+import { Product, productData } from '../components/products/ProductData';
 
 // Fetch all products with their variants
 export async function getProducts(): Promise<Product[]> {
-  const { data: productsData, error: productsError } = await supabase
-    .from('products')
-    .select('*')
-    .eq('active', true);
+  try {
+    const { data: productsData, error: productsError } = await supabase
+      .from('products')
+      .select('*')
+      .eq('active', true);
 
-  if (productsError) {
-    console.error('Error fetching products:', productsError);
-    return [];
+    if (productsError || !productsData || productsData.length === 0) {
+      return productData;
+    }
+
+    const { data: variantsData } = await supabase
+      .from('variants')
+      .select('*');
+
+    // Map database rows to Frontend Product interface
+    const mappedProducts = productsData.map(product => {
+      const productVariants = (variantsData || [])
+        .filter(v => v.product_id === product.id)
+        .map(v => ({
+          size: v.size,
+          price: Number(v.price) || 0,
+          stripe_price_id: v.stripe_price_id
+        }));
+
+      // Ensure there is at least one variant fallback if database record has no variants yet
+      const finalVariants = productVariants.length > 0 
+        ? productVariants 
+        : [{ size: '10mg', price: 50 }];
+
+      return {
+        id: product.id,
+        name: product.name,
+        category: product.category || 'Weight Management',
+        shortDesc: product.description ? (product.description.substring(0, 100) + '...') : 'High-quality research compound.',
+        longDesc: product.description || 'High-quality research compound for laboratory use.',
+        imageUrl: product.image_url || '/new-products/semaglutide-glp1.jpeg',
+        specs: {
+          purity: '>99.0%',
+          format: 'Lyophilized Powder',
+          storage: 'Store at -20°C',
+          mw: 'Varies',
+        },
+        reviews: {
+          rating: 5.0,
+          count: Math.floor(Math.random() * 50) + 10,
+        },
+        variants: finalVariants,
+      };
+    });
+
+    return mappedProducts.length > 0 ? mappedProducts : productData;
+  } catch (err) {
+    console.error('Error in getProducts:', err);
+    return productData;
   }
-
-  const { data: variantsData, error: variantsError } = await supabase
-    .from('variants')
-    .select('*');
-
-  if (variantsError) {
-    console.error('Error fetching variants:', variantsError);
-    return [];
-  }
-
-  // Map database rows to Frontend Product interface
-  return productsData.map(product => {
-    const productVariants = variantsData
-      .filter(v => v.product_id === product.id)
-      .map(v => ({
-        size: v.size,
-        price: v.price,
-        stripe_price_id: v.stripe_price_id
-      }));
-
-    return {
-      id: product.id,
-      name: product.name,
-      category: product.category,
-      shortDesc: product.description?.substring(0, 100) + '...' || '',
-      longDesc: product.description || '',
-      imageUrl: product.image_url || '',
-      // Provide fallback values for UI fields not in database yet
-      specs: {
-        purity: '>99.0%',
-        format: 'Lyophilized Powder',
-        storage: 'Store at -20°C',
-        mw: 'Varies',
-      },
-      reviews: {
-        rating: 4.9,
-        count: Math.floor(Math.random() * 50) + 10,
-      },
-      variants: productVariants,
-    };
-  });
 }
 
 // Fetch a single product by ID

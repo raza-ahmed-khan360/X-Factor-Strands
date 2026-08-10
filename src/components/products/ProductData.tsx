@@ -396,7 +396,7 @@ export const productData: Product[] = [
 ];
 
 export function ProductCard({ product }: { product: Product }) {
-  const startingPrice = product.variants[0].price;
+  const startingPrice = product.variants?.[0]?.price ?? 0;
   
   return (
     <div className="bg-card border border-border rounded-xl flex flex-col glow-hover group relative overflow-hidden p-0 h-full">

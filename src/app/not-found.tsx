@@ -1,24 +1,46 @@
 "use client";
-import { Card, CardContent } from '@/components/ui/card';
-import { AlertCircle } from 'lucide-react';
+import * as React from 'react';
+import Link from 'next/link';
+import { Header } from '@/components/shared/Header';
+import { Footer } from '@/components/shared/Footer';
+import { Button } from '@/components/ui/button';
+import { ShieldAlert, ArrowLeft, ShoppingBag } from 'lucide-react';
 
 export default function NotFound() {
   return (
-    <div className="min-h-screen w-full flex items-center justify-center bg-gray-50">
-      <Card className="w-full max-w-md mx-4">
-        <CardContent className="pt-6">
-          <div className="flex mb-4 gap-2">
-            <AlertCircle className="h-8 w-8 text-red-500" />
-            <h1 className="text-2xl font-bold text-gray-900">
-              404 Page Not Found
-            </h1>
+    <div className="min-h-screen bg-background text-foreground flex flex-col">
+      <Header />
+
+      <main className="flex-grow pt-32 pb-20 flex items-center justify-center">
+        <div className="container mx-auto px-4 lg:px-8 text-center max-w-xl">
+          <div className="w-16 h-16 rounded-2xl bg-accent/10 border border-accent/30 flex items-center justify-center mx-auto mb-6">
+            <ShieldAlert className="w-8 h-8 text-accent" />
           </div>
 
-          <p className="mt-4 text-sm text-gray-600">
-            Did you forget to add the page to the router?
+          <h1 className="text-6xl font-display font-extrabold text-foreground mb-4">404</h1>
+          <h2 className="text-2xl font-display font-semibold text-foreground mb-3">Page Not Found</h2>
+          <p className="text-muted-foreground text-base mb-8 leading-relaxed">
+            The page or compound parameter you requested could not be found in our database. It may have been moved or updated.
           </p>
-        </CardContent>
-      </Card>
+
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+            <Link href="/">
+              <Button variant="outline" className="w-full sm:w-auto flex items-center gap-2 border-border">
+                <ArrowLeft className="w-4 h-4" />
+                Back to Home
+              </Button>
+            </Link>
+            <Link href="/shop">
+              <Button className="w-full sm:w-auto flex items-center gap-2 bg-primary text-primary-foreground hover:bg-primary/90">
+                <ShoppingBag className="w-4 h-4" />
+                Browse Shop
+              </Button>
+            </Link>
+          </div>
+        </div>
+      </main>
+
+      <Footer />
     </div>
   );
 }

@@ -1,8 +1,9 @@
-import { productData } from '@/components/products/ProductData';
+import { getProducts } from '@/lib/api';
 import { ProductDetailClient } from './ProductDetailClient';
 
 export async function generateStaticParams() {
-  return productData.map((product) => ({
+  const products = await getProducts();
+  return products.map((product) => ({
     id: product.id,
   }));
 }

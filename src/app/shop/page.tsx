@@ -40,13 +40,18 @@ export default function ShopPage() {
     );
   };
 
-  const filteredProducts = products.filter(p => {
-    const matchesCategory = selectedCategories.length === 0 || selectedCategories.includes(p.category);
-    const matchesSearch = p.name.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesPrice = p.variants.some(v => v.price >= priceRange[0] && v.price <= priceRange[1]);
-    
-    return matchesCategory && matchesSearch && matchesPrice;
-  });
+  const filteredProducts = React.useMemo(() => {
+    const { smartSearchProducts } = require('@/lib/search');
+    let list = products;
+    if (searchQuery.trim()) {
+      list = smartSearchProducts(products, searchQuery);
+    }
+    return list.filter((p) => {
+      const matchesCategory = selectedCategories.length === 0 || selectedCategories.includes(p.category);
+      const matchesPrice = p.variants.some((v) => v.price >= priceRange[0] && v.price <= priceRange[1]);
+      return matchesCategory && matchesPrice;
+    });
+  }, [products, searchQuery, selectedCategories, priceRange]);
 
   const categories = [
     'Weight Management',

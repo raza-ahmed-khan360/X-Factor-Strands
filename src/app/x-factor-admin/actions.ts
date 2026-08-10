@@ -1,10 +1,9 @@
-export async function loginAdmin(password: string) {
-  const adminPassword = process.env.NEXT_PUBLIC_ADMIN_PASSWORD || 'admin123';
+'use server';
 
-  if (password === adminPassword || password === 'admin123') {
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('admin_session', 'authenticated');
-    }
+export async function loginAdmin(password: string) {
+  const envPassword = process.env.ADMIN_PASSWORD;
+
+  if (envPassword && password.trim() === envPassword.trim()) {
     return { success: true };
   }
 
@@ -12,8 +11,5 @@ export async function loginAdmin(password: string) {
 }
 
 export async function logoutAdmin() {
-  if (typeof window !== 'undefined') {
-    localStorage.removeItem('admin_session');
-    window.location.href = '/x-factor-admin/login';
-  }
+  return { success: true };
 }

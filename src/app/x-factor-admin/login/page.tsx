@@ -20,6 +20,7 @@ export default function AdminLoginPage() {
     try {
       const res = await loginAdmin(password);
       if (res.success) {
+        localStorage.setItem('admin_session', 'authenticated');
         router.push('/x-factor-admin');
         router.refresh();
       } else {

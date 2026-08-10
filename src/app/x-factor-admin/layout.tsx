@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { LayoutDashboard, Package, ShoppingCart, LogOut, ChevronRight } from 'lucide-react';
 import { logoutAdmin } from './actions';
 
@@ -14,6 +14,16 @@ const navigation = [
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const router = useRouter();
+
+  React.useEffect(() => {
+    if (pathname !== '/x-factor-admin/login') {
+      const session = localStorage.getItem('admin_session');
+      if (session !== 'authenticated') {
+        router.push('/x-factor-admin/login');
+      }
+    }
+  }, [pathname, router]);
 
   // If we are on the login page, don't show the sidebar
   if (pathname === '/x-factor-admin/login') {

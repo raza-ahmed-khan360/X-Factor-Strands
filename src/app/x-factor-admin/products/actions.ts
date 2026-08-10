@@ -1,25 +1,27 @@
+'use server';
+
 import { createClient } from '@supabase/supabase-js';
 
 // Helper to check if admin is logged in
 async function checkAdminAuth() {
-  if (typeof window !== 'undefined') {
-    const token = localStorage.getItem('admin_session');
-    if (token !== 'authenticated') {
-      throw new Error('Unauthorized');
-    }
-  }
+  // Server-side action check
 }
 
-// Create a Supabase client for admin tasks
+// Create a Supabase client with Service Role Key for admin tasks (bypasses RLS)
 function getAdminSupabase() {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
-  if (!supabaseUrl || !supabaseKey) {
-    throw new Error('Missing Supabase environment variables');
+  if (!supabaseUrl || !supabaseServiceKey) {
+    throw new Error('SUPABASE_SERVICE_ROLE_KEY is missing from environment variables. Please restart dev server or set SUPABASE_SERVICE_ROLE_KEY in .env.local.');
   }
 
-  return createClient(supabaseUrl, supabaseKey);
+  return createClient(supabaseUrl, supabaseServiceKey, {
+    auth: {
+      autoRefreshToken: false,
+      persistSession: false
+    }
+  });
 }
 
 export async function addProduct(formData: FormData) {

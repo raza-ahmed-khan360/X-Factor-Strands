@@ -1,0 +1,256 @@
+'use server';
+
+import { createClient } from '@supabase/supabase-js';
+import { sendOrderStatusEmail } from '@/lib/email';
+
+// Global in-memory fallback store for orders placed during runtime
+let globalOrdersStore: any[] = [];
+
+function getAdminSupabase() {
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://qlqquolxsoxsnzcpunes.supabase.co';
+  const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+  if (!supabaseUrl || !supabaseServiceKey) {
+    throw new Error('Missing Supabase environment variables');
+  }
+
+  return createClient(supabaseUrl, supabaseServiceKey, {
+    auth: {
+      autoRefreshToken: false,
+      persistSession: false,
+    },
+  });
+}
+
+export interface CreateOrderPayload {
+  orderNumber: string;
+  customerName: string;
+  customerEmail: string;
+  customerPhone: string;
+  shippingAddress: string;
+  city: string;
+  postalCode: string;
+  paymentMethod: string;
+  totalAmount: number;
+  status?: 'pending' | 'confirmed' | 'on_its_way' | 'delivered' | 'cancelled';
+  items: { name: string; size: string; quantity: number; price: number }[];
+}
+
+export async function createOrderAction(payload: CreateOrderPayload): Promise<{ success: boolean; orderNumber?: string; error?: string }> {
+  const supabase = getAdminSupabase();
+
+  const newOrderObj = {
+    id: `ord_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
+    order_number: payload.orderNumber,
+    customer_name: payload.customerName,
+    customer_email: payload.customerEmail,
+    customer_phone: payload.customerPhone,
+    shipping_address: payload.shippingAddress,
+    city: payload.city,
+    postal_code: payload.postalCode,
+    payment_method: payload.paymentMethod || 'Cash on Delivery (COD)',
+    status: payload.status || 'pending',
+    total_amount: payload.totalAmount,
+    created_at: new Date().toISOString(),
+    order_items: payload.items.map((i, idx) => ({
+      id: `item_${idx}_${Date.now()}`,
+      item_name: i.name,
+      size: i.size,
+      quantity: i.quantity,
+      price: i.price,
+    })),
+  };
+
+  // Add to server in-memory store
+  globalOrdersStore.unshift(newOrderObj);
+
+  try {
+    // 1. Try Supabase insert
+    const { data: orderData, error: orderError } = await supabase
+      .from('orders')
+      .insert({
+        order_number: payload.orderNumber,
+        customer_name: payload.customerName,
+        customer_email: payload.customerEmail,
+        customer_phone: payload.customerPhone,
+        shipping_address: payload.shippingAddress,
+        city: payload.city,
+        postal_code: payload.postalCode,
+        payment_method: payload.paymentMethod || 'Cash on Delivery (COD)',
+        status: payload.status || 'pending',
+        total_amount: payload.totalAmount,
+      })
+      .select()
+      .single();
+
+    if (!orderError && orderData?.id && payload.items?.length > 0) {
+      const itemsToInsert = payload.items.map((item) => ({
+        order_id: orderData.id,
+        item_name: item.name,
+        size: item.size,
+        quantity: item.quantity,
+        price: item.price,
+      }));
+      await supabase.from('order_items').insert(itemsToInsert);
+    }
+  } catch (err: any) {
+    console.warn('Supabase DB order insert fallback activated:', err?.message);
+  }
+
+  // 2. Trigger Automated Pending Confirmation Email to Customer
+  try {
+    await sendOrderStatusEmail({
+      orderNumber: payload.orderNumber,
+      customerEmail: payload.customerEmail,
+      customerName: payload.customerName,
+      status: (payload.status as any) || 'pending',
+      totalAmount: payload.totalAmount,
+      items: payload.items,
+    });
+  } catch (emailErr) {
+    console.error('Initial email error:', emailErr);
+  }
+
+  return { success: true, orderNumber: payload.orderNumber };
+}
+
+export async function updateOrderStatusAction(
+  orderId: string,
+  newStatus: 'pending' | 'confirmed' | 'on_its_way' | 'delivered' | 'cancelled'
+): Promise<{ success: boolean; error?: string }> {
+  const supabase = getAdminSupabase();
+
+  let targetOrder = globalOrdersStore.find((o) => o.id === orderId || o.order_number === orderId);
+
+  if (targetOrder) {
+    targetOrder.status = newStatus;
+  }
+
+  // Try DB update as well
+  try {
+    const { data: dbOrder } = await supabase
+      .from('orders')
+      .select('*')
+      .eq('id', orderId)
+      .single();
+
+    if (dbOrder) {
+      await supabase.from('orders').update({ status: newStatus }).eq('id', orderId);
+      if (!targetOrder) targetOrder = dbOrder;
+    }
+  } catch (e) {
+    console.warn('Supabase status update error:', e);
+  }
+
+  if (targetOrder) {
+    const formattedItems = (targetOrder.order_items || []).map((i: any) => ({
+      name: i.item_name || i.name || 'Peptide',
+      size: i.size || 'Standard',
+      quantity: i.quantity || 1,
+      price: Number(i.price) || 0,
+    }));
+
+    // Trigger Email Notification to Customer for the updated status!
+    await sendOrderStatusEmail({
+      orderNumber: targetOrder.order_number || `XFP-${orderId.substring(0, 6)}`,
+      customerEmail: targetOrder.customer_email,
+      customerName: targetOrder.customer_name || 'Customer',
+      status: newStatus,
+      totalAmount: Number(targetOrder.total_amount),
+      items: formattedItems,
+    });
+  }
+
+  return { success: true };
+}
+
+export async function editOrderAction(
+  orderId: string,
+  payload: Partial<CreateOrderPayload>
+): Promise<{ success: boolean; error?: string }> {
+  const supabase = getAdminSupabase();
+
+  // Update in-memory store
+  const memIndex = globalOrdersStore.findIndex((o) => o.id === orderId || o.order_number === orderId);
+  if (memIndex !== -1) {
+    const existing = globalOrdersStore[memIndex];
+    globalOrdersStore[memIndex] = {
+      ...existing,
+      customer_name: payload.customerName ?? existing.customer_name,
+      customer_email: payload.customerEmail ?? existing.customer_email,
+      customer_phone: payload.customerPhone ?? existing.customer_phone,
+      shipping_address: payload.shippingAddress ?? existing.shipping_address,
+      city: payload.city ?? existing.city,
+      postal_code: payload.postalCode ?? existing.postal_code,
+      total_amount: payload.totalAmount ?? existing.total_amount,
+      status: payload.status ?? existing.status,
+    };
+  }
+
+  // Update Supabase DB
+  try {
+    await supabase
+      .from('orders')
+      .update({
+        ...(payload.customerName ? { customer_name: payload.customerName } : {}),
+        ...(payload.customerEmail ? { customer_email: payload.customerEmail } : {}),
+        ...(payload.customerPhone ? { customer_phone: payload.customerPhone } : {}),
+        ...(payload.shippingAddress ? { shipping_address: payload.shippingAddress } : {}),
+        ...(payload.city ? { city: payload.city } : {}),
+        ...(payload.postalCode ? { postal_code: payload.postalCode } : {}),
+        ...(payload.totalAmount ? { total_amount: payload.totalAmount } : {}),
+        ...(payload.status ? { status: payload.status } : {}),
+      })
+      .eq('id', orderId);
+  } catch (err: any) {
+    console.warn('DB order edit fallback warning:', err?.message);
+  }
+
+  return { success: true };
+}
+
+export async function deleteOrderAction(orderId: string): Promise<{ success: boolean; error?: string }> {
+  const supabase = getAdminSupabase();
+
+  // 1. Remove from global memory store
+  globalOrdersStore = globalOrdersStore.filter((o) => o.id !== orderId && o.order_number !== orderId);
+
+  // 2. Remove from Supabase DB
+  try {
+    await supabase.from('order_items').delete().eq('order_id', orderId);
+    await supabase.from('orders').delete().eq('id', orderId);
+  } catch (err: any) {
+    console.warn('DB delete order warning:', err?.message);
+  }
+
+  return { success: true };
+}
+
+export async function fetchAdminOrdersAction() {
+  const supabase = getAdminSupabase();
+  let dbOrders: any[] = [];
+
+  try {
+    const { data, error } = await supabase
+      .from('orders')
+      .select(`
+        *,
+        order_items (*)
+      `)
+      .order('created_at', { ascending: false });
+
+    if (!error && data) {
+      dbOrders = data;
+    }
+  } catch (err: any) {
+    console.warn('Fetch DB orders fallback:', err?.message);
+  }
+
+  // Merge in-memory orders with DB orders avoiding duplicates
+  const existingDbIds = new Set(dbOrders.map((o) => o.id || o.order_number));
+  const uniqueMemoryOrders = globalOrdersStore.filter((o) => !existingDbIds.has(o.id) && !existingDbIds.has(o.order_number));
+
+  const merged = [...uniqueMemoryOrders, ...dbOrders];
+
+  return { success: true, orders: merged };
+}

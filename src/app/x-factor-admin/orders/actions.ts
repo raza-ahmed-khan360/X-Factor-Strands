@@ -5,6 +5,7 @@ import { sendOrderStatusEmail } from '@/lib/email';
 
 // Global in-memory fallback store for orders placed during runtime
 let globalOrdersStore: any[] = [];
+let globalCodShippingFee: number = 5.99;
 
 function getAdminSupabase() {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://qlqquolxsoxsnzcpunes.supabase.co';
@@ -31,9 +32,19 @@ export interface CreateOrderPayload {
   city: string;
   postalCode: string;
   paymentMethod: string;
+  shippingFee?: number;
   totalAmount: number;
   status?: 'pending' | 'confirmed' | 'on_its_way' | 'delivered' | 'cancelled';
   items: { name: string; size: string; quantity: number; price: number }[];
+}
+
+export async function getCodShippingFeeAction(): Promise<{ success: boolean; fee: number }> {
+  return { success: true, fee: globalCodShippingFee };
+}
+
+export async function updateCodShippingFeeAction(newFee: number): Promise<{ success: boolean; fee: number }> {
+  globalCodShippingFee = Number(newFee) || 0;
+  return { success: true, fee: globalCodShippingFee };
 }
 
 export async function createOrderAction(payload: CreateOrderPayload): Promise<{ success: boolean; orderNumber?: string; error?: string }> {
@@ -49,6 +60,7 @@ export async function createOrderAction(payload: CreateOrderPayload): Promise<{ 
     city: payload.city,
     postal_code: payload.postalCode,
     payment_method: payload.paymentMethod || 'Cash on Delivery (COD)',
+    shipping_fee: payload.shippingFee ?? globalCodShippingFee,
     status: payload.status || 'pending',
     total_amount: payload.totalAmount,
     created_at: new Date().toISOString(),
@@ -108,7 +120,25 @@ export async function createOrderAction(payload: CreateOrderPayload): Promise<{ 
       items: payload.items,
     });
   } catch (emailErr) {
-    console.error('Initial email error:', emailErr);
+    console.error('Initial customer email error:', emailErr);
+  }
+
+  // 3. Trigger Admin Alert Email to info/admin email
+  try {
+    const { sendAdminNewOrderAlertEmail } = await import('@/lib/email');
+    await sendAdminNewOrderAlertEmail({
+      orderNumber: payload.orderNumber,
+      customerName: payload.customerName,
+      customerEmail: payload.customerEmail,
+      customerPhone: payload.customerPhone,
+      shippingAddress: payload.shippingAddress,
+      city: payload.city,
+      postalCode: payload.postalCode,
+      totalAmount: payload.totalAmount,
+      items: payload.items,
+    });
+  } catch (adminAlertErr) {
+    console.error('Admin alert email error:', adminAlertErr);
   }
 
   return { success: true, orderNumber: payload.orderNumber };
@@ -182,6 +212,7 @@ export async function editOrderAction(
       shipping_address: payload.shippingAddress ?? existing.shipping_address,
       city: payload.city ?? existing.city,
       postal_code: payload.postalCode ?? existing.postal_code,
+      shipping_fee: payload.shippingFee ?? existing.shipping_fee,
       total_amount: payload.totalAmount ?? existing.total_amount,
       status: payload.status ?? existing.status,
     };
@@ -252,5 +283,5 @@ export async function fetchAdminOrdersAction() {
 
   const merged = [...uniqueMemoryOrders, ...dbOrders];
 
-  return { success: true, orders: merged };
+  return { success: true, orders: merged, currentShippingFee: globalCodShippingFee };
 }

@@ -29,6 +29,16 @@ export default function CheckoutPage() {
     paymentMethod: 'cod', // Cash on delivery
   });
 
+  const [shippingFee, setShippingFee] = useState(5.99);
+
+  React.useEffect(() => {
+    import('@/app/x-factor-admin/orders/actions').then(({ getCodShippingFeeAction }) => {
+      getCodShippingFeeAction().then((res) => {
+        if (res?.fee !== undefined) setShippingFee(res.fee);
+      });
+    });
+  }, []);
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData((prev) => ({ ...prev, [e.target.id]: e.target.value }));
   };
@@ -39,7 +49,7 @@ export default function CheckoutPage() {
 
     const orderNumber = `XFP-${Math.floor(100000 + Math.random() * 900000)}`;
     const subtotal = getTotalPrice();
-    const shipping = 5.99;
+    const shipping = shippingFee;
     const total = subtotal + shipping;
 
     const orderData = {
@@ -194,51 +204,51 @@ export default function CheckoutPage() {
                         />
                       </div>
                       <div className="space-y-2">
-                        <Label htmlFor="phone">Phone Number (Required for COD)</Label>
+                        <Label htmlFor="phone">Phone Number (US format required for COD)</Label>
                         <Input
                           id="phone"
                           type="tel"
                           required
                           value={formData.phone}
                           onChange={handleChange}
-                          placeholder="+44 7123 456789"
+                          placeholder="+1 (555) 000-0000"
                           className="bg-background"
                         />
                       </div>
                     </div>
 
                     <div className="space-y-2">
-                      <Label htmlFor="address">Delivery Address</Label>
+                      <Label htmlFor="address">Delivery Address (US)</Label>
                       <Input
                         id="address"
                         required
                         value={formData.address}
                         onChange={handleChange}
-                        placeholder="123 Science Park Road"
+                        placeholder="123 Science Way, Suite 400"
                         className="bg-background"
                       />
                     </div>
 
                     <div className="grid grid-cols-2 gap-4">
                       <div className="space-y-2">
-                        <Label htmlFor="city">City</Label>
+                        <Label htmlFor="city">City & State</Label>
                         <Input
                           id="city"
                           required
                           value={formData.city}
                           onChange={handleChange}
-                          placeholder="London"
+                          placeholder="New York, NY"
                           className="bg-background"
                         />
                       </div>
                       <div className="space-y-2">
-                        <Label htmlFor="postalCode">Postal Code</Label>
+                        <Label htmlFor="postalCode">ZIP Code</Label>
                         <Input
                           id="postalCode"
                           required
                           value={formData.postalCode}
                           onChange={handleChange}
-                          placeholder="EC1A 1BB"
+                          placeholder="10001"
                           className="bg-background"
                         />
                       </div>
@@ -284,7 +294,7 @@ export default function CheckoutPage() {
                       <span className="flex items-center gap-1.5">
                         <Truck className="w-4 h-4 text-accent" /> Express Delivery
                       </span>
-                      <span>$5.99</span>
+                      <span>${shippingFee.toFixed(2)}</span>
                     </div>
                     <div className="flex justify-between text-muted-foreground text-xs">
                       <span>Payment Processing</span>
@@ -295,14 +305,14 @@ export default function CheckoutPage() {
 
                     <div className="flex justify-between text-xl font-display font-bold">
                       <span>Total Due (on delivery)</span>
-                      <span className="text-accent">${(getTotalPrice() + 5.99).toFixed(2)}</span>
+                      <span className="text-accent">${(getTotalPrice() + shippingFee).toFixed(2)}</span>
                     </div>
                   </div>
 
                   <div className="p-4 bg-accent/5 border border-accent/20 rounded-lg text-xs text-foreground/80 leading-relaxed flex items-start gap-2.5">
                     <ShieldCheck className="w-4 h-4 text-accent shrink-0 mt-0.5" />
                     <span>
-                      By placing this order, you confirm that these research compounds are strictly for laboratory use and agree to pay <b>${(getTotalPrice() + 5.99).toFixed(2)}</b> in cash upon delivery.
+                      By placing this order, you confirm that these research compounds are strictly for laboratory use and agree to pay <b>${(getTotalPrice() + shippingFee).toFixed(2)}</b> in cash upon delivery.
                     </span>
                   </div>
 

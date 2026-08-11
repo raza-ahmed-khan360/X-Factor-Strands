@@ -7,9 +7,17 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Package, Search, Phone, Mail, MapPin, Loader2, CheckCircle, Truck, Clock, XCircle, RefreshCw, Plus, Pencil, Trash2 } from 'lucide-react';
+import { Package, Search, Phone, Mail, MapPin, Loader2, CheckCircle, Truck, Clock, XCircle, RefreshCw, Plus, Pencil, Trash2, DollarSign, Settings } from 'lucide-react';
 import { toast } from 'sonner';
-import { fetchAdminOrdersAction, updateOrderStatusAction, createOrderAction, editOrderAction, deleteOrderAction } from './actions';
+import {
+  fetchAdminOrdersAction,
+  updateOrderStatusAction,
+  createOrderAction,
+  editOrderAction,
+  deleteOrderAction,
+  getCodShippingFeeAction,
+  updateCodShippingFeeAction,
+} from './actions';
 
 type OrderStatus = 'pending' | 'confirmed' | 'on_its_way' | 'delivered' | 'cancelled';
 
@@ -18,6 +26,11 @@ export default function AdminOrdersPage() {
   const [loading, setLoading] = useState(true);
   const [updatingId, setUpdatingId] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
+
+  // COD Fee state
+  const [globalFee, setGlobalFee] = useState<number>(5.99);
+  const [savingFee, setSavingFee] = useState(false);
+  const [isFeeModalOpen, setIsFeeModalOpen] = useState(false);
 
   // Modals state
   const [isCreateOpen, setIsCreateOpen] = useState(false);
@@ -41,6 +54,7 @@ export default function AdminOrdersPage() {
     itemSize: '5mg',
     itemQuantity: 1,
     itemPrice: 75,
+    shippingFee: 5.99,
     totalAmount: 80.99,
   });
 
@@ -49,6 +63,9 @@ export default function AdminOrdersPage() {
     try {
       const res = await fetchAdminOrdersAction();
       setOrders(res.orders || []);
+      if (res.currentShippingFee !== undefined) {
+        setGlobalFee(res.currentShippingFee);
+      }
     } catch (err) {
       console.error('Failed to load orders', err);
       toast.error('Failed to load orders');
@@ -60,6 +77,22 @@ export default function AdminOrdersPage() {
   useEffect(() => {
     loadOrders();
   }, []);
+
+  // Update Global COD Fee
+  const handleUpdateGlobalFee = async () => {
+    setSavingFee(true);
+    try {
+      const res = await updateCodShippingFeeAction(globalFee);
+      if (res.success) {
+        toast.success(`Global COD Shipping Fee updated to $${globalFee.toFixed(2)}!`);
+        setIsFeeModalOpen(false);
+      }
+    } catch (err: any) {
+      toast.error(err?.message || 'Failed to update COD Fee');
+    } finally {
+      setSavingFee(false);
+    }
+  };
 
   // Reset Create Form
   const openCreateModal = () => {
@@ -76,7 +109,8 @@ export default function AdminOrdersPage() {
       itemSize: '5mg',
       itemQuantity: 1,
       itemPrice: 75,
-      totalAmount: 80.99,
+      shippingFee: globalFee,
+      totalAmount: 75 + globalFee,
     });
     setIsCreateOpen(true);
   };
@@ -84,6 +118,7 @@ export default function AdminOrdersPage() {
   // Pre-fill Edit Form
   const openEditModal = (order: any) => {
     setEditingOrder(order);
+    const orderFee = order.shipping_fee ?? globalFee;
     setFormData({
       orderNumber: order.order_number || order.id,
       customerName: order.customer_name || '',
@@ -96,7 +131,8 @@ export default function AdminOrdersPage() {
       itemName: order.order_items?.[0]?.item_name || 'Research Peptide',
       itemSize: order.order_items?.[0]?.size || 'Standard',
       itemQuantity: order.order_items?.[0]?.quantity || 1,
-      itemPrice: order.order_items?.[0]?.price || order.total_amount || 0,
+      itemPrice: order.order_items?.[0]?.price || 0,
+      shippingFee: orderFee,
       totalAmount: Number(order.total_amount) || 0,
     });
     setIsEditOpen(true);
@@ -118,7 +154,8 @@ export default function AdminOrdersPage() {
         postalCode: formData.postalCode,
         paymentMethod: 'Cash on Delivery (COD)',
         status: formData.status,
-        totalAmount: Number(formData.totalAmount) || (Number(formData.itemPrice) * Number(formData.itemQuantity) + 5.99),
+        shippingFee: Number(formData.shippingFee),
+        totalAmount: Number(formData.totalAmount) || (Number(formData.itemPrice) * Number(formData.itemQuantity) + Number(formData.shippingFee)),
         items: [
           {
             name: formData.itemName,
@@ -159,6 +196,7 @@ export default function AdminOrdersPage() {
         city: formData.city,
         postalCode: formData.postalCode,
         status: formData.status,
+        shippingFee: Number(formData.shippingFee),
         totalAmount: Number(formData.totalAmount),
       };
 
@@ -278,27 +316,38 @@ export default function AdminOrdersPage() {
         <div>
           <h1 className="text-3xl font-display font-bold text-white tracking-wide">Customer Orders</h1>
           <p className="text-muted-foreground mt-1 text-sm">
-            Create, edit, delete, and update COD order status with automated email updates to customers.
+            Manage COD orders, edit delivery fees, and automatically update customers via email.
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-3 w-full sm:w-auto">
+          <Button
+            onClick={() => setIsFeeModalOpen(true)}
+            variant="outline"
+            className="border-accent/40 text-accent hover:bg-accent/10 gap-2 font-semibold"
+          >
+            <Settings className="w-4 h-4" /> COD Delivery Fee: ${globalFee.toFixed(2)}
+          </Button>
+
           <Button onClick={openCreateModal} className="bg-primary text-white hover:bg-primary/90 gap-2">
             <Plus className="w-4 h-4" /> Create Manual Order
           </Button>
+
           <Button onClick={loadOrders} variant="outline" size="sm" className="border-border gap-2">
             <RefreshCw className="w-4 h-4" /> Refresh
           </Button>
-          <div className="relative flex-1 sm:flex-initial">
-            <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
-            <input
-              type="text"
-              placeholder="Search order #, name, phone..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="bg-background border border-border rounded-lg pl-9 pr-4 py-2 text-sm text-white focus:outline-none focus:border-accent w-full sm:w-64"
-            />
-          </div>
         </div>
+      </div>
+
+      {/* Search Bar */}
+      <div className="relative w-full">
+        <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+        <input
+          type="text"
+          placeholder="Search order #, customer name, email, phone..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className="bg-background border border-border rounded-lg pl-9 pr-4 py-2 text-sm text-white focus:outline-none focus:border-accent w-full"
+        />
       </div>
 
       {/* Orders List Container */}
@@ -406,9 +455,11 @@ export default function AdminOrdersPage() {
                       </div>
 
                       <div className="space-y-1 text-left md:text-right">
-                        <span className="text-muted-foreground font-semibold uppercase text-[10px]">Payment & Total</span>
+                        <span className="text-muted-foreground font-semibold uppercase text-[10px]">Payment & COD Fee</span>
                         <p className="text-accent font-bold text-base">${Number(order.total_amount || 0).toFixed(2)}</p>
-                        <p className="text-muted-foreground">Payment: <b className="text-foreground">{order.payment_method || 'Cash on Delivery'}</b></p>
+                        <p className="text-muted-foreground">
+                          Delivery Fee: <b className="text-white">${Number(order.shipping_fee ?? globalFee).toFixed(2)}</b> (COD)
+                        </p>
                       </div>
                     </div>
 
@@ -433,6 +484,41 @@ export default function AdminOrdersPage() {
           )}
         </CardContent>
       </Card>
+
+      {/* UPDATE GLOBAL COD SHIPPING FEE MODAL */}
+      <Dialog open={isFeeModalOpen} onOpenChange={setIsFeeModalOpen}>
+        <DialogContent className="sm:max-w-md bg-card border-border text-foreground">
+          <DialogHeader>
+            <DialogTitle className="text-xl font-display font-bold flex items-center gap-2">
+              <DollarSign className="w-5 h-5 text-accent" /> COD Shipping Fee Settings
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 pt-2">
+            <p className="text-xs text-muted-foreground leading-relaxed">
+              Set the default Cash on Delivery (COD) shipping charge applied dynamically to all new orders during checkout.
+            </p>
+            <div className="space-y-2">
+              <Label htmlFor="globalFeeInput">COD Shipping Charge ($)</Label>
+              <Input
+                id="globalFeeInput"
+                type="number"
+                step="0.01"
+                value={globalFee}
+                onChange={(e) => setGlobalFee(Number(e.target.value))}
+                className="bg-background text-lg font-bold text-accent"
+              />
+            </div>
+            <div className="flex justify-end gap-3 pt-2">
+              <Button variant="outline" onClick={() => setIsFeeModalOpen(false)}>
+                Cancel
+              </Button>
+              <Button onClick={handleUpdateGlobalFee} disabled={savingFee} className="bg-primary text-white">
+                {savingFee ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Save COD Fee'}
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
 
       {/* CREATE ORDER MODAL */}
       <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
@@ -487,7 +573,7 @@ export default function AdminOrdersPage() {
                   value={formData.customerPhone}
                   onChange={(e) => setFormData({ ...formData, customerPhone: e.target.value })}
                   required
-                  placeholder="+44 7123 456789"
+                  placeholder="+1 (555) 000-0000"
                   className="bg-background"
                 />
               </div>
@@ -507,45 +593,45 @@ export default function AdminOrdersPage() {
             </div>
 
             <div className="space-y-1.5">
-              <Label htmlFor="shippingAddress">Shipping Address</Label>
+              <Label htmlFor="shippingAddress">Shipping Address (US)</Label>
               <Input
                 id="shippingAddress"
                 value={formData.shippingAddress}
                 onChange={(e) => setFormData({ ...formData, shippingAddress: e.target.value })}
                 required
-                placeholder="123 Science Park Road"
+                placeholder="123 Science Way, Suite 400"
                 className="bg-background"
               />
             </div>
 
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-1.5">
-                <Label htmlFor="city">City</Label>
+                <Label htmlFor="city">City & State</Label>
                 <Input
                   id="city"
                   value={formData.city}
                   onChange={(e) => setFormData({ ...formData, city: e.target.value })}
                   required
-                  placeholder="London"
+                  placeholder="New York, NY"
                   className="bg-background"
                 />
               </div>
               <div className="space-y-1.5">
-                <Label htmlFor="postalCode">Postal Code</Label>
+                <Label htmlFor="postalCode">ZIP Code</Label>
                 <Input
                   id="postalCode"
                   value={formData.postalCode}
                   onChange={(e) => setFormData({ ...formData, postalCode: e.target.value })}
                   required
-                  placeholder="EC1A 1BB"
+                  placeholder="10001"
                   className="bg-background"
                 />
               </div>
             </div>
 
-            {/* Product Item Form */}
+            {/* Item & Shipping Fee Controls */}
             <div className="p-4 bg-background border border-border rounded-xl space-y-3">
-              <Label className="text-xs font-bold uppercase tracking-wider text-accent">Order Item & Pricing</Label>
+              <Label className="text-xs font-bold uppercase tracking-wider text-accent">Order Item & COD Charges</Label>
               <div className="grid grid-cols-3 gap-3">
                 <div className="col-span-2 space-y-1">
                   <Label htmlFor="itemName" className="text-xs">Product Name</Label>
@@ -568,7 +654,7 @@ export default function AdminOrdersPage() {
                   />
                 </div>
               </div>
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-3 gap-3">
                 <div className="space-y-1">
                   <Label htmlFor="itemPrice" className="text-xs">Price ($)</Label>
                   <Input
@@ -577,17 +663,41 @@ export default function AdminOrdersPage() {
                     value={formData.itemPrice}
                     onChange={(e) => {
                       const p = Number(e.target.value);
-                      setFormData({ ...formData, itemPrice: p, totalAmount: p * formData.itemQuantity + 5.99 });
+                      setFormData({
+                        ...formData,
+                        itemPrice: p,
+                        totalAmount: p * formData.itemQuantity + formData.shippingFee,
+                      });
                     }}
                     required
                     className="bg-card text-xs"
                   />
                 </div>
                 <div className="space-y-1">
-                  <Label htmlFor="totalAmount" className="text-xs">Total Amount ($)</Label>
+                  <Label htmlFor="shippingFee" className="text-xs">COD Fee ($)</Label>
+                  <Input
+                    id="shippingFee"
+                    type="number"
+                    step="0.01"
+                    value={formData.shippingFee}
+                    onChange={(e) => {
+                      const f = Number(e.target.value);
+                      setFormData({
+                        ...formData,
+                        shippingFee: f,
+                        totalAmount: formData.itemPrice * formData.itemQuantity + f,
+                      });
+                    }}
+                    required
+                    className="bg-card text-xs text-amber-400 font-semibold"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <Label htmlFor="totalAmount" className="text-xs">Total ($)</Label>
                   <Input
                     id="totalAmount"
                     type="number"
+                    step="0.01"
                     value={formData.totalAmount}
                     onChange={(e) => setFormData({ ...formData, totalAmount: Number(e.target.value) })}
                     required
@@ -613,7 +723,7 @@ export default function AdminOrdersPage() {
       <Dialog open={isEditOpen} onOpenChange={setIsEditOpen}>
         <DialogContent className="sm:max-w-xl bg-card border-border text-foreground">
           <DialogHeader>
-            <DialogTitle className="text-2xl font-display font-bold">Edit Order Details</DialogTitle>
+            <DialogTitle className="text-2xl font-display font-bold">Edit Order & COD Fee</DialogTitle>
           </DialogHeader>
           <form onSubmit={handleEditSubmit} className="space-y-4 pt-2">
             <div className="grid grid-cols-2 gap-4">
@@ -685,27 +795,40 @@ export default function AdminOrdersPage() {
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-3 gap-4">
               <div className="space-y-1.5">
                 <Label htmlFor="editStatus">Status</Label>
                 <select
                   id="editStatus"
                   value={formData.status}
                   onChange={(e) => setFormData({ ...formData, status: e.target.value as OrderStatus })}
-                  className="w-full bg-background border border-border rounded-md px-3 py-2 text-sm text-foreground focus:outline-none focus:border-accent"
+                  className="w-full bg-background border border-border rounded-md px-3 py-2 text-xs text-foreground focus:outline-none focus:border-accent"
                 >
-                  <option value="pending">PENDING (Confirmation)</option>
-                  <option value="confirmed">CONFIRMED (Processing)</option>
-                  <option value="on_its_way">ON ITS WAY (Dispatched)</option>
-                  <option value="delivered">DELIVERED (Completed)</option>
+                  <option value="pending">PENDING</option>
+                  <option value="confirmed">CONFIRMED</option>
+                  <option value="on_its_way">ON ITS WAY</option>
+                  <option value="delivered">DELIVERED</option>
                   <option value="cancelled">CANCELLED</option>
                 </select>
               </div>
               <div className="space-y-1.5">
-                <Label htmlFor="editTotalAmount">Total Amount ($)</Label>
+                <Label htmlFor="editShippingFee">COD Fee ($)</Label>
+                <Input
+                  id="editShippingFee"
+                  type="number"
+                  step="0.01"
+                  value={formData.shippingFee}
+                  onChange={(e) => setFormData({ ...formData, shippingFee: Number(e.target.value) })}
+                  required
+                  className="bg-background font-semibold text-amber-400"
+                />
+              </div>
+              <div className="space-y-1.5">
+                <Label htmlFor="editTotalAmount">Total ($)</Label>
                 <Input
                   id="editTotalAmount"
                   type="number"
+                  step="0.01"
                   value={formData.totalAmount}
                   onChange={(e) => setFormData({ ...formData, totalAmount: Number(e.target.value) })}
                   required

@@ -9,6 +9,26 @@ export interface EmailParams {
   items?: { name: string; size: string; quantity: number; price: number }[];
 }
 
+export interface AdminAlertParams {
+  orderNumber: string;
+  customerName: string;
+  customerEmail: string;
+  customerPhone: string;
+  shippingAddress: string;
+  city: string;
+  postalCode: string;
+  totalAmount: number;
+  items: { name: string; size: string; quantity: number; price: number }[];
+}
+
+export interface ContactFormParams {
+  firstName: string;
+  lastName: string;
+  email: string;
+  subject: string;
+  message: string;
+}
+
 export async function sendOrderStatusEmail(params: EmailParams) {
   const { orderNumber, customerEmail, customerName, status, totalAmount, items } = params;
 
@@ -158,7 +178,7 @@ export async function sendOrderStatusEmail(params: EmailParams) {
       const transporter = nodemailer.createTransport({
         host: smtpHost,
         port: smtpPort,
-        secure: smtpPort === 465, // true for 465, false for 587
+        secure: smtpPort === 465,
         auth: {
           user: smtpUser,
           pass: smtpPass,
@@ -186,7 +206,7 @@ export async function sendOrderStatusEmail(params: EmailParams) {
       const { Resend } = await import('resend');
       const resend = new Resend(resendApiKey);
       await resend.emails.send({
-        from: 'X-Factor Peptides <orders@xfactorpeptides.com>',
+        from: 'X-Factor Peptides <orders@xfactorpeps.com>',
         to: customerEmail,
         subject,
         html: htmlContent,
@@ -199,7 +219,233 @@ export async function sendOrderStatusEmail(params: EmailParams) {
     }
   }
 
-  // 3. Simulated Mode (when credentials not yet entered in .env)
+  // 3. Simulated Mode
   console.log(`[Email Simulated (${status})] To: ${customerEmail} | Subject: ${subject}`);
+  return { success: true, simulated: true };
+}
+
+/**
+ * Send New Order Alert Email directly to Admin / Info Email Address
+ */
+export async function sendAdminNewOrderAlertEmail(params: AdminAlertParams) {
+  const { orderNumber, customerName, customerEmail, customerPhone, shippingAddress, city, postalCode, totalAmount, items } = params;
+
+  const smtpHost = process.env.SMTP_HOST || 'smtp.hostinger.com';
+  const smtpPort = Number(process.env.SMTP_PORT) || 465;
+  const smtpUser = process.env.SMTP_USER;
+  const smtpPass = process.env.SMTP_PASSWORD;
+  const adminNotifyEmail = process.env.ADMIN_NOTIFY_EMAIL || smtpUser || 'info@xfactorpeps.com';
+  const resendApiKey = process.env.RESEND_API_KEY;
+
+  const subject = `🚨 NEW ORDER RECEIVED: ${orderNumber} - $${totalAmount.toFixed(2)} (COD)`;
+
+  const itemsHtml = (items || [])
+    .map(
+      (item) => `
+        <tr style="border-bottom: 1px solid #1e293b;">
+          <td style="padding: 10px 0; color: #f8fafc; font-size: 13px;">
+            <b>${item.name}</b> (${item.size})
+          </td>
+          <td style="padding: 10px 0; text-align: center; color: #94a3b8; font-size: 13px;">x${item.quantity}</td>
+          <td style="padding: 10px 0; text-align: right; color: #38bdf8; font-weight: bold; font-size: 13px;">$${(item.price * item.quantity).toFixed(2)}</td>
+        </tr>
+      `
+    )
+    .join('');
+
+  const htmlContent = `
+    <!DOCTYPE html>
+    <html>
+      <head>
+        <meta charset="utf-8">
+        <title>${subject}</title>
+      </head>
+      <body style="background-color: #0b0f19; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; margin: 0; padding: 40px 20px; color: #f8fafc;">
+        <div style="max-width: 600px; margin: 0 auto; background-color: #0f172a; border: 2px solid #f59e0b; border-radius: 16px; overflow: hidden; box-shadow: 0 20px 25px -5px rgba(245, 158, 11, 0.2);">
+          <!-- Header -->
+          <div style="background-color: #030712; padding: 20px; text-align: center; border-bottom: 1px solid #1e293b;">
+            <span style="background-color: #f59e0b; color: #000; font-weight: 800; font-size: 10px; padding: 4px 10px; border-radius: 9999px; text-transform: uppercase; letter-spacing: 1px;">Admin Order Alert</span>
+            <h1 style="color: #ffffff; margin: 10px 0 0 0; font-size: 20px;">🚨 New Cash on Delivery Order!</h1>
+          </div>
+
+          <!-- Body -->
+          <div style="padding: 24px;">
+            <p style="color: #94a3b8; font-size: 14px; margin-top: 0;">
+              A new order has just been placed on <b>X-Factor Peptides</b> website. Please review and verify in your admin dashboard.
+            </p>
+
+            <!-- Customer Box -->
+            <div style="background-color: #030712; border: 1px solid #1e293b; border-radius: 12px; padding: 16px; margin-bottom: 20px; font-size: 13px;">
+              <h3 style="color: #38bdf8; margin: 0 0 12px 0; font-size: 14px; border-bottom: 1px solid #1e293b; padding-bottom: 8px;">Customer Information</h3>
+              <p style="margin: 4px 0; color: #ffffff;"><b>Name:</b> ${customerName}</p>
+              <p style="margin: 4px 0; color: #ffffff;"><b>Email:</b> <a href="mailto:${customerEmail}" style="color: #38bdf8;">${customerEmail}</a></p>
+              <p style="margin: 4px 0; color: #ffffff;"><b>Phone:</b> <a href="tel:${customerPhone}" style="color: #38bdf8;">${customerPhone}</a></p>
+              <p style="margin: 4px 0; color: #ffffff;"><b>Address:</b> ${shippingAddress}, ${city} (${postalCode})</p>
+            </div>
+
+            <!-- Order Details Box -->
+            <div style="background-color: #030712; border: 1px solid #1e293b; border-radius: 12px; padding: 16px; margin-bottom: 20px; font-size: 13px;">
+              <table style="width: 100%; border-collapse: collapse; margin-bottom: 12px;">
+                <tr>
+                  <td style="color: #64748b;">Order Number:</td>
+                  <td style="text-align: right; color: #f8fafc; font-weight: bold; font-family: monospace;">${orderNumber}</td>
+                </tr>
+                <tr>
+                  <td style="color: #64748b;">Payment Method:</td>
+                  <td style="text-align: right; color: #f59e0b; font-weight: bold;">Cash on Delivery (COD)</td>
+                </tr>
+              </table>
+
+              <table style="width: 100%; border-collapse: collapse;">
+                ${itemsHtml}
+              </table>
+
+              <div style="margin-top: 12px; border-top: 1px solid #1e293b; padding-top: 10px; text-align: right;">
+                <span style="color: #94a3b8; font-size: 13px; margin-right: 8px;">Total Collectable Cash:</span>
+                <span style="color: #38bdf8; font-size: 16px; font-weight: bold;">$${totalAmount.toFixed(2)}</span>
+              </div>
+            </div>
+
+            <!-- Dashboard Button -->
+            <div style="text-align: center; margin-top: 24px;">
+              <a href="http://localhost:3000/x-factor-admin/orders" style="display: inline-block; background-color: #38bdf8; color: #000; font-weight: bold; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-size: 14px;">
+                Open Admin Orders Dashboard
+              </a>
+            </div>
+          </div>
+        </div>
+      </body>
+    </html>
+  `;
+
+  if (smtpUser && smtpPass) {
+    try {
+      const transporter = nodemailer.createTransport({
+        host: smtpHost,
+        port: smtpPort,
+        secure: smtpPort === 465,
+        auth: {
+          user: smtpUser,
+          pass: smtpPass,
+        },
+      });
+
+      await transporter.sendMail({
+        from: `"X-Factor Peptides Alerts" <${smtpUser}>`,
+        to: adminNotifyEmail,
+        subject,
+        html: htmlContent,
+      });
+
+      console.log(`[Admin New Order Alert Sent] Alert sent to ${adminNotifyEmail} for order ${orderNumber}`);
+      return { success: true };
+    } catch (err: any) {
+      console.error('[Admin Alert Email Error]', err?.message || err);
+      return { success: false, error: err?.message };
+    }
+  }
+
+  if (resendApiKey && !resendApiKey.includes('placeholder')) {
+    try {
+      const { Resend } = await import('resend');
+      const resend = new Resend(resendApiKey);
+      await resend.emails.send({
+        from: 'X-Factor Peptides <orders@xfactorpeps.com>',
+        to: adminNotifyEmail,
+        subject,
+        html: htmlContent,
+      });
+      return { success: true };
+    } catch (err: any) {
+      console.error('[Resend Admin Alert Error]', err?.message || err);
+      return { success: false, error: err?.message };
+    }
+  }
+
+  console.log(`[Admin Alert Email Simulated] To: ${adminNotifyEmail} | Subject: ${subject}`);
+  return { success: true, simulated: true };
+}
+
+/**
+ * Send Contact Us Form Submission Email directly to info/admin email + Auto-reply to user
+ */
+export async function sendContactFormEmail(params: ContactFormParams) {
+  const { firstName, lastName, email, subject, message } = params;
+
+  const smtpHost = process.env.SMTP_HOST || 'smtp.hostinger.com';
+  const smtpPort = Number(process.env.SMTP_PORT) || 465;
+  const smtpUser = process.env.SMTP_USER;
+  const smtpPass = process.env.SMTP_PASSWORD;
+  const adminNotifyEmail = process.env.ADMIN_NOTIFY_EMAIL || smtpUser || 'info@xfactorpeps.com';
+
+  const emailSubject = `💬 Contact Form Inquiry: ${subject} (from ${firstName} ${lastName})`;
+
+  const adminHtml = `
+    <!DOCTYPE html>
+    <html>
+      <head><meta charset="utf-8"></head>
+      <body style="background-color: #0b0f19; font-family: sans-serif; padding: 30px; color: #f8fafc;">
+        <div style="max-width: 600px; margin: 0 auto; background-color: #0f172a; border: 1px solid #38bdf8; border-radius: 12px; padding: 24px;">
+          <h2 style="color: #38bdf8; margin-top: 0;">💬 New Contact Form Message</h2>
+          <p style="margin: 6px 0; color: #ffffff;"><b>Name:</b> ${firstName} ${lastName}</p>
+          <p style="margin: 6px 0; color: #ffffff;"><b>Email:</b> <a href="mailto:${email}" style="color: #38bdf8;">${email}</a></p>
+          <p style="margin: 6px 0; color: #ffffff;"><b>Subject:</b> ${subject}</p>
+          <div style="margin-top: 16px; background-color: #030712; padding: 16px; border-radius: 8px; border: 1px solid #1e293b;">
+            <p style="color: #64748b; font-size: 11px; uppercase; margin-top: 0;">Message Content:</p>
+            <p style="color: #f8fafc; line-height: 1.6; white-space: pre-wrap; margin: 0;">${message}</p>
+          </div>
+        </div>
+      </body>
+    </html>
+  `;
+
+  if (smtpUser && smtpPass) {
+    try {
+      const transporter = nodemailer.createTransport({
+        host: smtpHost,
+        port: smtpPort,
+        secure: smtpPort === 465,
+        auth: {
+          user: smtpUser,
+          pass: smtpPass,
+        },
+      });
+
+      // 1. Send to Admin/Info email
+      await transporter.sendMail({
+        from: `"X-Factor Contact Form" <${smtpUser}>`,
+        to: adminNotifyEmail,
+        replyTo: email,
+        subject: emailSubject,
+        html: adminHtml,
+      });
+
+      // 2. Send Auto-Reply to Visitor
+      await transporter.sendMail({
+        from: `"X-Factor Peptides" <${smtpUser}>`,
+        to: email,
+        subject: `We received your message: ${subject}`,
+        html: `
+          <div style="background-color: #0b0f19; font-family: sans-serif; padding: 30px; color: #f8fafc;">
+            <div style="max-width: 500px; margin: 0 auto; background-color: #0f172a; border: 1px solid #1e293b; border-radius: 12px; padding: 24px;">
+              <h2 style="color: #38bdf8; margin-top: 0;">Hi ${firstName},</h2>
+              <p style="color: #94a3b8; line-height: 1.6;">
+                Thank you for contacting X-Factor Peptides! We have received your inquiry regarding <b>"${subject}"</b> and our support team will respond to you shortly.
+              </p>
+              <p style="color: #64748b; font-size: 12px; margin-top: 24px;">&copy; 2026 X-Factor Peptides</p>
+            </div>
+          </div>
+        `,
+      });
+
+      console.log(`[Contact Form Email Sent] Inquiry from ${email} sent to ${adminNotifyEmail}`);
+      return { success: true };
+    } catch (err: any) {
+      console.error('[Contact Form Email Error]', err?.message || err);
+      return { success: false, error: err?.message };
+    }
+  }
+
+  console.log(`[Contact Form Simulated] To: ${adminNotifyEmail} | Subject: ${emailSubject}`);
   return { success: true, simulated: true };
 }

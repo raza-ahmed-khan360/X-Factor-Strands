@@ -1,29 +1,59 @@
-"use client";
+'use client';
+
 import * as React from 'react';
 import { useState } from 'react';
 import { Header } from '@/components/shared/Header';
 import { Footer } from '@/components/shared/Footer';
-import { Mail, Clock, MapPin, CheckCircle2 } from 'lucide-react';
+import { Mail, Clock, MapPin, CheckCircle2, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { toast } from 'sonner';
+import { submitContactFormAction } from './actions';
 
 export default function ContactPage() {
   const [submitted, setSubmitted] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const [form, setForm] = useState({
+    firstName: '',
+    lastName: '',
+    email: '',
+    subject: 'General Enquiry',
+    message: '',
+  });
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setSubmitted(true);
+    setLoading(true);
+
+    try {
+      const res = await submitContactFormAction(form);
+      if (res.success) {
+        setSubmitted(true);
+        toast.success('Your message has been sent to info@xfactorpeps.com!');
+      } else {
+        toast.error(res.error || 'Failed to send message');
+      }
+    } catch (err: any) {
+      toast.error(err?.message || 'Error submitting form');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col">
       <Header />
-      
-      <main className="flex-grow pt-24 pb-20">
+
+      <main className="flex-grow pt-28 pb-20">
         <div className="container mx-auto px-4 lg:px-8 max-w-6xl">
-          <div className="text-center mb-16 mt-8">
+          <div className="text-center mb-16 mt-4">
             <h1 className="text-4xl md:text-5xl font-display font-bold mb-4">Get in Touch</h1>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Our team provides genuine, hands-on support for all our researchers. Send us a message and a real person will get back to you shortly.
+              Our US support team provides genuine, hands-on support for all our researchers. Send us a message and we will get back to you shortly.
             </p>
           </div>
 
@@ -35,9 +65,9 @@ export default function ContactPage() {
                   <div className="w-16 h-16 bg-accent/20 rounded-full flex items-center justify-center mb-6">
                     <CheckCircle2 className="w-8 h-8 text-accent" />
                   </div>
-                  <h3 className="text-2xl font-display font-bold mb-2">Message Sent</h3>
-                  <p className="text-muted-foreground mb-8">
-                    Thank you for reaching out. A member of our support team will respond to your enquiry within a few hours.
+                  <h3 className="text-2xl font-display font-bold mb-2">Message Sent Successfully</h3>
+                  <p className="text-muted-foreground mb-8 max-w-md">
+                    Thank you for reaching out. A message has been dispatched to <b>info@xfactorpeps.com</b> and an auto-confirmation was sent to your email.
                   </p>
                   <Button variant="outline" onClick={() => setSubmitted(false)}>
                     Send Another Message
@@ -48,46 +78,83 @@ export default function ContactPage() {
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                     <div className="space-y-2">
                       <label className="text-sm font-medium text-foreground/90">First Name</label>
-                      <input required type="text" className="w-full bg-background border border-border rounded-md px-4 py-3 focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent" placeholder="John" />
+                      <input
+                        required
+                        type="text"
+                        name="firstName"
+                        value={form.firstName}
+                        onChange={handleChange}
+                        className="w-full bg-background border border-border rounded-md px-4 py-3 focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent"
+                        placeholder="John"
+                      />
                     </div>
                     <div className="space-y-2">
                       <label className="text-sm font-medium text-foreground/90">Last Name</label>
-                      <input required type="text" className="w-full bg-background border border-border rounded-md px-4 py-3 focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent" placeholder="Doe" />
+                      <input
+                        required
+                        type="text"
+                        name="lastName"
+                        value={form.lastName}
+                        onChange={handleChange}
+                        className="w-full bg-background border border-border rounded-md px-4 py-3 focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent"
+                        placeholder="Doe"
+                      />
                     </div>
                   </div>
-                  
+
                   <div className="space-y-2">
                     <label className="text-sm font-medium text-foreground/90">Email Address</label>
-                    <input required type="email" className="w-full bg-background border border-border rounded-md px-4 py-3 focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent" placeholder="john@example.com" />
+                    <input
+                      required
+                      type="email"
+                      name="email"
+                      value={form.email}
+                      onChange={handleChange}
+                      className="w-full bg-background border border-border rounded-md px-4 py-3 focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent"
+                      placeholder="john@example.com"
+                    />
                   </div>
-                  
+
                   <div className="space-y-2">
                     <label className="text-sm font-medium text-foreground/90">Subject</label>
-                    <select className="w-full bg-background border border-border rounded-md px-4 py-3 focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent text-foreground">
-                      <option>General Enquiry</option>
-                      <option>Order Support</option>
-                      <option>Product Information</option>
-                      <option>Wholesale/Bulk Enquiry</option>
+                    <select
+                      name="subject"
+                      value={form.subject}
+                      onChange={handleChange}
+                      className="w-full bg-background border border-border rounded-md px-4 py-3 focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent text-foreground"
+                    >
+                      <option value="General Enquiry">General Enquiry</option>
+                      <option value="Order Support">Order Support</option>
+                      <option value="Product Information">Product Information</option>
+                      <option value="Wholesale/Bulk Enquiry">Wholesale/Bulk Enquiry</option>
                     </select>
                   </div>
 
                   <div className="space-y-2">
                     <label className="text-sm font-medium text-foreground/90">Message</label>
-                    <textarea required rows={5} className="w-full bg-background border border-border rounded-md px-4 py-3 focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent resize-none" placeholder="How can we help you?"></textarea>
+                    <textarea
+                      required
+                      rows={5}
+                      name="message"
+                      value={form.message}
+                      onChange={handleChange}
+                      className="w-full bg-background border border-border rounded-md px-4 py-3 focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent resize-none"
+                      placeholder="How can we help with your research enquiry?"
+                    ></textarea>
                   </div>
-                  
-                  <Button type="submit" className="w-full h-12 bg-primary hover:bg-primary/90 text-white text-lg">
-                    Send Message
+
+                  <Button type="submit" disabled={loading} className="w-full h-12 bg-primary hover:bg-primary/90 text-white text-lg">
+                    {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Send Message'}
                   </Button>
                 </form>
               )}
             </div>
 
             {/* Contact Info */}
-            <div className="space-y-10 lg:pt-8">
+            <div className="space-y-10 lg:pt-4">
               <div>
                 <h3 className="text-2xl font-display font-bold mb-8">Contact Information</h3>
-                
+
                 <div className="space-y-6">
                   <div className="flex gap-4">
                     <div className="w-12 h-12 rounded-full bg-card border border-border flex items-center justify-center shrink-0 text-accent">
@@ -95,8 +162,10 @@ export default function ContactPage() {
                     </div>
                     <div>
                       <h4 className="font-display font-semibold text-lg">Email Us</h4>
-                      <p className="text-muted-foreground mt-1 mb-1">Our primary support channel.</p>
-                      <a href="mailto:info@xfactorpeptides.com" className="text-secondary hover:underline font-medium">info@xfactorpeptides.com</a>
+                      <p className="text-muted-foreground mt-1 mb-1">Direct support for all enquiries.</p>
+                      <a href="mailto:info@xfactorpeps.com" className="text-accent hover:underline font-medium text-base">
+                        info@xfactorpeps.com
+                      </a>
                     </div>
                   </div>
 
@@ -105,28 +174,38 @@ export default function ContactPage() {
                       <Clock className="w-5 h-5" />
                     </div>
                     <div>
-                      <h4 className="font-display font-semibold text-lg">Business Hours</h4>
-                      <p className="text-muted-foreground mt-1">Monday - Friday: 9am - 5pm GMT</p>
+                      <h4 className="font-display font-semibold text-lg">Business Hours (US)</h4>
+                      <p className="text-muted-foreground mt-1">Monday - Friday: 9am - 5pm EST</p>
                       <p className="text-muted-foreground">Saturday - Sunday: Closed</p>
+                    </div>
+                  </div>
+
+                  <div className="flex gap-4">
+                    <div className="w-12 h-12 rounded-full bg-card border border-border flex items-center justify-center shrink-0 text-accent">
+                      <MapPin className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <h4 className="font-display font-semibold text-lg">Location</h4>
+                      <p className="text-muted-foreground mt-1">United States</p>
                     </div>
                   </div>
                 </div>
               </div>
 
-              {/* Map Placeholder */}
-              <div className="w-full h-48 bg-card border border-border rounded-2xl relative overflow-hidden flex flex-col items-center justify-center">
-                 <div className="absolute inset-0" style={{
-                   backgroundImage: `linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px)`,
-                   backgroundSize: '20px 20px'
-                 }} />
-                 <MapPin className="w-8 h-8 text-accent mb-2 relative z-10" />
-                 <span className="font-display font-medium text-foreground relative z-10">United States</span>
+              {/* Security Banner */}
+              <div className="p-6 bg-card border border-border rounded-2xl space-y-2">
+                <h4 className="font-display font-semibold text-foreground text-sm flex items-center gap-2">
+                  <span className="w-2 h-2 rounded-full bg-accent animate-pulse" /> Fast Support Response
+                </h4>
+                <p className="text-xs text-muted-foreground leading-relaxed">
+                  All messages sent through this contact form are delivered directly to our <b>info@xfactorpeps.com</b> inbox. We strive to answer all research enquiries within 2-4 business hours.
+                </p>
               </div>
             </div>
           </div>
         </div>
       </main>
-      
+
       <Footer />
     </div>
   );

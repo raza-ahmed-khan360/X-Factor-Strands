@@ -1,3 +1,5 @@
+import nodemailer from 'nodemailer';
+
 export interface EmailParams {
   orderNumber: string;
   customerEmail: string;
@@ -8,9 +10,14 @@ export interface EmailParams {
 }
 
 export async function sendOrderStatusEmail(params: EmailParams) {
-  const apiKey = process.env.RESEND_API_KEY;
-
   const { orderNumber, customerEmail, customerName, status, totalAmount, items } = params;
+
+  // Environment variables for Hostinger SMTP or Resend
+  const smtpHost = process.env.SMTP_HOST || 'smtp.hostinger.com';
+  const smtpPort = Number(process.env.SMTP_PORT) || 465;
+  const smtpUser = process.env.SMTP_USER;
+  const smtpPass = process.env.SMTP_PASSWORD;
+  const resendApiKey = process.env.RESEND_API_KEY;
 
   let subject = '';
   let heading = '';
@@ -80,7 +87,7 @@ export async function sendOrderStatusEmail(params: EmailParams) {
           <!-- Header -->
           <div style="background-color: #030712; padding: 24px; text-align: center; border-bottom: 1px solid #1e293b;">
             <h1 style="color: #38bdf8; margin: 0; font-size: 24px; letter-spacing: 1px; font-weight: 800;">X-FACTOR PEPTIDES</h1>
-            <p style="color: #64748b; font-size: 11px; margin-top: 4px; text-transform: uppercase; tracking: 1px;">Research Use Only</p>
+            <p style="color: #64748b; font-size: 11px; margin-top: 4px; text-transform: uppercase; letter-spacing: 1px;">Research Use Only</p>
           </div>
 
           <!-- Body -->
@@ -110,7 +117,7 @@ export async function sendOrderStatusEmail(params: EmailParams) {
               ${
                 itemsHtml
                   ? `
-                <div style="margin-top: 16px; border-top: 1px dashed #1e293b; pt: 16px;">
+                <div style="margin-top: 16px; border-top: 1px dashed #1e293b; padding-top: 16px;">
                   <table style="width: 100%; border-collapse: collapse;">
                     ${itemsHtml}
                   </table>
@@ -145,25 +152,54 @@ export async function sendOrderStatusEmail(params: EmailParams) {
     </html>
   `;
 
-  if (apiKey) {
+  // 1. Hostinger SMTP Handler (Nodemailer)
+  if (smtpUser && smtpPass) {
+    try {
+      const transporter = nodemailer.createTransport({
+        host: smtpHost,
+        port: smtpPort,
+        secure: smtpPort === 465, // true for 465, false for 587
+        auth: {
+          user: smtpUser,
+          pass: smtpPass,
+        },
+      });
+
+      await transporter.sendMail({
+        from: `"X-Factor Peptides" <${smtpUser}>`,
+        to: customerEmail,
+        subject,
+        html: htmlContent,
+      });
+
+      console.log(`[Hostinger SMTP Email Sent] ${status} notification sent to ${customerEmail} for order ${orderNumber}`);
+      return { success: true, provider: 'hostinger_smtp' };
+    } catch (err: any) {
+      console.error('[Hostinger SMTP Error]', err?.message || err);
+      return { success: false, error: err?.message };
+    }
+  }
+
+  // 2. Resend API Handler (Fallback)
+  if (resendApiKey && !resendApiKey.includes('placeholder')) {
     try {
       const { Resend } = await import('resend');
-      const resend = new Resend(apiKey);
+      const resend = new Resend(resendApiKey);
       await resend.emails.send({
         from: 'X-Factor Peptides <orders@xfactorpeptides.com>',
         to: customerEmail,
         subject,
         html: htmlContent,
       });
-      console.log(`[Email Sent] ${status} notification sent to ${customerEmail} for order ${orderNumber}`);
-      return { success: true };
+      console.log(`[Resend Email Sent] ${status} notification sent to ${customerEmail} for order ${orderNumber}`);
+      return { success: true, provider: 'resend' };
     } catch (err: any) {
-      console.error('[Email Error]', err?.message || err);
+      console.error('[Resend Email Error]', err?.message || err);
       return { success: false, error: err?.message };
     }
-  } else {
-    // Log simulation if RESEND_API_KEY is not yet added
-    console.log(`[Email Simulated (${status})] To: ${customerEmail} | Subject: ${subject}`);
-    return { success: true, simulated: true };
   }
+
+  // 3. Simulated Mode (when credentials not yet entered in .env)
+  console.log(`[Email Simulated (${status})] To: ${customerEmail} | Subject: ${subject}`);
+  return { success: true, simulated: true };
 }

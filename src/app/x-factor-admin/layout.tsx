@@ -4,8 +4,6 @@ import * as React from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { LayoutDashboard, Package, ShoppingCart, LogOut, ChevronRight } from 'lucide-react';
-import { logoutAdmin } from './actions';
-
 const navigation = [
   { name: 'Overview', href: '/x-factor-admin', icon: LayoutDashboard },
   { name: 'Products', href: '/x-factor-admin/products', icon: Package },
@@ -69,10 +67,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
         <div className="p-4 border-t border-border">
           <button
-            onClick={async () => {
+            onClick={() => {
               localStorage.removeItem('admin_session');
-              await logoutAdmin();
-              router.push('/x-factor-admin/login');
+              window.location.href = '/x-factor-admin/login';
             }}
             className="flex items-center gap-3 px-3 py-3 rounded-md w-full text-left text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition-colors"
           >
@@ -89,7 +86,13 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           <Link href="/admin" className="font-display font-bold text-lg tracking-wider text-white">
             <span className="text-accent">X</span>-FACTOR
           </Link>
-          <button onClick={() => logoutAdmin()} className="text-muted-foreground hover:text-destructive">
+          <button
+            onClick={() => {
+              localStorage.removeItem('admin_session');
+              window.location.href = '/x-factor-admin/login';
+            }}
+            className="text-muted-foreground hover:text-destructive"
+          >
             <LogOut className="w-5 h-5" />
           </button>
         </header>

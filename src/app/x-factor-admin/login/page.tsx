@@ -18,13 +18,17 @@ export default function AdminLoginPage() {
     setLoading(true);
 
     try {
-      console.log('Logging in with password:', password);
-      const res = await loginAdmin(password);
-      console.log('Login action response:', res);
+      // console.log('Logging in with password:', password);
+      const res = await fetch('/api/admin/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password }),
+      }).then((r) => r.json());
+
+      console.log('Login API response:', res);
       if (res.success) {
         localStorage.setItem('admin_session', 'authenticated');
-        router.push('/x-factor-admin/orders');
-        router.refresh();
+        window.location.href = '/x-factor-admin/orders';
       } else {
         setError(res.error || 'Login failed');
       }

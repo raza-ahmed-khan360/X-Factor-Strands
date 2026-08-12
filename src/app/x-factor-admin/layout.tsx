@@ -17,13 +17,15 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const router = useRouter();
 
   React.useEffect(() => {
+    const session = typeof window !== 'undefined' ? localStorage.getItem('admin_session') : null;
     if (pathname !== '/x-factor-admin/login') {
-      const session = localStorage.getItem('admin_session');
       if (session !== 'authenticated') {
-        router.push('/x-factor-admin/login');
+        window.location.href = '/x-factor-admin/login';
       }
+    } else if (session === 'authenticated') {
+      window.location.href = '/x-factor-admin/orders';
     }
-  }, [pathname, router]);
+  }, [pathname]);
 
   // If we are on the login page, don't show the sidebar
   if (pathname === '/x-factor-admin/login') {

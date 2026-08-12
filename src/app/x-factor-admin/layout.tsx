@@ -67,7 +67,11 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
         <div className="p-4 border-t border-border">
           <button
-            onClick={() => logoutAdmin()}
+            onClick={async () => {
+              localStorage.removeItem('admin_session');
+              await logoutAdmin();
+              router.push('/x-factor-admin/login');
+            }}
             className="flex items-center gap-3 px-3 py-3 rounded-md w-full text-left text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition-colors"
           >
             <LogOut className="w-5 h-5" />

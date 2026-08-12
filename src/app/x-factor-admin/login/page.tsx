@@ -18,16 +18,19 @@ export default function AdminLoginPage() {
     setLoading(true);
 
     try {
+      console.log('Logging in with password:', password);
       const res = await loginAdmin(password);
+      console.log('Login action response:', res);
       if (res.success) {
         localStorage.setItem('admin_session', 'authenticated');
-        router.push('/x-factor-admin');
+        router.push('/x-factor-admin/orders');
         router.refresh();
       } else {
         setError(res.error || 'Login failed');
       }
     } catch (err: any) {
-      setError(err.message || 'An unexpected error occurred');
+      console.error('Login error:', err);
+      setError(err?.message || 'An unexpected error occurred');
     } finally {
       setLoading(false);
     }

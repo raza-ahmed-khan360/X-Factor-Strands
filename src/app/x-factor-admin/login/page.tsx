@@ -1,16 +1,13 @@
 'use client';
 
 import * as React from 'react';
-import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
-import { loginAdmin } from '../actions';
-import { Lock, AlertCircle } from 'lucide-react';
+import { Lock, AlertCircle, Loader2 } from 'lucide-react';
 
 export default function AdminLoginPage() {
   const [password, setPassword] = React.useState('');
   const [error, setError] = React.useState('');
   const [loading, setLoading] = React.useState(false);
-  const router = useRouter();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -18,23 +15,22 @@ export default function AdminLoginPage() {
     setLoading(true);
 
     try {
-      // console.log('Logging in with password:', password);
       const res = await fetch('/api/admin/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ password }),
-      }).then((r) => r.json());
+      });
 
-      console.log('Login API response:', res);
-      if (res.success) {
-        localStorage.setItem('admin_session', 'authenticated');
+      const data = await res.json();
+
+      if (res.ok && data.success) {
+        // Secure HTTP-only cookie set by server -> navigate to orders
         window.location.href = '/x-factor-admin/orders';
       } else {
-        setError(res.error || 'Login failed');
+        setError(data.error || 'Invalid master password');
       }
     } catch (err: any) {
-      console.error('Login error:', err);
-      setError(err?.message || 'An unexpected error occurred');
+      setError('Connection error. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -74,12 +70,18 @@ export default function AdminLoginPage() {
             />
           </div>
 
-          <Button 
-            type="submit" 
-            disabled={loading} 
-            className="w-full h-12 bg-primary hover:bg-primary/90 text-white font-medium text-lg shadow-[0_0_15px_rgba(11,95,255,0.3)]"
+          <Button
+            type="submit"
+            disabled={loading}
+            className="w-full h-12 bg-primary text-white hover:bg-primary/90 text-base font-semibold"
           >
-            {loading ? 'Authenticating...' : 'Enter Dashboard'}
+            {loading ? (
+              <span className="flex items-center gap-2">
+                <Loader2 className="w-4 h-4 animate-spin" /> Authenticating...
+              </span>
+            ) : (
+              'Sign In'
+            )}
           </Button>
         </form>
       </div>

@@ -15,18 +15,31 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const pathname = usePathname();
   const router = useRouter();
 
+  const handleLogout = async () => {
+    try {
+      await fetch('/api/admin/logout', { method: 'POST' });
+    } finally {
+      window.location.href = '/x-factor-admin/login';
+    }
+  };
+
   // If we are on the login page, render children directly without layout checks
   if (pathname === '/x-factor-admin/login') {
     return <>{children}</>;
   }
 
-  // Protect admin pages: check if authenticated
+  // Protect admin pages: check server HTTP-only session cookie
   React.useEffect(() => {
-    const session = typeof window !== 'undefined' ? localStorage.getItem('admin_session') : null;
-    if (session !== 'authenticated') {
-      router.push('/x-factor-admin/login');
-    }
-  }, [pathname, router]);
+    fetch('/api/admin/check-auth')
+      .then((res) => {
+        if (!res.ok) {
+          window.location.href = '/x-factor-admin/login';
+        }
+      })
+      .catch(() => {
+        window.location.href = '/x-factor-admin/login';
+      });
+  }, [pathname]);
 
   return (
     <div className="min-h-screen bg-background text-foreground flex">
@@ -65,12 +78,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
         <div className="p-4 border-t border-border">
           <button
-            onClick={() => {
-              if (typeof window !== 'undefined') {
-                localStorage.removeItem('admin_session');
-              }
-              router.push('/x-factor-admin/login');
-            }}
+            onClick={handleLogout}
             className="flex items-center gap-3 px-3 py-3 rounded-md w-full text-left text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition-colors"
           >
             <LogOut className="w-5 h-5" />
@@ -87,12 +95,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             <span className="text-accent">X</span>-FACTOR
           </Link>
           <button
-            onClick={() => {
-              if (typeof window !== 'undefined') {
-                localStorage.removeItem('admin_session');
-              }
-              router.push('/x-factor-admin/login');
-            }}
+            onClick={handleLogout}
             className="text-muted-foreground hover:text-destructive"
           >
             <LogOut className="w-5 h-5" />

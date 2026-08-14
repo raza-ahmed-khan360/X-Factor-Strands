@@ -7,7 +7,30 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Package, Search, Phone, Mail, MapPin, Loader2, CheckCircle, Truck, Clock, XCircle, RefreshCw, Plus, Pencil, Trash2, DollarSign, Settings } from 'lucide-react';
+import {
+  Package,
+  Search,
+  Phone,
+  Mail,
+  MapPin,
+  Loader2,
+  CheckCircle,
+  Truck,
+  Clock,
+  XCircle,
+  RefreshCw,
+  Plus,
+  Pencil,
+  Trash2,
+  DollarSign,
+  Settings,
+  Image as ImageIcon,
+  ExternalLink,
+  Smartphone,
+  Wallet,
+  Building2,
+  CheckCircle2,
+} from 'lucide-react';
 import { toast } from 'sonner';
 import {
   fetchAdminOrdersAction,
@@ -27,7 +50,7 @@ export default function AdminOrdersPage() {
   const [updatingId, setUpdatingId] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
 
-  // COD Fee state
+  // Shipping Fee state
   const [globalFee, setGlobalFee] = useState<number>(5.99);
   const [savingFee, setSavingFee] = useState(false);
   const [isFeeModalOpen, setIsFeeModalOpen] = useState(false);
@@ -40,6 +63,20 @@ export default function AdminOrdersPage() {
   // Active edit target
   const [editingOrder, setEditingOrder] = useState<any | null>(null);
 
+  // Payment Proof Modal State
+  const [isProofModalOpen, setIsProofModalOpen] = useState(false);
+  const [activeProof, setActiveProof] = useState<{
+    orderNumber: string;
+    proofUrl: string;
+    transactionId?: string;
+    senderName?: string;
+    paymentMethod?: string;
+    timestamp?: string;
+    customerName?: string;
+    totalAmount?: number;
+    orderId: string;
+  } | null>(null);
+
   // Form State for Create/Edit
   const [formData, setFormData] = useState({
     orderNumber: '',
@@ -49,6 +86,7 @@ export default function AdminOrdersPage() {
     shippingAddress: '',
     city: '',
     postalCode: '',
+    paymentMethod: 'Cash App',
     status: 'pending' as OrderStatus,
     itemName: 'Semaglutide (GLP-1)',
     itemSize: '5mg',
@@ -78,17 +116,17 @@ export default function AdminOrdersPage() {
     loadOrders();
   }, []);
 
-  // Update Global COD Fee
+  // Update Global Shipping Fee
   const handleUpdateGlobalFee = async () => {
     setSavingFee(true);
     try {
       const res = await updateCodShippingFeeAction(globalFee);
       if (res.success) {
-        toast.success(`Global COD Shipping Fee updated to $${globalFee.toFixed(2)}!`);
+        toast.success(`Global Shipping Fee updated to $${globalFee.toFixed(2)}!`);
         setIsFeeModalOpen(false);
       }
     } catch (err: any) {
-      toast.error(err?.message || 'Failed to update COD Fee');
+      toast.error(err?.message || 'Failed to update Shipping Fee');
     } finally {
       setSavingFee(false);
     }
@@ -104,6 +142,7 @@ export default function AdminOrdersPage() {
       shippingAddress: '',
       city: '',
       postalCode: '',
+      paymentMethod: 'Cash App',
       status: 'pending',
       itemName: 'Semaglutide (GLP-1)',
       itemSize: '5mg',
@@ -127,6 +166,7 @@ export default function AdminOrdersPage() {
       shippingAddress: order.shipping_address || '',
       city: order.city || '',
       postalCode: order.postal_code || '',
+      paymentMethod: order.payment_method || 'Cash App',
       status: (order.status as OrderStatus) || 'pending',
       itemName: order.order_items?.[0]?.item_name || 'Research Peptide',
       itemSize: order.order_items?.[0]?.size || 'Standard',
@@ -136,6 +176,22 @@ export default function AdminOrdersPage() {
       totalAmount: Number(order.total_amount) || 0,
     });
     setIsEditOpen(true);
+  };
+
+  // Open Proof Viewer Modal
+  const openProofModal = (order: any) => {
+    setActiveProof({
+      orderNumber: order.order_number || order.id,
+      proofUrl: order.payment_proof_url,
+      transactionId: order.transaction_id,
+      senderName: order.sender_name,
+      paymentMethod: order.payment_method,
+      timestamp: order.payment_proof_timestamp,
+      customerName: order.customer_name,
+      totalAmount: Number(order.total_amount),
+      orderId: order.id,
+    });
+    setIsProofModalOpen(true);
   };
 
   // Create Order Submit
@@ -152,7 +208,7 @@ export default function AdminOrdersPage() {
         shippingAddress: formData.shippingAddress,
         city: formData.city,
         postalCode: formData.postalCode,
-        paymentMethod: 'Cash on Delivery (COD)',
+        paymentMethod: formData.paymentMethod || 'Cash App',
         status: formData.status,
         shippingFee: Number(formData.shippingFee),
         totalAmount: Number(formData.totalAmount) || (Number(formData.itemPrice) * Number(formData.itemQuantity) + Number(formData.shippingFee)),
@@ -195,6 +251,7 @@ export default function AdminOrdersPage() {
         shippingAddress: formData.shippingAddress,
         city: formData.city,
         postalCode: formData.postalCode,
+        paymentMethod: formData.paymentMethod,
         status: formData.status,
         shippingFee: Number(formData.shippingFee),
         totalAmount: Number(formData.totalAmount),
@@ -237,7 +294,7 @@ export default function AdminOrdersPage() {
     }
   };
 
-  // Dropdown Status Change Handler
+  // Status Change Handler
   const handleStatusChange = async (orderId: string, newStatus: OrderStatus) => {
     setUpdatingId(orderId);
     try {
@@ -247,6 +304,9 @@ export default function AdminOrdersPage() {
         setOrders((prev) =>
           prev.map((o) => (o.id === orderId ? { ...o, status: newStatus } : o))
         );
+        if (activeProof && activeProof.orderId === orderId) {
+          setIsProofModalOpen(false);
+        }
       } else {
         toast.error(res.error || 'Failed to update order status');
       }
@@ -264,7 +324,9 @@ export default function AdminOrdersPage() {
       (order.order_number || '').toLowerCase().includes(q) ||
       (order.customer_name || '').toLowerCase().includes(q) ||
       (order.customer_email || '').toLowerCase().includes(q) ||
-      (order.customer_phone || '').toLowerCase().includes(q)
+      (order.customer_phone || '').toLowerCase().includes(q) ||
+      (order.payment_method || '').toLowerCase().includes(q) ||
+      (order.transaction_id || '').toLowerCase().includes(q)
     );
   });
 
@@ -272,14 +334,14 @@ export default function AdminOrdersPage() {
     switch (status.toLowerCase()) {
       case 'pending':
         return {
-          label: 'Pending Confirmation',
+          label: 'Pending Verification',
           color: 'bg-amber-500/10 text-amber-400 border-amber-500/20',
           icon: <Clock className="w-3.5 h-3.5" />,
         };
       case 'confirmed':
         return {
           label: 'Confirmed',
-          color: 'bg-blue-500/10 text-blue-400 border-blue-500/20',
+          color: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
           icon: <CheckCircle className="w-3.5 h-3.5" />,
         };
       case 'on_its_way':
@@ -291,7 +353,7 @@ export default function AdminOrdersPage() {
       case 'delivered':
         return {
           label: 'Delivered',
-          color: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
+          color: 'bg-blue-500/10 text-blue-400 border-blue-500/20',
           icon: <CheckCircle className="w-3.5 h-3.5" />,
         };
       case 'cancelled':
@@ -309,30 +371,60 @@ export default function AdminOrdersPage() {
     }
   };
 
+  const getPaymentBadge = (method: string) => {
+    const m = (method || '').toLowerCase();
+    if (m.includes('cash app') || m.includes('cashapp')) {
+      return {
+        label: 'Cash App',
+        color: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30',
+        icon: <Smartphone className="w-3.5 h-3.5" />,
+      };
+    }
+    if (m.includes('venmo')) {
+      return {
+        label: 'Venmo',
+        color: 'bg-sky-500/10 text-sky-400 border-sky-500/30',
+        icon: <Wallet className="w-3.5 h-3.5" />,
+      };
+    }
+    if (m.includes('zelle')) {
+      return {
+        label: 'Zelle',
+        color: 'bg-purple-500/10 text-purple-400 border-purple-500/30',
+        icon: <Building2 className="w-3.5 h-3.5" />,
+      };
+    }
+    return {
+      label: method || 'Direct Pay',
+      color: 'bg-accent/10 text-accent border-accent/30',
+      icon: <DollarSign className="w-3.5 h-3.5" />,
+    };
+  };
+
   return (
     <div className="space-y-8">
       {/* Top Header & Search & Actions */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="text-3xl font-display font-bold text-white tracking-wide">Customer Orders</h1>
+          <h1 className="text-3xl font-display font-bold text-white tracking-wide">Customer Orders & Payment Verification</h1>
           <p className="text-muted-foreground mt-1 text-sm">
-            Manage COD orders, edit delivery fees, and automatically update customers via email.
+            Review payment screenshots, verify P2P transfers (Cash App, Venmo, Zelle), and confirm orders.
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-3 w-full sm:w-auto">
           <Button
             onClick={() => setIsFeeModalOpen(true)}
             variant="outline"
-            className="border-accent/40 text-accent hover:bg-accent/10 gap-2 font-semibold"
+            className="border-accent/40 text-accent hover:bg-accent/10 gap-2 font-semibold text-xs"
           >
-            <Settings className="w-4 h-4" /> COD Delivery Fee: ${globalFee.toFixed(2)}
+            <Settings className="w-4 h-4" /> Global Delivery Fee: ${globalFee.toFixed(2)}
           </Button>
 
-          <Button onClick={openCreateModal} className="bg-primary text-white hover:bg-primary/90 gap-2">
+          <Button onClick={openCreateModal} className="bg-primary text-white hover:bg-primary/90 gap-2 text-xs">
             <Plus className="w-4 h-4" /> Create Manual Order
           </Button>
 
-          <Button onClick={loadOrders} variant="outline" size="sm" className="border-border gap-2">
+          <Button onClick={loadOrders} variant="outline" size="sm" className="border-border gap-2 text-xs">
             <RefreshCw className="w-4 h-4" /> Refresh
           </Button>
         </div>
@@ -343,7 +435,7 @@ export default function AdminOrdersPage() {
         <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
         <input
           type="text"
-          placeholder="Search order #, customer name, email, phone..."
+          placeholder="Search order #, customer name, email, payment method, transaction ID..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           className="bg-background border border-border rounded-lg pl-9 pr-4 py-2 text-sm text-white focus:outline-none focus:border-accent w-full"
@@ -355,32 +447,40 @@ export default function AdminOrdersPage() {
         <CardContent className="p-0">
           {loading ? (
             <div className="p-12 text-center text-muted-foreground flex items-center justify-center gap-2">
-              <Loader2 className="w-5 h-5 animate-spin text-accent" /> Loading orders...
+              <Loader2 className="w-5 h-5 animate-spin text-accent" /> Loading customer orders...
             </div>
           ) : filteredOrders.length === 0 ? (
             <div className="p-16 text-center text-muted-foreground flex flex-col items-center">
               <Package className="w-12 h-12 mb-4 opacity-30 text-accent" />
               <p className="text-lg font-medium text-foreground">No orders found</p>
-              <p className="text-xs text-muted-foreground mt-1">Click "+ Create Manual Order" or place a COD order on shop to get started.</p>
+              <p className="text-xs text-muted-foreground mt-1">Place an order on checkout or click "+ Create Manual Order" to get started.</p>
             </div>
           ) : (
             <div className="divide-y divide-border">
               {filteredOrders.map((order) => {
                 const badge = getStatusBadge(order.status || 'pending');
+                const paymentBadge = getPaymentBadge(order.payment_method || 'Cash App');
                 const isUpdating = updatingId === order.id;
+                const hasProof = Boolean(order.payment_proof_url);
 
                 return (
                   <div key={order.id} className="p-6 hover:bg-white/[0.01] transition-colors space-y-4">
                     {/* Header Row */}
                     <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                       <div>
-                        <div className="flex items-center gap-3 mb-1">
+                        <div className="flex flex-wrap items-center gap-2.5 mb-1">
                           <span className="font-mono text-base font-bold text-white">
                             {order.order_number || `XFP-${order.id.substring(0, 8)}`}
                           </span>
-                          <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold border ${badge.color}`}>
+
+                          <span className={`inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full text-xs font-semibold border ${badge.color}`}>
                             {badge.icon}
                             {badge.label}
+                          </span>
+
+                          <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-bold border ${paymentBadge.color}`}>
+                            {paymentBadge.icon}
+                            {paymentBadge.label}
                           </span>
                         </div>
                         <p className="text-xs text-muted-foreground">
@@ -388,17 +488,39 @@ export default function AdminOrdersPage() {
                         </p>
                       </div>
 
-                      {/* Status Change Dropdown & Edit/Delete Action Buttons */}
-                      <div className="flex items-center flex-wrap gap-3">
-                        <div className="flex items-center gap-2">
-                          <span className="text-xs text-muted-foreground font-medium">Status:</span>
+                      {/* Action Buttons & Status Dropdown */}
+                      <div className="flex items-center flex-wrap gap-2.5">
+                        {/* Verify & Confirm Quick Action Button */}
+                        {order.status === 'pending' && (
+                          <Button
+                            onClick={() => handleStatusChange(order.id, 'confirmed')}
+                            disabled={isUpdating}
+                            className="bg-emerald-600 hover:bg-emerald-500 text-white h-8 text-xs font-bold gap-1.5 shadow-md shadow-emerald-900/30"
+                          >
+                            <CheckCircle2 className="w-3.5 h-3.5" /> Verify & Confirm
+                          </Button>
+                        )}
+
+                        {/* View Proof Button */}
+                        {hasProof && (
+                          <Button
+                            onClick={() => openProofModal(order)}
+                            variant="outline"
+                            size="sm"
+                            className="h-8 border-emerald-500/40 text-emerald-400 hover:bg-emerald-500/10 gap-1.5 text-xs font-semibold"
+                          >
+                            <ImageIcon className="w-3.5 h-3.5" /> View Payment Proof
+                          </Button>
+                        )}
+
+                        <div className="flex items-center gap-1.5">
                           <select
                             disabled={isUpdating}
                             value={order.status || 'pending'}
                             onChange={(e) => handleStatusChange(order.id, e.target.value as OrderStatus)}
-                            className="bg-background border border-accent/40 rounded-lg px-3 py-1.5 text-xs font-semibold text-white focus:outline-none focus:ring-1 focus:ring-accent cursor-pointer disabled:opacity-50"
+                            className="bg-background border border-accent/40 rounded-lg px-2.5 py-1.5 text-xs font-semibold text-white focus:outline-none focus:ring-1 focus:ring-accent cursor-pointer disabled:opacity-50"
                           >
-                            <option value="pending">PENDING (Confirmation)</option>
+                            <option value="pending">PENDING (Verification)</option>
                             <option value="confirmed">CONFIRMED (Processing)</option>
                             <option value="on_its_way">ON ITS WAY (Dispatched)</option>
                             <option value="delivered">DELIVERED (Completed)</option>
@@ -406,25 +528,23 @@ export default function AdminOrdersPage() {
                           </select>
                         </div>
 
-                        <div className="flex items-center gap-2">
-                          <Button
-                            onClick={() => openEditModal(order)}
-                            variant="outline"
-                            size="sm"
-                            className="h-8 border-border hover:border-accent hover:text-accent gap-1 text-xs"
-                          >
-                            <Pencil className="w-3.5 h-3.5" /> Edit
-                          </Button>
+                        <Button
+                          onClick={() => openEditModal(order)}
+                          variant="outline"
+                          size="sm"
+                          className="h-8 border-border hover:border-accent hover:text-accent gap-1 text-xs"
+                        >
+                          <Pencil className="w-3.5 h-3.5" /> Edit
+                        </Button>
 
-                          <Button
-                            onClick={() => handleDeleteOrder(order.id, order.order_number || order.id)}
-                            variant="outline"
-                            size="sm"
-                            className="h-8 border-red-500/30 text-red-400 hover:bg-red-500/10 gap-1 text-xs"
-                          >
-                            <Trash2 className="w-3.5 h-3.5" /> Delete
-                          </Button>
-                        </div>
+                        <Button
+                          onClick={() => handleDeleteOrder(order.id, order.order_number || order.id)}
+                          variant="outline"
+                          size="sm"
+                          className="h-8 border-red-500/30 text-red-400 hover:bg-red-500/10 gap-1 text-xs"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </Button>
 
                         {isUpdating && <Loader2 className="w-4 h-4 animate-spin text-accent" />}
                       </div>
@@ -433,7 +553,7 @@ export default function AdminOrdersPage() {
                     {/* Customer & Address Details */}
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-3 border-t border-border/50 text-xs">
                       <div className="space-y-1">
-                        <span className="text-muted-foreground font-semibold uppercase text-[10px]">Customer Details</span>
+                        <span className="text-muted-foreground font-semibold uppercase text-[10px]">Customer Info</span>
                         <p className="text-foreground font-semibold text-sm">{order.customer_name || 'Guest'}</p>
                         <p className="text-muted-foreground flex items-center gap-1.5">
                           <Mail className="w-3.5 h-3.5 text-accent shrink-0" /> {order.customer_email || 'No Email'}
@@ -444,7 +564,7 @@ export default function AdminOrdersPage() {
                       </div>
 
                       <div className="space-y-1">
-                        <span className="text-muted-foreground font-semibold uppercase text-[10px]">Shipping Address</span>
+                        <span className="text-muted-foreground font-semibold uppercase text-[10px]">Delivery Address</span>
                         <p className="text-foreground flex items-start gap-1.5">
                           <MapPin className="w-3.5 h-3.5 text-accent shrink-0 mt-0.5" />
                           <span>
@@ -455,11 +575,16 @@ export default function AdminOrdersPage() {
                       </div>
 
                       <div className="space-y-1 text-left md:text-right">
-                        <span className="text-muted-foreground font-semibold uppercase text-[10px]">Payment & COD Fee</span>
+                        <span className="text-muted-foreground font-semibold uppercase text-[10px]">Payment Summary</span>
                         <p className="text-accent font-bold text-base">${Number(order.total_amount || 0).toFixed(2)}</p>
                         <p className="text-muted-foreground">
-                          Delivery Fee: <b className="text-white">${Number(order.shipping_fee ?? globalFee).toFixed(2)}</b> (COD)
+                          Method: <strong className="text-white">{order.payment_method || 'Direct Pay'}</strong>
                         </p>
+                        {order.transaction_id && (
+                          <p className="text-muted-foreground font-mono text-[11px]">
+                            Ref/TxID: <span className="text-emerald-400 font-bold">{order.transaction_id}</span>
+                          </p>
+                        )}
                       </div>
                     </div>
 
@@ -485,20 +610,95 @@ export default function AdminOrdersPage() {
         </CardContent>
       </Card>
 
-      {/* UPDATE GLOBAL COD SHIPPING FEE MODAL */}
+      {/* PAYMENT PROOF MODAL VIEWER */}
+      <Dialog open={isProofModalOpen} onOpenChange={setIsProofModalOpen}>
+        <DialogContent className="sm:max-w-2xl bg-card border-border text-foreground">
+          <DialogHeader>
+            <DialogTitle className="text-xl font-display font-bold flex items-center justify-between">
+              <span className="flex items-center gap-2">
+                <ImageIcon className="w-5 h-5 text-emerald-400" /> Payment Screenshot Proof
+              </span>
+              <span className="font-mono text-sm text-accent">#{activeProof?.orderNumber}</span>
+            </DialogTitle>
+          </DialogHeader>
+
+          {activeProof && (
+            <div className="space-y-4 pt-2">
+              <div className="grid grid-cols-2 gap-4 text-xs bg-background p-3 rounded-lg border border-border">
+                <div>
+                  <span className="text-muted-foreground block text-[10px] uppercase font-bold">Customer</span>
+                  <strong className="text-white text-sm">{activeProof.customerName}</strong>
+                </div>
+                <div>
+                  <span className="text-muted-foreground block text-[10px] uppercase font-bold">Total Amount Due</span>
+                  <strong className="text-accent text-sm">${activeProof.totalAmount?.toFixed(2)}</strong>
+                </div>
+                <div>
+                  <span className="text-muted-foreground block text-[10px] uppercase font-bold">Payment Method</span>
+                  <strong className="text-white">{activeProof.paymentMethod}</strong>
+                </div>
+                <div>
+                  <span className="text-muted-foreground block text-[10px] uppercase font-bold">Transaction / Ref ID</span>
+                  <strong className="text-emerald-400 font-mono">{activeProof.transactionId || 'Not provided'}</strong>
+                </div>
+              </div>
+
+              {/* Image Screenshot Box */}
+              <div className="border border-border rounded-xl bg-background/80 overflow-hidden max-h-[420px] flex items-center justify-center p-2">
+                {activeProof.proofUrl ? (
+                  <img
+                    src={activeProof.proofUrl}
+                    alt="Payment Screenshot"
+                    className="max-h-[400px] w-auto object-contain rounded-lg shadow-lg"
+                  />
+                ) : (
+                  <div className="p-8 text-center text-muted-foreground text-xs">No screenshot image found.</div>
+                )}
+              </div>
+
+              <div className="flex items-center justify-between pt-2">
+                {activeProof.proofUrl && (
+                  <a
+                    href={activeProof.proofUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-xs text-accent hover:underline inline-flex items-center gap-1.5 font-medium"
+                  >
+                    Open Full Image in New Tab <ExternalLink className="w-3.5 h-3.5" />
+                  </a>
+                )}
+
+                <div className="flex items-center gap-3 ml-auto">
+                  <Button variant="outline" onClick={() => setIsProofModalOpen(false)}>
+                    Close
+                  </Button>
+                  <Button
+                    onClick={() => handleStatusChange(activeProof.orderId, 'confirmed')}
+                    className="bg-emerald-600 hover:bg-emerald-500 text-white font-bold gap-1.5"
+                  >
+                    <CheckCircle2 className="w-4 h-4" /> Approve & Confirm Order
+                  </Button>
+                </div>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+
+      {/* UPDATE GLOBAL SHIPPING FEE MODAL */}
       <Dialog open={isFeeModalOpen} onOpenChange={setIsFeeModalOpen}>
         <DialogContent className="sm:max-w-md bg-card border-border text-foreground">
           <DialogHeader>
             <DialogTitle className="text-xl font-display font-bold flex items-center gap-2">
-              <DollarSign className="w-5 h-5 text-accent" /> COD Shipping Fee Settings
+              <DollarSign className="w-5 h-5 text-accent" /> Shipping Fee Settings
             </DialogTitle>
           </DialogHeader>
           <div className="space-y-4 pt-2">
             <p className="text-xs text-muted-foreground leading-relaxed">
-              Set the default Cash on Delivery (COD) shipping charge applied dynamically to all new orders during checkout.
+              Set the default delivery shipping charge applied dynamically to all new orders during checkout.
             </p>
             <div className="space-y-2">
-              <Label htmlFor="globalFeeInput">COD Shipping Charge ($)</Label>
+              <Label htmlFor="globalFeeInput">Shipping Charge ($)</Label>
               <Input
                 id="globalFeeInput"
                 type="number"
@@ -513,7 +713,7 @@ export default function AdminOrdersPage() {
                 Cancel
               </Button>
               <Button onClick={handleUpdateGlobalFee} disabled={savingFee} className="bg-primary text-white">
-                {savingFee ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Save COD Fee'}
+                {savingFee ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Save Shipping Fee'}
               </Button>
             </div>
           </div>
@@ -546,7 +746,7 @@ export default function AdminOrdersPage() {
                   onChange={(e) => setFormData({ ...formData, status: e.target.value as OrderStatus })}
                   className="w-full bg-background border border-border rounded-md px-3 py-2 text-sm text-foreground focus:outline-none focus:border-accent"
                 >
-                  <option value="pending">PENDING (Confirmation)</option>
+                  <option value="pending">PENDING (Verification)</option>
                   <option value="confirmed">CONFIRMED (Processing)</option>
                   <option value="on_its_way">ON ITS WAY (Dispatched)</option>
                   <option value="delivered">DELIVERED (Completed)</option>
@@ -579,17 +779,32 @@ export default function AdminOrdersPage() {
               </div>
             </div>
 
-            <div className="space-y-1.5">
-              <Label htmlFor="customerEmail">Customer Email</Label>
-              <Input
-                id="customerEmail"
-                type="email"
-                value={formData.customerEmail}
-                onChange={(e) => setFormData({ ...formData, customerEmail: e.target.value })}
-                required
-                placeholder="customer@example.com"
-                className="bg-background"
-              />
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-1.5">
+                <Label htmlFor="customerEmail">Customer Email</Label>
+                <Input
+                  id="customerEmail"
+                  type="email"
+                  value={formData.customerEmail}
+                  onChange={(e) => setFormData({ ...formData, customerEmail: e.target.value })}
+                  required
+                  placeholder="customer@example.com"
+                  className="bg-background"
+                />
+              </div>
+              <div className="space-y-1.5">
+                <Label htmlFor="paymentMethod">Payment Method</Label>
+                <select
+                  id="paymentMethod"
+                  value={formData.paymentMethod}
+                  onChange={(e) => setFormData({ ...formData, paymentMethod: e.target.value })}
+                  className="w-full bg-background border border-border rounded-md px-3 py-2 text-sm text-foreground focus:outline-none focus:border-accent"
+                >
+                  <option value="Cash App">Cash App</option>
+                  <option value="Venmo">Venmo</option>
+                  <option value="Zelle">Zelle</option>
+                </select>
+              </div>
             </div>
 
             <div className="space-y-1.5">
@@ -631,7 +846,7 @@ export default function AdminOrdersPage() {
 
             {/* Item & Shipping Fee Controls */}
             <div className="p-4 bg-background border border-border rounded-xl space-y-3">
-              <Label className="text-xs font-bold uppercase tracking-wider text-accent">Order Item & COD Charges</Label>
+              <Label className="text-xs font-bold uppercase tracking-wider text-accent">Order Item & Charges</Label>
               <div className="grid grid-cols-3 gap-3">
                 <div className="col-span-2 space-y-1">
                   <Label htmlFor="itemName" className="text-xs">Product Name</Label>
@@ -674,7 +889,7 @@ export default function AdminOrdersPage() {
                   />
                 </div>
                 <div className="space-y-1">
-                  <Label htmlFor="shippingFee" className="text-xs">COD Fee ($)</Label>
+                  <Label htmlFor="shippingFee" className="text-xs">Shipping Fee ($)</Label>
                   <Input
                     id="shippingFee"
                     type="number"
@@ -723,7 +938,7 @@ export default function AdminOrdersPage() {
       <Dialog open={isEditOpen} onOpenChange={setIsEditOpen}>
         <DialogContent className="sm:max-w-xl bg-card border-border text-foreground">
           <DialogHeader>
-            <DialogTitle className="text-2xl font-display font-bold">Edit Order & COD Fee</DialogTitle>
+            <DialogTitle className="text-2xl font-display font-bold">Edit Order</DialogTitle>
           </DialogHeader>
           <form onSubmit={handleEditSubmit} className="space-y-4 pt-2">
             <div className="grid grid-cols-2 gap-4">
@@ -749,16 +964,31 @@ export default function AdminOrdersPage() {
               </div>
             </div>
 
-            <div className="space-y-1.5">
-              <Label htmlFor="editCustomerEmail">Customer Email</Label>
-              <Input
-                id="editCustomerEmail"
-                type="email"
-                value={formData.customerEmail}
-                onChange={(e) => setFormData({ ...formData, customerEmail: e.target.value })}
-                required
-                className="bg-background"
-              />
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-1.5">
+                <Label htmlFor="editCustomerEmail">Customer Email</Label>
+                <Input
+                  id="editCustomerEmail"
+                  type="email"
+                  value={formData.customerEmail}
+                  onChange={(e) => setFormData({ ...formData, customerEmail: e.target.value })}
+                  required
+                  className="bg-background"
+                />
+              </div>
+              <div className="space-y-1.5">
+                <Label htmlFor="editPaymentMethod">Payment Method</Label>
+                <select
+                  id="editPaymentMethod"
+                  value={formData.paymentMethod}
+                  onChange={(e) => setFormData({ ...formData, paymentMethod: e.target.value })}
+                  className="w-full bg-background border border-border rounded-md px-3 py-2 text-sm text-foreground focus:outline-none focus:border-accent"
+                >
+                  <option value="Cash App">Cash App</option>
+                  <option value="Venmo">Venmo</option>
+                  <option value="Zelle">Zelle</option>
+                </select>
+              </div>
             </div>
 
             <div className="space-y-1.5">
@@ -795,36 +1025,24 @@ export default function AdminOrdersPage() {
               </div>
             </div>
 
-            <div className="grid grid-cols-3 gap-4">
+            <div className="grid grid-cols-2 gap-4">
               <div className="space-y-1.5">
                 <Label htmlFor="editStatus">Status</Label>
                 <select
                   id="editStatus"
                   value={formData.status}
                   onChange={(e) => setFormData({ ...formData, status: e.target.value as OrderStatus })}
-                  className="w-full bg-background border border-border rounded-md px-3 py-2 text-xs text-foreground focus:outline-none focus:border-accent"
+                  className="w-full bg-background border border-border rounded-md px-3 py-2 text-sm text-foreground focus:outline-none focus:border-accent"
                 >
-                  <option value="pending">PENDING</option>
-                  <option value="confirmed">CONFIRMED</option>
-                  <option value="on_its_way">ON ITS WAY</option>
-                  <option value="delivered">DELIVERED</option>
+                  <option value="pending">PENDING (Verification)</option>
+                  <option value="confirmed">CONFIRMED (Processing)</option>
+                  <option value="on_its_way">ON ITS WAY (Dispatched)</option>
+                  <option value="delivered">DELIVERED (Completed)</option>
                   <option value="cancelled">CANCELLED</option>
                 </select>
               </div>
               <div className="space-y-1.5">
-                <Label htmlFor="editShippingFee">COD Fee ($)</Label>
-                <Input
-                  id="editShippingFee"
-                  type="number"
-                  step="0.01"
-                  value={formData.shippingFee}
-                  onChange={(e) => setFormData({ ...formData, shippingFee: Number(e.target.value) })}
-                  required
-                  className="bg-background font-semibold text-amber-400"
-                />
-              </div>
-              <div className="space-y-1.5">
-                <Label htmlFor="editTotalAmount">Total ($)</Label>
+                <Label htmlFor="editTotalAmount">Total Amount ($)</Label>
                 <Input
                   id="editTotalAmount"
                   type="number"

@@ -22,56 +22,56 @@ export const productData: Product[] = [
   {
     id: "semaglutide-glp1",
     name: "Semaglutide GLP1",
-    category: "Weight Management",
+    category: "Metabolic & Lipid Research",
     shortDesc: "High-quality research compound for laboratory use.",
     longDesc: "This compound is strictly for research and laboratory purposes. Please ensure proper handling and storage.",
     specs: { purity: ">99%", format: "Lyophilised", storage: "-20°C", mw: "Varies" },
     imageUrl: "/new-products/semaglutide-glp1.jpeg",
-    reviews: { rating: 5.0, count: Math.floor(Math.random() * 50) + 10 },
+    reviews: { rating: 5.0, count: 34 },
     variants: [{"size":"10mg","price":50},{"size":"20mg","price":70},{"size":"30mg","price":90}]
   },
   {
     id: "tirzepatide-glp2",
     name: "Tirzepatide (Tirz) GLP2",
-    category: "Weight Management",
+    category: "Metabolic & Lipid Research",
     shortDesc: "High-quality research compound for laboratory use.",
     longDesc: "This compound is strictly for research and laboratory purposes. Please ensure proper handling and storage.",
     specs: { purity: ">99%", format: "Lyophilised", storage: "-20°C", mw: "Varies" },
     imageUrl: "/new-products/tirzepatide-glp2.jpeg",
-    reviews: { rating: 5.0, count: Math.floor(Math.random() * 50) + 10 },
+    reviews: { rating: 5.0, count: 42 },
     variants: [{"size":"10mg","price":60},{"size":"20mg","price":100},{"size":"30mg","price":120}]
   },
   {
     id: "retatrutide-glp3",
     name: "Retatrutide (Reta) GLP3",
-    category: "Weight Management",
+    category: "Metabolic & Lipid Research",
     shortDesc: "High-quality research compound for laboratory use.",
     longDesc: "This compound is strictly for research and laboratory purposes. Please ensure proper handling and storage.",
     specs: { purity: ">99%", format: "Lyophilised", storage: "-20°C", mw: "Varies" },
     imageUrl: "/new-products/retatrutide-glp3.jpeg",
-    reviews: { rating: 5.0, count: Math.floor(Math.random() * 50) + 10 },
+    reviews: { rating: 5.0, count: 28 },
     variants: [{"size":"10mg","price":60},{"size":"20mg","price":100},{"size":"30mg","price":130}]
   },
   {
     id: "cagrilintide",
     name: "Cagrilintide",
-    category: "Weight Management",
+    category: "Metabolic & Lipid Research",
     shortDesc: "High-quality research compound for laboratory use.",
     longDesc: "This compound is strictly for research and laboratory purposes. Please ensure proper handling and storage.",
     specs: { purity: ">99%", format: "Lyophilised", storage: "-20°C", mw: "Varies" },
     imageUrl: "/new-products/cagrilintide.jpeg",
-    reviews: { rating: 5.0, count: Math.floor(Math.random() * 50) + 10 },
+    reviews: { rating: 5.0, count: 51 },
     variants: [{"size":"10mg","price":60}]
   },
   {
     id: "tesamorelin",
     name: "Tesamorelin (Tesa)",
-    category: "Weight Management",
+    category: "Metabolic & Lipid Research",
     shortDesc: "High-quality research compound for laboratory use.",
     longDesc: "This compound is strictly for research and laboratory purposes. Please ensure proper handling and storage.",
     specs: { purity: ">99%", format: "Lyophilised", storage: "-20°C", mw: "Varies" },
     imageUrl: "/new-products/tesamorelin.jpeg",
-    reviews: { rating: 5.0, count: Math.floor(Math.random() * 50) + 10 },
+    reviews: { rating: 5.0, count: 19 },
     variants: [{"size":"10mg","price":60},{"size":"20mg","price":100}]
   },
   {
@@ -82,7 +82,7 @@ export const productData: Product[] = [
     longDesc: "This compound is strictly for research and laboratory purposes. Please ensure proper handling and storage.",
     specs: { purity: ">99%", format: "Lyophilised", storage: "-20°C", mw: "Varies" },
     imageUrl: "/new-products/mots-c.jpeg",
-    reviews: { rating: 5.0, count: Math.floor(Math.random() * 50) + 10 },
+    reviews: { rating: 5.0, count: 47 },
     variants: [{"size":"10mg","price":40},{"size":"40mg","price":80}]
   },
   {
@@ -93,128 +93,128 @@ export const productData: Product[] = [
     longDesc: "This compound is strictly for research and laboratory purposes. Please ensure proper handling and storage.",
     specs: { purity: ">99%", format: "Lyophilised", storage: "-20°C", mw: "Varies" },
     imageUrl: "/new-products/sermorelin.jpeg",
-    reviews: { rating: 5.0, count: Math.floor(Math.random() * 50) + 10 },
+    reviews: { rating: 5.0, count: 23 },
     variants: [{"size":"10mg","price":60}]
   },
   {
     id: "bpc157",
     name: "BPC-157",
-    category: "Recovery",
+    category: "Tissue Regeneration & Repair",
     shortDesc: "High-quality research compound for laboratory use.",
     longDesc: "This compound is strictly for research and laboratory purposes. Please ensure proper handling and storage.",
     specs: { purity: ">99%", format: "Lyophilised", storage: "-20°C", mw: "Varies" },
     imageUrl: "/new-products/bpc157.jpeg",
-    reviews: { rating: 5.0, count: Math.floor(Math.random() * 50) + 10 },
+    reviews: { rating: 5.0, count: 38 },
     variants: [{"size":"10mg","price":50}]
   },
   {
     id: "tb-500",
     name: "TB-500",
-    category: "Recovery",
+    category: "Tissue Regeneration & Repair",
     shortDesc: "High-quality research compound for laboratory use.",
     longDesc: "This compound is strictly for research and laboratory purposes. Please ensure proper handling and storage.",
     specs: { purity: ">99%", format: "Lyophilised", storage: "-20°C", mw: "Varies" },
     imageUrl: "/new-products/tb-500.jpeg",
-    reviews: { rating: 5.0, count: Math.floor(Math.random() * 50) + 10 },
+    reviews: { rating: 5.0, count: 56 },
     variants: [{"size":"5mg","price":60}]
   },
   {
     id: "bpc157-tb500-wolverine",
     name: "BPC-157 / TB-500 Wolverine",
-    category: "Recovery",
+    category: "Tissue Regeneration & Repair",
     shortDesc: "High-quality research compound for laboratory use.",
     longDesc: "This compound is strictly for research and laboratory purposes. Please ensure proper handling and storage.",
     specs: { purity: ">99%", format: "Lyophilised", storage: "-20°C", mw: "Varies" },
     imageUrl: "/new-products/bpc157-tb500-wolverine.jpeg",
-    reviews: { rating: 5.0, count: Math.floor(Math.random() * 50) + 10 },
+    reviews: { rating: 5.0, count: 29 },
     variants: [{"size":"10mg/10mg","price":80}]
   },
   {
     id: "klow",
     name: "KLOW",
-    category: "Weight Management",
+    category: "Metabolic & Lipid Research",
     shortDesc: "High-quality research compound for laboratory use.",
     longDesc: "This compound is strictly for research and laboratory purposes. Please ensure proper handling and storage.",
     specs: { purity: ">99%", format: "Lyophilised", storage: "-20°C", mw: "Varies" },
     imageUrl: "/new-products/klow.jpeg",
-    reviews: { rating: 5.0, count: Math.floor(Math.random() * 50) + 10 },
+    reviews: { rating: 5.0, count: 44 },
     variants: [{"size":"80mg","price":80}]
   },
   {
     id: "ipamorelin",
     name: "Ipamorelin",
-    category: "Recovery",
+    category: "Tissue Regeneration & Repair",
     shortDesc: "High-quality research compound for laboratory use.",
     longDesc: "This compound is strictly for research and laboratory purposes. Please ensure proper handling and storage.",
     specs: { purity: ">99%", format: "Lyophilised", storage: "-20°C", mw: "Varies" },
     imageUrl: "/new-products/ipamorelin.jpeg",
-    reviews: { rating: 5.0, count: Math.floor(Math.random() * 50) + 10 },
+    reviews: { rating: 5.0, count: 31 },
     variants: [{"size":"10mg","price":50}]
   },
   {
     id: "cjc-1295-ipa",
     name: "CJC-1295 / Ipamorelin",
-    category: "Recovery",
+    category: "Tissue Regeneration & Repair",
     shortDesc: "High-quality research compound for laboratory use.",
     longDesc: "This compound is strictly for research and laboratory purposes. Please ensure proper handling and storage.",
     specs: { purity: ">99%", format: "Lyophilised", storage: "-20°C", mw: "Varies" },
     imageUrl: "/new-products/cjc-1295-ipa.jpeg",
-    reviews: { rating: 5.0, count: Math.floor(Math.random() * 50) + 10 },
+    reviews: { rating: 5.0, count: 26 },
     variants: [{"size":"5mg/5mg","price":60}]
   },
   {
     id: "cjc-1295-w-dac",
     name: "CJC-1295 w/ DAC",
-    category: "Performance",
+    category: "Musculoskeletal & Cellular Dynamics",
     shortDesc: "High-quality research compound for laboratory use.",
     longDesc: "This compound is strictly for research and laboratory purposes. Please ensure proper handling and storage.",
     specs: { purity: ">99%", format: "Lyophilised", storage: "-20°C", mw: "Varies" },
     imageUrl: "/new-products/cjc-1295-w-dac.jpeg",
-    reviews: { rating: 5.0, count: Math.floor(Math.random() * 50) + 10 },
+    reviews: { rating: 5.0, count: 49 },
     variants: [{"size":"5mg","price":70}]
   },
   {
     id: "cjc-1295-wo-dac",
     name: "CJC-1295 w/o DAC",
-    category: "Performance",
+    category: "Musculoskeletal & Cellular Dynamics",
     shortDesc: "High-quality research compound for laboratory use.",
     longDesc: "This compound is strictly for research and laboratory purposes. Please ensure proper handling and storage.",
     specs: { purity: ">99%", format: "Lyophilised", storage: "-20°C", mw: "Varies" },
     imageUrl: "/new-products/cjc-1295-wo-dac.jpeg",
-    reviews: { rating: 5.0, count: Math.floor(Math.random() * 50) + 10 },
+    reviews: { rating: 5.0, count: 37 },
     variants: [{"size":"10mg","price":60}]
   },
   {
     id: "igf-1-lr3",
     name: "IGF-1 LR3",
-    category: "Performance",
+    category: "Musculoskeletal & Cellular Dynamics",
     shortDesc: "High-quality research compound for laboratory use.",
     longDesc: "This compound is strictly for research and laboratory purposes. Please ensure proper handling and storage.",
     specs: { purity: ">99%", format: "Lyophilised", storage: "-20°C", mw: "Varies" },
     imageUrl: "/new-products/igf-1-lr3.jpeg",
-    reviews: { rating: 5.0, count: Math.floor(Math.random() * 50) + 10 },
+    reviews: { rating: 5.0, count: 22 },
     variants: [{"size":"1mg","price":60}]
   },
   {
     id: "hgh-191-aa",
     name: "HGH 191 AA",
-    category: "Performance",
+    category: "Musculoskeletal & Cellular Dynamics",
     shortDesc: "High-quality research compound for laboratory use.",
     longDesc: "This compound is strictly for research and laboratory purposes. Please ensure proper handling and storage.",
     specs: { purity: ">99%", format: "Lyophilised", storage: "-20°C", mw: "Varies" },
     imageUrl: "/new-products/hgh-191-aa.jpeg",
-    reviews: { rating: 5.0, count: Math.floor(Math.random() * 50) + 10 },
+    reviews: { rating: 5.0, count: 45 },
     variants: [{"size":"15iu","price":60}]
   },
   {
     id: "ghk-cu",
     name: "GHK-CU",
-    category: "Recovery",
+    category: "Tissue Regeneration & Repair",
     shortDesc: "High-quality research compound for laboratory use.",
     longDesc: "This compound is strictly for research and laboratory purposes. Please ensure proper handling and storage.",
     specs: { purity: ">99%", format: "Lyophilised", storage: "-20°C", mw: "Varies" },
     imageUrl: "/new-products/ghk-cu.jpeg",
-    reviews: { rating: 5.0, count: Math.floor(Math.random() * 50) + 10 },
+    reviews: { rating: 5.0, count: 33 },
     variants: [{"size":"100mg","price":60}]
   },
   {
@@ -225,51 +225,51 @@ export const productData: Product[] = [
     longDesc: "This compound is strictly for research and laboratory purposes. Please ensure proper handling and storage.",
     specs: { purity: ">99%", format: "Lyophilised", storage: "-20°C", mw: "Varies" },
     imageUrl: "/new-products/nad-plus.jpeg",
-    reviews: { rating: 5.0, count: Math.floor(Math.random() * 50) + 10 },
+    reviews: { rating: 5.0, count: 50 },
     variants: [{"size":"500mg","price":50}]
   },
   {
     id: "kpv",
     name: "KPV",
-    category: "Recovery",
+    category: "Tissue Regeneration & Repair",
     shortDesc: "High-quality research compound for laboratory use.",
     longDesc: "This compound is strictly for research and laboratory purposes. Please ensure proper handling and storage.",
     specs: { purity: ">99%", format: "Lyophilised", storage: "-20°C", mw: "Varies" },
     imageUrl: "/new-products/kpv.jpeg",
-    reviews: { rating: 5.0, count: Math.floor(Math.random() * 50) + 10 },
+    reviews: { rating: 5.0, count: 27 },
     variants: [{"size":"10mg","price":50}]
   },
   {
     id: "5-amino-1mq",
     name: "5 Amino 1MQ",
-    category: "Weight Management",
+    category: "Metabolic & Lipid Research",
     shortDesc: "High-quality research compound for laboratory use.",
     longDesc: "This compound is strictly for research and laboratory purposes. Please ensure proper handling and storage.",
     specs: { purity: ">99%", format: "Lyophilised", storage: "-20°C", mw: "Varies" },
     imageUrl: "/new-products/5-amino-1mq.jpeg",
-    reviews: { rating: 5.0, count: Math.floor(Math.random() * 50) + 10 },
+    reviews: { rating: 5.0, count: 41 },
     variants: [{"size":"10mg","price":80}]
   },
   {
     id: "aod-9604",
     name: "AOD-9604",
-    category: "Weight Management",
+    category: "Metabolic & Lipid Research",
     shortDesc: "High-quality research compound for laboratory use.",
     longDesc: "This compound is strictly for research and laboratory purposes. Please ensure proper handling and storage.",
     specs: { purity: ">99%", format: "Lyophilised", storage: "-20°C", mw: "Varies" },
     imageUrl: "/new-products/aod-9604.jpeg",
-    reviews: { rating: 5.0, count: Math.floor(Math.random() * 50) + 10 },
+    reviews: { rating: 5.0, count: 35 },
     variants: [{"size":"10mg","price":100}]
   },
   {
     id: "ara-290",
     name: "ARA-290",
-    category: "Recovery",
+    category: "Tissue Regeneration & Repair",
     shortDesc: "High-quality research compound for laboratory use.",
     longDesc: "This compound is strictly for research and laboratory purposes. Please ensure proper handling and storage.",
     specs: { purity: ">99%", format: "Lyophilised", storage: "-20°C", mw: "Varies" },
     imageUrl: "/new-products/ara-290.jpeg",
-    reviews: { rating: 5.0, count: Math.floor(Math.random() * 50) + 10 },
+    reviews: { rating: 5.0, count: 48 },
     variants: [{"size":"10mg","price":50},{"size":"16mg","price":80}]
   },
   {
@@ -280,7 +280,7 @@ export const productData: Product[] = [
     longDesc: "This compound is strictly for research and laboratory purposes. Please ensure proper handling and storage.",
     specs: { purity: ">99%", format: "Lyophilised", storage: "-20°C", mw: "Varies" },
     imageUrl: "/new-products/ss-31.jpeg",
-    reviews: { rating: 5.0, count: Math.floor(Math.random() * 50) + 10 },
+    reviews: { rating: 5.0, count: 30 },
     variants: [{"size":"10mg","price":60}]
   },
   {
@@ -291,18 +291,18 @@ export const productData: Product[] = [
     longDesc: "This compound is strictly for research and laboratory purposes. Please ensure proper handling and storage.",
     specs: { purity: ">99%", format: "Lyophilised", storage: "-20°C", mw: "Varies" },
     imageUrl: "/new-products/epithalon.jpeg",
-    reviews: { rating: 5.0, count: Math.floor(Math.random() * 50) + 10 },
+    reviews: { rating: 5.0, count: 46 },
     variants: [{"size":"10mg","price":40}]
   },
   {
     id: "pt-141",
     name: "PT-141",
-    category: "Performance",
+    category: "Musculoskeletal & Cellular Dynamics",
     shortDesc: "High-quality research compound for laboratory use.",
     longDesc: "This compound is strictly for research and laboratory purposes. Please ensure proper handling and storage.",
     specs: { purity: ">99%", format: "Lyophilised", storage: "-20°C", mw: "Varies" },
     imageUrl: "/new-products/pt-141.jpeg",
-    reviews: { rating: 5.0, count: Math.floor(Math.random() * 50) + 10 },
+    reviews: { rating: 5.0, count: 25 },
     variants: [{"size":"10mg","price":40}]
   },
   {
@@ -313,84 +313,84 @@ export const productData: Product[] = [
     longDesc: "This compound is strictly for research and laboratory purposes. Please ensure proper handling and storage.",
     specs: { purity: ">99%", format: "Lyophilised", storage: "-20°C", mw: "Varies" },
     imageUrl: "/new-products/dsip.jpeg",
-    reviews: { rating: 5.0, count: Math.floor(Math.random() * 50) + 10 },
+    reviews: { rating: 5.0, count: 39 },
     variants: [{"size":"5mg","price":40}]
   },
   {
     id: "melanotan-2",
     name: "Melanotan 2",
-    category: "Performance",
+    category: "Musculoskeletal & Cellular Dynamics",
     shortDesc: "High-quality research compound for laboratory use.",
     longDesc: "This compound is strictly for research and laboratory purposes. Please ensure proper handling and storage.",
     specs: { purity: ">99%", format: "Lyophilised", storage: "-20°C", mw: "Varies" },
     imageUrl: "/new-products/melanotan-2.jpeg",
-    reviews: { rating: 5.0, count: Math.floor(Math.random() * 50) + 10 },
+    reviews: { rating: 5.0, count: 53 },
     variants: [{"size":"10mg","price":50}]
   },
   {
     id: "lipo-c",
     name: "Lipo-C",
-    category: "Weight Management",
+    category: "Metabolic & Lipid Research",
     shortDesc: "High-quality research compound for laboratory use.",
     longDesc: "This compound is strictly for research and laboratory purposes. Please ensure proper handling and storage.",
     specs: { purity: ">99%", format: "Lyophilised", storage: "-20°C", mw: "Varies" },
     imageUrl: "/new-products/lipo-c.jpeg",
-    reviews: { rating: 5.0, count: Math.floor(Math.random() * 50) + 10 },
+    reviews: { rating: 5.0, count: 21 },
     variants: [{"size":"10mg","price":30}]
   },
   {
     id: "bac-water",
     name: "BAC Water",
-    category: "Recovery",
+    category: "Tissue Regeneration & Repair",
     shortDesc: "High-quality research compound for laboratory use.",
     longDesc: "This compound is strictly for research and laboratory purposes. Please ensure proper handling and storage.",
     specs: { purity: ">99%", format: "Lyophilised", storage: "-20°C", mw: "Varies" },
     imageUrl: "/new-products/bac-water.jpeg",
-    reviews: { rating: 5.0, count: Math.floor(Math.random() * 50) + 10 },
+    reviews: { rating: 5.0, count: 43 },
     variants: [{"size":"3mL","price":5},{"size":"5mL","price":8},{"size":"10mL","price":12}]
   },
   {
     id: "kisspeptin",
     name: "Kisspeptin",
-    category: "Performance",
+    category: "Musculoskeletal & Cellular Dynamics",
     shortDesc: "High-quality research compound for laboratory use.",
     longDesc: "This compound is strictly for research and laboratory purposes. Please ensure proper handling and storage.",
     specs: { purity: ">99%", format: "Lyophilised", storage: "-20°C", mw: "Varies" },
     imageUrl: "/new-products/kisspeptin.jpeg",
-    reviews: { rating: 5.0, count: Math.floor(Math.random() * 50) + 10 },
+    reviews: { rating: 5.0, count: 36 },
     variants: [{"size":"10mg","price":60}]
   },
   {
     id: "glow-pro",
     name: "GLOW PRO",
-    category: "Recovery",
+    category: "Tissue Regeneration & Repair",
     shortDesc: "High-quality research compound for laboratory use.",
     longDesc: "This compound is strictly for research and laboratory purposes. Please ensure proper handling and storage.",
     specs: { purity: ">99%", format: "Lyophilised", storage: "-20°C", mw: "Varies" },
     imageUrl: "/new-products/glow-pro.jpeg",
-    reviews: { rating: 5.0, count: Math.floor(Math.random() * 50) + 10 },
+    reviews: { rating: 5.0, count: 52 },
     variants: [{"size":"70mg","price":100}]
   },
   {
     id: "slu-pp-332",
     name: "SLU-PP-332",
-    category: "Performance",
+    category: "Musculoskeletal & Cellular Dynamics",
     shortDesc: "High-quality research compound for laboratory use.",
     longDesc: "This compound is strictly for research and laboratory purposes. Please ensure proper handling and storage.",
     specs: { purity: ">99%", format: "Lyophilised", storage: "-20°C", mw: "Varies" },
     imageUrl: "/new-products/slu-pp-332.jpeg",
-    reviews: { rating: 5.0, count: Math.floor(Math.random() * 50) + 10 },
+    reviews: { rating: 5.0, count: 20 },
     variants: [{"size":"50mg","price":120}]
   },
   {
     id: "retatrutide",
     name: "Retatrutide",
-    category: "Weight Management",
+    category: "Metabolic & Lipid Research",
     shortDesc: "High-quality research compound for laboratory use.",
     longDesc: "This compound is strictly for research and laboratory purposes. Please ensure proper handling and storage.",
     specs: { purity: ">99%", format: "Lyophilised", storage: "-20°C", mw: "Varies" },
     imageUrl: "/new-products/retatrutide.jpeg",
-    reviews: { rating: 5.0, count: Math.floor(Math.random() * 50) + 10 },
+    reviews: { rating: 5.0, count: 40 },
     variants: [{"size":"20mg","price":100}]
   }
 ];
@@ -419,9 +419,9 @@ export function ProductCard({ product }: { product: Product }) {
         <div className="mb-4 flex-grow">
           <div className="flex items-center justify-between mb-2">
             <span className="text-xs font-display uppercase tracking-wider text-accent font-semibold">{product.category}</span>
-            <div className="flex items-center gap-1 text-yellow-500">
-              <Star className="w-3.5 h-3.5 fill-current" />
-              <span className="text-xs font-medium text-muted-foreground" suppressHydrationWarning={true}>{product.reviews.rating} ({product.reviews.count})</span>
+            <div className="flex items-center gap-1.5 px-2 py-0.5 rounded bg-accent/10 border border-accent/20 text-[11px] font-medium text-accent">
+              <span className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse" />
+              <span>HPLC ≥99% Purity</span>
             </div>
           </div>
           <h3 className="text-xl font-display font-semibold text-foreground leading-tight mb-2 group-hover:text-accent transition-colors">{product.name}</h3>

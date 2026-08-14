@@ -3,6 +3,7 @@ import * as React from 'react';
 import { Header } from '@/components/shared/Header';
 import { Footer } from '@/components/shared/Footer';
 import { Product, ProductCard } from '@/components/products/ProductData';
+import { ProductGridSkeleton } from '@/components/products/ProductCardSkeleton';
 import Link from 'next/link';
 
 import { Search, Filter } from 'lucide-react';
@@ -166,9 +167,7 @@ export default function ShopPage() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
               {loading ? (
-                <div className="col-span-full py-20 text-center text-muted-foreground">
-                  Loading products...
-                </div>
+                <ProductGridSkeleton count={9} />
               ) : filteredProducts.length === 0 ? (
                 <div className="col-span-full py-20 text-center text-muted-foreground">
                   No products found matching your filters.

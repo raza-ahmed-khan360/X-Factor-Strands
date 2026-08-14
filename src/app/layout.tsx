@@ -24,17 +24,22 @@ export const metadata: Metadata = {
 };
 
 import WhatsAppWrapper from "@/components/WhatsAppWrapper";
+import { ResearchGateModal } from "@/components/shared/ResearchGateModal";
+import { Toaster } from "sonner";
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      suppressHydrationWarning={true}
     >
-      <body className="min-h-full flex flex-col">
+      <body className="min-h-full flex flex-col" suppressHydrationWarning={true}>
         <CustomCursor />
         {children}
         <WhatsAppWrapper />
+        <ResearchGateModal />
+        <Toaster position="top-right" richColors closeButton theme="dark" />
       </body>
     </html>
   );

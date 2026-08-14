@@ -1,3 +1,4 @@
+"use client";
 import * as React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -14,6 +15,7 @@ export function Header() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const totalItems = useCartStore((state) => state.getTotalItems());
 
   useEffect(() => {
@@ -80,8 +82,8 @@ export function Header() {
             </button>
             
             <Link href="/checkout" className="relative text-secondary hover:text-accent transition-colors group p-2">
-              <ShoppingCart className="w-5 h-5" />
-              {totalItems > 0 && (
+              <ShoppingCart className="w-5 h-5"/>
+              {mounted && totalItems > 0 && (
                 <span className="absolute top-0 right-0 -mt-1 -mr-1 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-primary-foreground group-hover:bg-accent transition-colors">
                   {totalItems}
                 </span>
@@ -106,7 +108,7 @@ export function Header() {
             </button>
             <Link href="/checkout" className="relative text-foreground hover:text-accent transition-colors p-2">
               <ShoppingCart className="w-5 h-5" />
-              {totalItems > 0 && (
+              {mounted && totalItems > 0 && (
                 <span className="absolute top-0 right-0 -mt-1 -mr-1 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-primary-foreground">
                   {totalItems}
                 </span>

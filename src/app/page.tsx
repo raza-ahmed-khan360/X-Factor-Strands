@@ -8,6 +8,7 @@ import { Footer } from '@/components/shared/Footer';
 import { TheStrand } from '@/components/shared/TheStrand';
 import { VialIllustration } from '@/components/illustrations/VialIllustration';
 import { Product, ProductCard } from '@/components/products/ProductData';
+import { ProductGridSkeleton } from '@/components/products/ProductCardSkeleton';
 import { FlaskConical, Microscope, Zap, Headset, ShieldCheck, ArrowRight, CheckCircle2, ChevronDown, Activity, Brain, Moon, Dumbbell, Droplet, Battery } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
@@ -184,9 +185,9 @@ export default function HomePage() {
             
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {[
-                { title: 'Weight Management', icon: Activity, desc: 'Peptide compounds studied for metabolic pathways and lipid regulation in laboratory settings.' },
-                { title: 'Recovery Research', icon: Dumbbell, desc: 'Research compounds exploring tissue repair mechanisms and cellular regeneration processes.' },
-                { title: 'Performance', icon: Zap, desc: 'Laboratory peptides studied for their effects on muscular and physical performance markers.' },
+                { title: 'Metabolic & Lipid Research', icon: Activity, desc: 'Peptide compounds studied for metabolic pathways, insulin sensitivity, and lipid regulation in laboratory settings.' },
+                { title: 'Tissue Regeneration & Repair', icon: Dumbbell, desc: 'Research compounds exploring extracellular matrix restoration, tissue repair, and cellular regeneration mechanisms.' },
+                { title: 'Musculoskeletal & Cellular Dynamics', icon: Zap, desc: 'Laboratory peptides investigated for amino acid transport, muscular peptide signalling, and cellular resilience.' },
                 { title: 'Sleep Research', icon: Moon, desc: 'Compounds investigated for their role in circadian rhythm regulation and sleep architecture.' },
                 { title: 'Focus & Cognitive', icon: Brain, desc: 'Peptides studied for neurological pathways associated with cognitive function and focus.' },
                 { title: 'Energy Research', icon: Battery, desc: 'Research compounds explored for their role in mitochondrial function and energy metabolism.' },
@@ -322,9 +323,7 @@ export default function HomePage() {
             
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {loading ? (
-                <div className="col-span-full text-center text-muted-foreground py-12">
-                  Loading featured products...
-                </div>
+                <ProductGridSkeleton count={3} />
               ) : (
                 products.map((product) => (
                   <motion.div variants={itemVariants} key={product.id}>

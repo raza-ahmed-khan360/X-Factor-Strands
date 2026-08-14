@@ -2,6 +2,7 @@
 
 import { createClient } from '@supabase/supabase-js';
 import { sendOrderStatusEmail } from '@/lib/email';
+import { sanitizeString, sanitizeEmail, sanitizePhone, sanitizeOrderNumber, sanitizeNumber, sanitizeTransactionId } from '@/lib/security';
 
 // Global in-memory fallback store for orders placed during runtime
 let globalOrdersStore: any[] = [];
@@ -38,6 +39,13 @@ export interface CreateOrderPayload {
   items: { name: string; size: string; quantity: number; price: number }[];
 }
 
+export interface AttachPaymentProofPayload {
+  orderNumber: string;
+  proofUrl: string;
+  transactionId?: string;
+  senderName?: string;
+}
+
 export async function getCodShippingFeeAction(): Promise<{ success: boolean; fee: number }> {
   return { success: true, fee: globalCodShippingFee };
 }
@@ -47,7 +55,37 @@ export async function updateCodShippingFeeAction(newFee: number): Promise<{ succ
   return { success: true, fee: globalCodShippingFee };
 }
 
-export async function createOrderAction(payload: CreateOrderPayload): Promise<{ success: boolean; orderNumber?: string; error?: string }> {
+export async function createOrderAction(rawPayload: CreateOrderPayload) {
+  let cleanEmail = '';
+  try {
+    cleanEmail = sanitizeEmail(rawPayload.customerEmail);
+  } catch {
+    cleanEmail = (rawPayload.customerEmail || '').slice(0, 100);
+  }
+
+  const payload: CreateOrderPayload = {
+    orderNumber: sanitizeOrderNumber(rawPayload.orderNumber) || `XFP-${Math.floor(100000 + Math.random() * 900000)}`,
+    customerName: sanitizeString(rawPayload.customerName, 120),
+    customerEmail: cleanEmail,
+    customerPhone: sanitizePhone(rawPayload.customerPhone),
+    shippingAddress: sanitizeString(rawPayload.shippingAddress, 250),
+    city: sanitizeString(rawPayload.city, 80),
+    postalCode: sanitizeString(rawPayload.postalCode, 20),
+    paymentMethod: sanitizeString(rawPayload.paymentMethod, 50) || 'Cash App',
+    shippingFee: sanitizeNumber(rawPayload.shippingFee, 0, 500, 5.99),
+    totalAmount: sanitizeNumber(rawPayload.totalAmount, 0, 100000, 0),
+    status: rawPayload.status || 'pending',
+    items: (rawPayload.items || []).map((item) => ({
+      name: sanitizeString(item.name, 120),
+      size: sanitizeString(item.size, 30),
+      quantity: Math.max(1, Math.min(100, Math.floor(Number(item.quantity) || 1))),
+      price: sanitizeNumber(item.price, 0, 10000, 0),
+    })),
+  };
+  return _createOrderActionInternal(payload);
+}
+
+async function _createOrderActionInternal(payload: CreateOrderPayload): Promise<{ success: boolean; orderNumber?: string; error?: string }> {
   const supabase = getAdminSupabase();
 
   const newOrderObj = {
@@ -59,7 +97,7 @@ export async function createOrderAction(payload: CreateOrderPayload): Promise<{ 
     shipping_address: payload.shippingAddress,
     city: payload.city,
     postal_code: payload.postalCode,
-    payment_method: payload.paymentMethod || 'Cash on Delivery (COD)',
+    payment_method: payload.paymentMethod || 'Cash App',
     shipping_fee: payload.shippingFee ?? globalCodShippingFee,
     status: payload.status || 'pending',
     total_amount: payload.totalAmount,
@@ -88,7 +126,7 @@ export async function createOrderAction(payload: CreateOrderPayload): Promise<{ 
         shipping_address: payload.shippingAddress,
         city: payload.city,
         postal_code: payload.postalCode,
-        payment_method: payload.paymentMethod || 'Cash on Delivery (COD)',
+        payment_method: payload.paymentMethod || 'Cash App',
         status: payload.status || 'pending',
         total_amount: payload.totalAmount,
       })
@@ -118,6 +156,7 @@ export async function createOrderAction(payload: CreateOrderPayload): Promise<{ 
       status: (payload.status as any) || 'pending',
       totalAmount: payload.totalAmount,
       items: payload.items,
+      paymentMethod: payload.paymentMethod,
     });
   } catch (emailErr) {
     console.error('Initial customer email error:', emailErr);
@@ -135,6 +174,7 @@ export async function createOrderAction(payload: CreateOrderPayload): Promise<{ 
       city: payload.city,
       postalCode: payload.postalCode,
       totalAmount: payload.totalAmount,
+      paymentMethod: payload.paymentMethod,
       items: payload.items,
     });
   } catch (adminAlertErr) {
@@ -142,6 +182,57 @@ export async function createOrderAction(payload: CreateOrderPayload): Promise<{ 
   }
 
   return { success: true, orderNumber: payload.orderNumber };
+}
+
+export async function attachPaymentProofAction(payload: AttachPaymentProofPayload): Promise<{ success: boolean; error?: string }> {
+  const supabase = getAdminSupabase();
+  const timestamp = new Date().toISOString();
+
+  // 1. Update in-memory store
+  const target = globalOrdersStore.find(
+    (o) => o.order_number === payload.orderNumber || o.id === payload.orderNumber
+  );
+
+  if (target) {
+    target.payment_proof_url = payload.proofUrl;
+    target.transaction_id = payload.transactionId || target.transaction_id;
+    target.sender_name = payload.senderName || target.sender_name;
+    target.payment_proof_timestamp = timestamp;
+  }
+
+  // 2. Update Supabase DB
+  try {
+    await supabase
+      .from('orders')
+      .update({
+        payment_proof_url: payload.proofUrl,
+        transaction_id: payload.transactionId || null,
+        sender_name: payload.senderName || null,
+        payment_proof_timestamp: timestamp,
+      })
+      .eq('order_number', payload.orderNumber);
+  } catch (err: any) {
+    console.warn('DB payment proof update error:', err?.message);
+  }
+
+  // 3. Trigger Admin Alert Email
+  try {
+    const { sendAdminPaymentProofAlertEmail } = await import('@/lib/email');
+    await sendAdminPaymentProofAlertEmail({
+      orderNumber: payload.orderNumber,
+      customerName: target?.customer_name || 'Customer',
+      customerEmail: target?.customer_email || 'customer@example.com',
+      paymentMethod: target?.payment_method || 'P2P Online Pay',
+      proofUrl: payload.proofUrl,
+      transactionId: payload.transactionId,
+      senderName: payload.senderName,
+      totalAmount: Number(target?.total_amount || 0),
+    });
+  } catch (emailErr) {
+    console.error('Payment proof admin alert email error:', emailErr);
+  }
+
+  return { success: true };
 }
 
 export async function updateOrderStatusAction(
@@ -187,6 +278,7 @@ export async function updateOrderStatusAction(
       customerName: targetOrder.customer_name || 'Customer',
       status: newStatus,
       totalAmount: Number(targetOrder.total_amount),
+      paymentMethod: targetOrder.payment_method,
       items: formattedItems,
     });
   }
@@ -212,6 +304,7 @@ export async function editOrderAction(
       shipping_address: payload.shippingAddress ?? existing.shipping_address,
       city: payload.city ?? existing.city,
       postal_code: payload.postalCode ?? existing.postal_code,
+      payment_method: payload.paymentMethod ?? existing.payment_method,
       shipping_fee: payload.shippingFee ?? existing.shipping_fee,
       total_amount: payload.totalAmount ?? existing.total_amount,
       status: payload.status ?? existing.status,
@@ -229,6 +322,7 @@ export async function editOrderAction(
         ...(payload.shippingAddress ? { shipping_address: payload.shippingAddress } : {}),
         ...(payload.city ? { city: payload.city } : {}),
         ...(payload.postalCode ? { postal_code: payload.postalCode } : {}),
+        ...(payload.paymentMethod ? { payment_method: payload.paymentMethod } : {}),
         ...(payload.totalAmount ? { total_amount: payload.totalAmount } : {}),
         ...(payload.status ? { status: payload.status } : {}),
       })

@@ -1,4 +1,5 @@
 import nodemailer from 'nodemailer';
+import { escapeHtml } from '@/lib/security';
 
 export interface EmailParams {
   orderNumber: string;
@@ -6,6 +7,7 @@ export interface EmailParams {
   customerName: string;
   status: 'pending' | 'confirmed' | 'on_its_way' | 'delivered' | 'cancelled';
   totalAmount?: number;
+  paymentMethod?: string;
   items?: { name: string; size: string; quantity: number; price: number }[];
 }
 
@@ -18,7 +20,19 @@ export interface AdminAlertParams {
   city: string;
   postalCode: string;
   totalAmount: number;
+  paymentMethod?: string;
   items: { name: string; size: string; quantity: number; price: number }[];
+}
+
+export interface PaymentProofAlertParams {
+  orderNumber: string;
+  customerName: string;
+  customerEmail: string;
+  paymentMethod: string;
+  proofUrl: string;
+  transactionId?: string;
+  senderName?: string;
+  totalAmount: number;
 }
 
 export interface ContactFormParams {
@@ -30,14 +44,15 @@ export interface ContactFormParams {
 }
 
 export async function sendOrderStatusEmail(params: EmailParams) {
-  const { orderNumber, customerEmail, customerName, status, totalAmount, items } = params;
+  const { orderNumber, customerEmail, customerName, status, totalAmount, paymentMethod, items } = params;
 
-  // Environment variables for Hostinger SMTP or Resend
   const smtpHost = process.env.SMTP_HOST || 'smtp.hostinger.com';
   const smtpPort = Number(process.env.SMTP_PORT) || 465;
   const smtpUser = process.env.SMTP_USER;
   const smtpPass = process.env.SMTP_PASSWORD;
   const resendApiKey = process.env.RESEND_API_KEY;
+
+  const pMethod = paymentMethod || 'Cash App / Venmo / Zelle';
 
   let subject = '';
   let heading = '';
@@ -46,37 +61,37 @@ export async function sendOrderStatusEmail(params: EmailParams) {
 
   switch (status) {
     case 'pending':
-      subject = `Order Received: ${orderNumber} (Pending Confirmation)`;
-      heading = 'Your Order is Pending Confirmation';
-      message = 'Thank you for placing your order with X-Factor Peptides! Your Cash on Delivery order has been received and is currently being verified by our team. Please be patient while we confirm your order.';
+      subject = `Order Placed: ${orderNumber} (Pending Payment Verification)`;
+      heading = 'Your Order Has Been Created';
+      message = `Thank you for ordering with X-Factor Peptides! Your order has been registered under payment method <b>${pMethod}</b>. Please ensure you have completed payment and uploaded your payment receipt screenshot on the confirmation page so our team can verify and process your shipment.`;
       badgeColor = '#f59e0b'; // amber
       break;
 
     case 'confirmed':
-      subject = `Order Confirmed: ${orderNumber} - X-Factor Peptides`;
-      heading = 'Your Order is Confirmed!';
-      message = 'Great news! Your order has been officially verified and confirmed by our team. We are currently preparing and packaging your research compounds for dispatch.';
+      subject = `Payment Verified & Order Confirmed: ${orderNumber} - X-Factor Peptides`;
+      heading = 'Payment Verified & Order Confirmed!';
+      message = `Great news! Your payment proof for order <b>${orderNumber}</b> has been verified by our team. Your research peptides are now being packaged and prepared for immediate dispatch.`;
       badgeColor = '#10b981'; // green
       break;
 
     case 'on_its_way':
       subject = `Order Dispatched: ${orderNumber} is On Its Way!`;
-      heading = 'Your Order is On Its Way!';
-      message = 'Your parcel has been dispatched and is currently out for delivery via our courier partner. Please have the exact Cash on Delivery amount ready upon arrival.';
+      heading = 'Your Order Has Been Dispatched!';
+      message = `Your package for order <b>${orderNumber}</b> has been handed over to our express courier partner and is on its way to your specified delivery address.`;
       badgeColor = '#8b5cf6'; // purple
       break;
 
     case 'delivered':
       subject = `Order Delivered: ${orderNumber} - X-Factor Peptides`;
       heading = 'Your Order Has Been Delivered!';
-      message = 'Your Cash on Delivery order has been successfully delivered. Thank you for choosing X-Factor Peptides!';
+      message = `Your research peptides order <b>${orderNumber}</b> has been successfully delivered. Thank you for choosing X-Factor Peptides!`;
       badgeColor = '#059669'; // emerald
       break;
 
     case 'cancelled':
       subject = `Order Cancellation Notice: ${orderNumber}`;
       heading = 'Your Order Has Been Cancelled';
-      message = 'Your order has been cancelled. If you believe this was in error, please contact our support team.';
+      message = `Your order <b>${orderNumber}</b> has been cancelled. If you believe this was in error or need assistance, please contact support.`;
       badgeColor = '#ef4444'; // red
       break;
   }
@@ -129,8 +144,8 @@ export async function sendOrderStatusEmail(params: EmailParams) {
                   <td style="text-align: right; color: #f8fafc; font-weight: bold; font-family: monospace; font-size: 16px;">${orderNumber}</td>
                 </tr>
                 <tr>
-                  <td style="color: #64748b; font-size: 12px; text-transform: uppercase; padding-top: 8px;">Payment Method</td>
-                  <td style="text-align: right; color: #38bdf8; font-weight: bold; font-size: 13px; padding-top: 8px;">Cash on Delivery (COD)</td>
+                  <td style="color: #64748b; font-size: 12px; text-transform: uppercase; padding-top: 8px;">Payment Option</td>
+                  <td style="text-align: right; color: #38bdf8; font-weight: bold; font-size: 13px; padding-top: 8px;">${pMethod}</td>
                 </tr>
               </table>
 
@@ -150,7 +165,7 @@ export async function sendOrderStatusEmail(params: EmailParams) {
                 totalAmount
                   ? `
                 <div style="margin-top: 16px; border-top: 1px solid #1e293b; padding-top: 12px; text-align: right;">
-                  <span style="color: #94a3b8; font-size: 14px; margin-right: 12px;">Total Payable Cash:</span>
+                  <span style="color: #94a3b8; font-size: 14px; margin-right: 12px;">Total Payable:</span>
                   <span style="color: #38bdf8; font-size: 18px; font-weight: bold;">$${totalAmount.toFixed(2)}</span>
                 </div>
               `
@@ -159,7 +174,7 @@ export async function sendOrderStatusEmail(params: EmailParams) {
             </div>
 
             <p style="color: #64748b; font-size: 12px; line-height: 1.5; margin: 0;">
-              If you have any questions regarding your order, reply directly to this email or contact support.
+              If you have any questions regarding your order or payment verification, reply directly to this email or contact support at info@xfactorpeps.com.
             </p>
           </div>
 
@@ -228,7 +243,7 @@ export async function sendOrderStatusEmail(params: EmailParams) {
  * Send New Order Alert Email directly to Admin / Info Email Address
  */
 export async function sendAdminNewOrderAlertEmail(params: AdminAlertParams) {
-  const { orderNumber, customerName, customerEmail, customerPhone, shippingAddress, city, postalCode, totalAmount, items } = params;
+  const { orderNumber, customerName, customerEmail, customerPhone, shippingAddress, city, postalCode, totalAmount, paymentMethod, items } = params;
 
   const smtpHost = process.env.SMTP_HOST || 'smtp.hostinger.com';
   const smtpPort = Number(process.env.SMTP_PORT) || 465;
@@ -237,7 +252,8 @@ export async function sendAdminNewOrderAlertEmail(params: AdminAlertParams) {
   const adminNotifyEmail = process.env.ADMIN_NOTIFY_EMAIL || smtpUser || 'info@xfactorpeps.com';
   const resendApiKey = process.env.RESEND_API_KEY;
 
-  const subject = `🚨 NEW ORDER RECEIVED: ${orderNumber} - $${totalAmount.toFixed(2)} (COD)`;
+  const pMethod = paymentMethod || 'Direct P2P Pay';
+  const subject = `🚨 NEW ORDER RECEIVED: ${orderNumber} - $${totalAmount.toFixed(2)} (${pMethod})`;
 
   const itemsHtml = (items || [])
     .map(
@@ -265,13 +281,13 @@ export async function sendAdminNewOrderAlertEmail(params: AdminAlertParams) {
           <!-- Header -->
           <div style="background-color: #030712; padding: 20px; text-align: center; border-bottom: 1px solid #1e293b;">
             <span style="background-color: #f59e0b; color: #000; font-weight: 800; font-size: 10px; padding: 4px 10px; border-radius: 9999px; text-transform: uppercase; letter-spacing: 1px;">Admin Order Alert</span>
-            <h1 style="color: #ffffff; margin: 10px 0 0 0; font-size: 20px;">🚨 New Cash on Delivery Order!</h1>
+            <h1 style="color: #ffffff; margin: 10px 0 0 0; font-size: 20px;">🚨 New Direct Payment Order!</h1>
           </div>
 
           <!-- Body -->
           <div style="padding: 24px;">
             <p style="color: #94a3b8; font-size: 14px; margin-top: 0;">
-              A new order has just been placed on <b>X-Factor Peptides</b> website. Please review and verify in your admin dashboard.
+              A new order has just been placed on <b>X-Factor Peptides</b> using <b>${pMethod}</b>. Please wait for payment proof screenshot or verify in admin dashboard.
             </p>
 
             <!-- Customer Box -->
@@ -292,7 +308,7 @@ export async function sendAdminNewOrderAlertEmail(params: AdminAlertParams) {
                 </tr>
                 <tr>
                   <td style="color: #64748b;">Payment Method:</td>
-                  <td style="text-align: right; color: #f59e0b; font-weight: bold;">Cash on Delivery (COD)</td>
+                  <td style="text-align: right; color: #f59e0b; font-weight: bold;">${pMethod}</td>
                 </tr>
               </table>
 
@@ -301,7 +317,7 @@ export async function sendAdminNewOrderAlertEmail(params: AdminAlertParams) {
               </table>
 
               <div style="margin-top: 12px; border-top: 1px solid #1e293b; padding-top: 10px; text-align: right;">
-                <span style="color: #94a3b8; font-size: 13px; margin-right: 8px;">Total Collectable Cash:</span>
+                <span style="color: #94a3b8; font-size: 13px; margin-right: 8px;">Total Amount:</span>
                 <span style="color: #38bdf8; font-size: 16px; font-weight: bold;">$${totalAmount.toFixed(2)}</span>
               </div>
             </div>
@@ -324,10 +340,7 @@ export async function sendAdminNewOrderAlertEmail(params: AdminAlertParams) {
         host: smtpHost,
         port: smtpPort,
         secure: smtpPort === 465,
-        auth: {
-          user: smtpUser,
-          pass: smtpPass,
-        },
+        auth: { user: smtpUser, pass: smtpPass },
       });
 
       await transporter.sendMail({
@@ -367,7 +380,78 @@ export async function sendAdminNewOrderAlertEmail(params: AdminAlertParams) {
 }
 
 /**
- * Send Contact Us Form Submission Email directly to info/admin email + Auto-reply to user
+ * Send Payment Proof Alert Email to Admin when customer uploads a screenshot
+ */
+export async function sendAdminPaymentProofAlertEmail(params: PaymentProofAlertParams) {
+  const { orderNumber, customerName, customerEmail, paymentMethod, proofUrl, transactionId, senderName, totalAmount } = params;
+
+  const smtpHost = process.env.SMTP_HOST || 'smtp.hostinger.com';
+  const smtpPort = Number(process.env.SMTP_PORT) || 465;
+  const smtpUser = process.env.SMTP_USER;
+  const smtpPass = process.env.SMTP_PASSWORD;
+  const adminNotifyEmail = process.env.ADMIN_NOTIFY_EMAIL || smtpUser || 'info@xfactorpeps.com';
+
+  const subject = `📷 PAYMENT PROOF RECEIVED: Order #${orderNumber} ($${totalAmount.toFixed(2)} via ${paymentMethod})`;
+
+  const htmlContent = `
+    <!DOCTYPE html>
+    <html>
+      <head><meta charset="utf-8"></head>
+      <body style="background-color: #0b0f19; font-family: sans-serif; padding: 24px; color: #f8fafc;">
+        <div style="max-width: 600px; margin: 0 auto; background-color: #0f172a; border: 2px solid #10b981; border-radius: 16px; padding: 24px;">
+          <h2 style="color: #10b981; margin-top: 0;">📷 Payment Proof Uploaded for Verification</h2>
+          <p style="color: #94a3b8; font-size: 14px;">
+            Customer <b>${customerName}</b> (${customerEmail}) has submitted a payment receipt screenshot for order <b>${orderNumber}</b>.
+          </p>
+
+          <div style="background-color: #030712; border: 1px solid #1e293b; border-radius: 12px; padding: 16px; margin: 16px 0; font-size: 13px;">
+            <p style="margin: 4px 0; color: #ffffff;"><b>Order #:</b> ${orderNumber}</p>
+            <p style="margin: 4px 0; color: #ffffff;"><b>Payment Method:</b> ${paymentMethod}</p>
+            <p style="margin: 4px 0; color: #ffffff;"><b>Total Amount:</b> $${totalAmount.toFixed(2)}</p>
+            <p style="margin: 4px 0; color: #ffffff;"><b>Transaction / Ref ID:</b> ${transactionId || 'Not specified'}</p>
+            <p style="margin: 4px 0; color: #ffffff;"><b>Sender Name:</b> ${senderName || 'Not specified'}</p>
+          </div>
+
+          <div style="text-align: center; margin-top: 24px;">
+            <a href="http://localhost:3000/x-factor-admin/orders" style="display: inline-block; background-color: #10b981; color: #000; font-weight: bold; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-size: 14px;">
+              Review Screenshot in Admin Dashboard
+            </a>
+          </div>
+        </div>
+      </body>
+    </html>
+  `;
+
+  if (smtpUser && smtpPass) {
+    try {
+      const transporter = nodemailer.createTransport({
+        host: smtpHost,
+        port: smtpPort,
+        secure: smtpPort === 465,
+        auth: { user: smtpUser, pass: smtpPass },
+      });
+
+      await transporter.sendMail({
+        from: `"X-Factor Payment Proofs" <${smtpUser}>`,
+        to: adminNotifyEmail,
+        subject,
+        html: htmlContent,
+      });
+
+      console.log(`[Admin Payment Proof Alert Sent] Alert sent to ${adminNotifyEmail} for order ${orderNumber}`);
+      return { success: true };
+    } catch (err: any) {
+      console.error('[Payment Proof Alert Error]', err?.message || err);
+      return { success: false, error: err?.message };
+    }
+  }
+
+  console.log(`[Admin Payment Proof Alert Simulated] To: ${adminNotifyEmail} | Subject: ${subject}`);
+  return { success: true, simulated: true };
+}
+
+/**
+ * Send Contact Us Form Submission Email
  */
 export async function sendContactFormEmail(params: ContactFormParams) {
   const { firstName, lastName, email, subject, message } = params;
@@ -405,13 +489,9 @@ export async function sendContactFormEmail(params: ContactFormParams) {
         host: smtpHost,
         port: smtpPort,
         secure: smtpPort === 465,
-        auth: {
-          user: smtpUser,
-          pass: smtpPass,
-        },
+        auth: { user: smtpUser, pass: smtpPass },
       });
 
-      // 1. Send to Admin/Info email
       await transporter.sendMail({
         from: `"X-Factor Contact Form" <${smtpUser}>`,
         to: adminNotifyEmail,
@@ -420,7 +500,6 @@ export async function sendContactFormEmail(params: ContactFormParams) {
         html: adminHtml,
       });
 
-      // 2. Send Auto-Reply to Visitor
       await transporter.sendMail({
         from: `"X-Factor Peptides" <${smtpUser}>`,
         to: email,
@@ -438,7 +517,6 @@ export async function sendContactFormEmail(params: ContactFormParams) {
         `,
       });
 
-      console.log(`[Contact Form Email Sent] Inquiry from ${email} sent to ${adminNotifyEmail}`);
       return { success: true };
     } catch (err: any) {
       console.error('[Contact Form Email Error]', err?.message || err);
@@ -447,5 +525,45 @@ export async function sendContactFormEmail(params: ContactFormParams) {
   }
 
   console.log(`[Contact Form Simulated] To: ${adminNotifyEmail} | Subject: ${emailSubject}`);
+  return { success: true, simulated: true };
+}
+
+export async function sendNewsletterSubscriptionEmail(subscriberEmail: string) {
+  const smtpHost = process.env.SMTP_HOST || 'smtp.hostinger.com';
+  const smtpPort = Number(process.env.SMTP_PORT) || 465;
+  const smtpUser = process.env.SMTP_USER;
+  const smtpPass = process.env.SMTP_PASSWORD;
+  const adminNotifyEmail = process.env.ADMIN_NOTIFY_EMAIL || smtpUser || 'info@xfactorpeps.com';
+
+  if (smtpUser && smtpPass) {
+    try {
+      const transporter = nodemailer.createTransport({
+        host: smtpHost,
+        port: smtpPort,
+        secure: smtpPort === 465,
+        auth: { user: smtpUser, pass: smtpPass },
+      });
+
+      await transporter.sendMail({
+        from: `"X-Factor Peptides" <${smtpUser}>`,
+        to: subscriberEmail,
+        subject: 'Welcome to X-Factor Peptides — Research Publications & Compound Updates',
+        html: `Subscribed successfully.`,
+      });
+
+      await transporter.sendMail({
+        from: `"X-Factor Website" <${smtpUser}>`,
+        to: adminNotifyEmail,
+        subject: `📬 New Newsletter Subscriber: ${subscriberEmail}`,
+        html: `New subscriber: ${subscriberEmail}`,
+      });
+
+      return { success: true };
+    } catch (err: any) {
+      console.error('[Newsletter Email Error]', err?.message || err);
+      return { success: false, error: err?.message };
+    }
+  }
+
   return { success: true, simulated: true };
 }

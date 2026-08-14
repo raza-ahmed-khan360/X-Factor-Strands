@@ -7,8 +7,9 @@ import { Footer } from '@/components/shared/Footer';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { PAYMENT_METHODS } from '@/lib/paymentConfig';
 
-import { Trash2, ShoppingBag, ArrowRight, Banknote, ShieldCheck, Truck, CheckCircle } from 'lucide-react';
+import { Trash2, ShoppingBag, ArrowRight, ShieldCheck, Truck, CheckCircle, Smartphone, Building2, Wallet } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 
@@ -16,6 +17,7 @@ export default function CheckoutPage() {
   const { items, removeItem, updateQuantity, getTotalPrice } = useCartStore();
   const router = useRouter();
   const [submitting, setSubmitting] = useState(false);
+  const [researchCertified, setResearchCertified] = useState(false);
 
   // Form State
   const [formData, setFormData] = useState({
@@ -26,7 +28,7 @@ export default function CheckoutPage() {
     address: '',
     city: '',
     postalCode: '',
-    paymentMethod: 'cod', // Cash on delivery
+    paymentMethod: 'cashapp' as 'cashapp' | 'venmo' | 'zelle',
   });
 
   const [shippingFee, setShippingFee] = useState(5.99);
@@ -47,6 +49,7 @@ export default function CheckoutPage() {
     e.preventDefault();
     setSubmitting(true);
 
+    const selectedMethod = PAYMENT_METHODS[formData.paymentMethod] || PAYMENT_METHODS.cashapp;
     const orderNumber = `XFP-${Math.floor(100000 + Math.random() * 900000)}`;
     const subtotal = getTotalPrice();
     const shipping = shippingFee;
@@ -60,8 +63,10 @@ export default function CheckoutPage() {
       shippingAddress: formData.address,
       city: formData.city,
       postalCode: formData.postalCode,
-      paymentMethod: 'Cash on Delivery (COD)',
+      paymentMethod: selectedMethod.name,
+      paymentMethodId: selectedMethod.id,
       totalAmount: total,
+      status: 'pending' as const,
       items: items.map((item) => ({
         name: item.name,
         size: item.size,
@@ -97,7 +102,7 @@ export default function CheckoutPage() {
     }
 
     setTimeout(() => {
-      router.push('/order-confirmation');
+      router.push(`/order-confirmation?orderNumber=${orderNumber}`);
     }, 500);
   };
 
@@ -204,7 +209,7 @@ export default function CheckoutPage() {
                         />
                       </div>
                       <div className="space-y-2">
-                        <Label htmlFor="phone">Phone Number (US format required for COD)</Label>
+                        <Label htmlFor="phone">Phone Number (US Format)</Label>
                         <Input
                           id="phone"
                           type="tel"
@@ -256,25 +261,98 @@ export default function CheckoutPage() {
                   </form>
                 </div>
 
-                {/* Payment Method Selection (Cash on Delivery) */}
+                {/* Direct Online Advance Payment Selection */}
                 <div className="bg-card border border-border rounded-xl p-6">
-                  <h2 className="text-2xl font-display font-semibold mb-4">Payment Method</h2>
-                  
-                  <div className="p-4 rounded-xl border-2 border-accent bg-accent/5 flex items-start gap-4">
-                    <div className="p-2.5 rounded-lg bg-accent/10 text-accent shrink-0 mt-0.5">
-                      <Banknote className="w-6 h-6" />
-                    </div>
-                    <div className="flex-grow">
-                      <div className="flex items-center justify-between mb-1">
-                        <h3 className="font-display font-bold text-base text-foreground flex items-center gap-2">
-                          Cash on Delivery (COD)
-                          <span className="text-[10px] font-sans font-bold bg-accent text-accent-foreground px-2 py-0.5 rounded-full uppercase tracking-wider">Active</span>
-                        </h3>
-                        <CheckCircle className="w-5 h-5 text-accent" />
+                  <div className="mb-6">
+                    <h2 className="text-2xl font-display font-semibold">Select Direct Payment Option</h2>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Choose your preferred direct payment method. Instructions & screenshot upload will be provided on the next page.
+                    </p>
+                  </div>
+
+                  <div className="space-y-4">
+                    {/* Cash App */}
+                    <div
+                      onClick={() => setFormData((prev) => ({ ...prev, paymentMethod: 'cashapp' }))}
+                      className={`p-4 rounded-xl border-2 cursor-pointer transition-all flex items-start gap-4 ${
+                        formData.paymentMethod === 'cashapp'
+                          ? 'border-emerald-500 bg-emerald-500/10 shadow-[0_0_15px_rgba(16,185,129,0.15)]'
+                          : 'border-border bg-background/50 hover:border-emerald-500/40'
+                      }`}
+                    >
+                      <div className="p-3 rounded-xl bg-emerald-500/10 text-emerald-400 shrink-0 mt-0.5 border border-emerald-500/20">
+                        <Smartphone className="w-6 h-6" />
                       </div>
-                      <p className="text-xs text-muted-foreground leading-relaxed">
-                        Pay in cash to the courier driver upon delivery of your parcel to your specified address. No advance payment required.
-                      </p>
+                      <div className="flex-grow">
+                        <div className="flex items-center justify-between mb-1">
+                          <h3 className="font-display font-bold text-base text-foreground flex items-center gap-2">
+                            Cash App
+                            <span className="text-[10px] font-sans font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 px-2 py-0.5 rounded-full uppercase tracking-wider">
+                              Instant Mobile Pay
+                            </span>
+                          </h3>
+                          {formData.paymentMethod === 'cashapp' && <CheckCircle className="w-5 h-5 text-emerald-400" />}
+                        </div>
+                        <p className="text-xs text-muted-foreground leading-relaxed">
+                          Pay directly via Cash App. Quick one-click mobile checkout with screenshot proof upload.
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Venmo */}
+                    <div
+                      onClick={() => setFormData((prev) => ({ ...prev, paymentMethod: 'venmo' }))}
+                      className={`p-4 rounded-xl border-2 cursor-pointer transition-all flex items-start gap-4 ${
+                        formData.paymentMethod === 'venmo'
+                          ? 'border-sky-500 bg-sky-500/10 shadow-[0_0_15px_rgba(14,165,233,0.15)]'
+                          : 'border-border bg-background/50 hover:border-sky-500/40'
+                      }`}
+                    >
+                      <div className="p-3 rounded-xl bg-sky-500/10 text-sky-400 shrink-0 mt-0.5 border border-sky-500/20">
+                        <Wallet className="w-6 h-6" />
+                      </div>
+                      <div className="flex-grow">
+                        <div className="flex items-center justify-between mb-1">
+                          <h3 className="font-display font-bold text-base text-foreground flex items-center gap-2">
+                            Venmo
+                            <span className="text-[10px] font-sans font-bold bg-sky-500/20 text-sky-300 border border-sky-500/30 px-2 py-0.5 rounded-full uppercase tracking-wider">
+                              Instant Mobile Pay
+                            </span>
+                          </h3>
+                          {formData.paymentMethod === 'venmo' && <CheckCircle className="w-5 h-5 text-sky-400" />}
+                        </div>
+                        <p className="text-xs text-muted-foreground leading-relaxed">
+                          Pay via Venmo mobile app. Fast transfer with order number memo.
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Zelle */}
+                    <div
+                      onClick={() => setFormData((prev) => ({ ...prev, paymentMethod: 'zelle' }))}
+                      className={`p-4 rounded-xl border-2 cursor-pointer transition-all flex items-start gap-4 ${
+                        formData.paymentMethod === 'zelle'
+                          ? 'border-purple-500 bg-purple-500/10 shadow-[0_0_15px_rgba(168,85,247,0.15)]'
+                          : 'border-border bg-background/50 hover:border-purple-500/40'
+                      }`}
+                    >
+                      <div className="p-3 rounded-xl bg-purple-500/10 text-purple-400 shrink-0 mt-0.5 border border-purple-500/20">
+                        <Building2 className="w-6 h-6" />
+                      </div>
+                      <div className="flex-grow">
+                        <div className="flex items-center justify-between mb-1">
+                          <h3 className="font-display font-bold text-base text-foreground flex items-center gap-2">
+                            Zelle
+                            <span className="text-[10px] font-sans font-bold bg-purple-500/20 text-purple-300 border border-purple-500/30 px-2 py-0.5 rounded-full uppercase tracking-wider">
+                              Direct Bank Transfer
+                            </span>
+                          </h3>
+                          {formData.paymentMethod === 'zelle' && <CheckCircle className="w-5 h-5 text-purple-400" />}
+                        </div>
+                        <p className="text-xs text-muted-foreground leading-relaxed">
+                          Direct fee-free transfer from your online banking app (Chase, Bank of America, Wells Fargo, etc.).
+                        </p>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -283,7 +361,7 @@ export default function CheckoutPage() {
               {/* Order Total Sidebar */}
               <div className="lg:col-span-5">
                 <div className="bg-card border border-border rounded-xl p-6 sticky top-28 space-y-6">
-                  <h2 className="text-2xl font-display font-semibold">Total</h2>
+                  <h2 className="text-2xl font-display font-semibold">Total Summary</h2>
 
                   <div className="space-y-4">
                     <div className="flex justify-between text-muted-foreground">
@@ -292,37 +370,49 @@ export default function CheckoutPage() {
                     </div>
                     <div className="flex justify-between text-muted-foreground">
                       <span className="flex items-center gap-1.5">
-                        <Truck className="w-4 h-4 text-accent" /> Express Delivery
+                        <Truck className="w-4 h-4 text-accent" /> Express Dispatch
                       </span>
                       <span>${shippingFee.toFixed(2)}</span>
                     </div>
                     <div className="flex justify-between text-muted-foreground text-xs">
-                      <span>Payment Processing</span>
-                      <span className="text-accent font-medium">Free (COD)</span>
+                      <span>Selected Payment</span>
+                      <span className="font-bold text-accent">
+                        {PAYMENT_METHODS[formData.paymentMethod]?.name || 'Direct Pay'}
+                      </span>
                     </div>
 
                     <div className="h-px bg-border my-2" />
 
                     <div className="flex justify-between text-xl font-display font-bold">
-                      <span>Total Due (on delivery)</span>
+                      <span>Total Amount Due</span>
                       <span className="text-accent">${(getTotalPrice() + shippingFee).toFixed(2)}</span>
                     </div>
                   </div>
 
-                  <div className="p-4 bg-accent/5 border border-accent/20 rounded-lg text-xs text-foreground/80 leading-relaxed flex items-start gap-2.5">
-                    <ShieldCheck className="w-4 h-4 text-accent shrink-0 mt-0.5" />
-                    <span>
-                      By placing this order, you confirm that these research compounds are strictly for laboratory use and agree to pay <b>${(getTotalPrice() + shippingFee).toFixed(2)}</b> in cash upon delivery.
-                    </span>
+                  <div className="p-4 bg-accent/10 border border-accent/30 rounded-xl space-y-3">
+                    <div className="flex items-start gap-3">
+                      <input
+                        type="checkbox"
+                        id="researchCertCheckbox"
+                        required
+                        checked={researchCertified}
+                        onChange={(e) => setResearchCertified(e.target.checked)}
+                        className="mt-1 h-4 w-4 rounded border-border bg-background text-accent focus:ring-accent accent-accent cursor-pointer"
+                      />
+                      <label htmlFor="researchCertCheckbox" className="text-xs text-foreground/90 leading-relaxed cursor-pointer select-none">
+                        <strong className="text-accent font-semibold block mb-0.5">Mandatory Laboratory Research Certification</strong>
+                        I certify that all purchased items are exclusively for in-vitro analytical, chemical, and laboratory research use by qualified personnel. I explicitly acknowledge that these compounds are strictly NOT for human or animal consumption, medical, or diagnostic administration.
+                      </label>
+                    </div>
                   </div>
 
                   <Button
                     type="submit"
                     form="checkout-form"
-                    disabled={submitting}
+                    disabled={submitting || !researchCertified}
                     className="w-full h-14 text-lg bg-primary text-white hover:bg-primary/90 flex items-center justify-center gap-2 shadow-lg shadow-primary/20"
                   >
-                    {submitting ? 'Processing Order...' : 'Place COD Order'} <ArrowRight className="w-5 h-5" />
+                    {submitting ? 'Processing Order...' : `Proceed with ${PAYMENT_METHODS[formData.paymentMethod]?.name}`} <ArrowRight className="w-5 h-5" />
                   </Button>
                 </div>
               </div>

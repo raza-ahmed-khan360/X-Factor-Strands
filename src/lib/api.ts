@@ -47,7 +47,7 @@ export async function getProducts(): Promise<Product[]> {
         },
         reviews: {
           rating: 5.0,
-          count: Math.floor(Math.random() * 50) + 10,
+          count: 35,
         },
         variants: finalVariants,
       };

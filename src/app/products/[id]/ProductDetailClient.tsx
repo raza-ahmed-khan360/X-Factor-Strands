@@ -3,11 +3,13 @@ import * as React from 'react';
 import { Header } from '@/components/shared/Header';
 import { Footer } from '@/components/shared/Footer';
 import { Product, ProductCard } from '@/components/products/ProductData';
+
 import Link from 'next/link';
 import { AlertTriangle, ChevronLeft, Star } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useCartStore } from '@/store/useCartStore';
 import { toast } from 'sonner';
+import { showCartAlert } from '@/components/ui/CartAlert';
 
 export function ProductDetailClient({ productId }: { productId: string }) {
   const addItem = useCartStore((state) => state.addItem);
@@ -36,7 +38,8 @@ export function ProductDetailClient({ productId }: { productId: string }) {
   if (loading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center flex-col gap-4">
-        <h1 className="text-2xl font-display font-bold">Loading product...</h1>
+        <div className="w-8 h-8 border-2 border-accent border-t-transparent rounded-full animate-spin" />
+        <h1 className="text-xl font-display font-medium text-muted-foreground">Loading compound details...</h1>
       </div>
     );
   }
@@ -60,7 +63,7 @@ export function ProductDetailClient({ productId }: { productId: string }) {
       price: variant.price,
       size: variant.size,
     });
-    toast.success(`${product.name} added to cart`);
+    showCartAlert({ productName: product.name, size: variant.size, price: variant.price, imageUrl: product.imageUrl });
   };
 
   return (

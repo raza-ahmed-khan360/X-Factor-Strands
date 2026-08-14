@@ -406,7 +406,7 @@ export default function AdminOrdersPage() {
       {/* Top Header & Search & Actions */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="text-3xl font-display font-bold text-white tracking-wide">Customer Orders & Payment Verification</h1>
+          <h1 className="text-2xl sm:text-3xl font-display font-bold text-white tracking-wide">Customer Orders & Payment Verification</h1>
           <p className="text-muted-foreground mt-1 text-sm">
             Review payment screenshots, verify P2P transfers (Cash App, Venmo, Zelle), and confirm orders.
           </p>

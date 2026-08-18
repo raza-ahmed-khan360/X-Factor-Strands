@@ -9,7 +9,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { PAYMENT_METHODS } from '@/lib/paymentConfig';
 
-import { Trash2, ShoppingBag, ArrowRight, ShieldCheck, Truck, CheckCircle, Smartphone, Building2, Wallet } from 'lucide-react';
+import { Trash2, ShoppingBag, Tag, Sparkles, X, Loader2, ArrowRight, ShieldCheck, Truck, CheckCircle, Smartphone, Building2, Wallet } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 
@@ -32,6 +32,16 @@ export default function CheckoutPage() {
   });
 
   const [shippingFee, setShippingFee] = useState(5.99);
+  const [couponCodeInput, setCouponCodeInput] = useState('');
+  const [validatingCoupon, setValidatingCoupon] = useState(false);
+  const [couponError, setCouponError] = useState('');
+  const [appliedCoupon, setAppliedCoupon] = useState<{
+    code: string;
+    discountType: 'percentage' | 'fixed';
+    discountValue: number;
+    discountAmount: number;
+    description?: string;
+  } | null>(null);
 
   React.useEffect(() => {
     import('@/app/x-factor-admin/orders/actions').then(({ getCodShippingFeeAction }) => {
@@ -40,6 +50,45 @@ export default function CheckoutPage() {
       });
     });
   }, []);
+
+  const handleApplyCoupon = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setCouponError('');
+    if (!couponCodeInput.trim()) return;
+
+    setValidatingCoupon(true);
+    try {
+      const { validateCouponAction } = await import('@/app/x-factor-admin/discounts/actions');
+      const res = await validateCouponAction({
+        code: couponCodeInput.trim(),
+        email: formData.email,
+        phone: formData.phone,
+        subtotal: getTotalPrice(),
+      });
+
+      if (res.valid && res.code && res.discountAmount !== undefined) {
+        setAppliedCoupon({
+          code: res.code,
+          discountType: res.discountType || 'percentage',
+          discountValue: res.discountValue || 0,
+          discountAmount: res.discountAmount,
+          description: res.description,
+        });
+        setCouponCodeInput('');
+      } else {
+        setCouponError(res.error || 'Invalid promo code');
+      }
+    } catch {
+      setCouponError('Failed to validate promo code');
+    } finally {
+      setValidatingCoupon(false);
+    }
+  };
+
+  const handleRemoveCoupon = () => {
+    setAppliedCoupon(null);
+    setCouponError('');
+  };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData((prev) => ({ ...prev, [e.target.id]: e.target.value }));
@@ -52,8 +101,9 @@ export default function CheckoutPage() {
     const selectedMethod = PAYMENT_METHODS[formData.paymentMethod] || PAYMENT_METHODS.cashapp;
     const orderNumber = `XFP-${Math.floor(100000 + Math.random() * 900000)}`;
     const subtotal = getTotalPrice();
+    const discountAmount = appliedCoupon ? appliedCoupon.discountAmount : 0;
     const shipping = shippingFee;
-    const total = subtotal + shipping;
+    const total = Math.max(0, subtotal - discountAmount + shipping);
 
     const orderData = {
       orderNumber,
@@ -66,6 +116,8 @@ export default function CheckoutPage() {
       paymentMethod: selectedMethod.name,
       paymentMethodId: selectedMethod.id,
       totalAmount: total,
+      couponCode: appliedCoupon ? appliedCoupon.code : undefined,
+      discountAmount: appliedCoupon ? appliedCoupon.discountAmount : 0,
       status: 'pending' as const,
       items: items.map((item) => ({
         name: item.name,
@@ -97,6 +149,10 @@ export default function CheckoutPage() {
     try {
       const { createOrderAction } = await import('@/app/x-factor-admin/orders/actions');
       await createOrderAction(orderData);
+      if (appliedCoupon?.code) {
+        const { incrementCouponUsage } = await import('@/app/x-factor-admin/discounts/actions');
+        incrementCouponUsage(appliedCoupon.code);
+      }
     } catch (err) {
       console.error('Order creation background call error:', err);
     }

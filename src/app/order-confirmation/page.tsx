@@ -386,6 +386,12 @@ function OrderConfirmationContent() {
                       <span className="text-accent font-semibold">${(item.price * item.quantity).toFixed(2)}</span>
                     </div>
                   ))}
+                  {order?.discountAmount > 0 && (
+                    <div className="flex justify-between text-sm text-emerald-400 font-medium pt-1">
+                      <span>Discount ({order.couponCode || 'Promo'}):</span>
+                      <span className="font-mono font-bold">-${Number(order.discountAmount).toFixed(2)}</span>
+                    </div>
+                  )}
                   <div className="border-t border-border/50 pt-2 flex justify-between font-bold text-base text-foreground">
                     <span>Total Amount:</span>
                     <span className="text-accent">${order.total?.toFixed(2) ?? '0.00'}</span>

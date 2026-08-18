@@ -34,6 +34,8 @@ export interface CreateOrderPayload {
   postalCode: string;
   paymentMethod: string;
   shippingFee?: number;
+  couponCode?: string;
+  discountAmount?: number;
   totalAmount: number;
   status?: 'pending' | 'confirmed' | 'on_its_way' | 'delivered' | 'cancelled';
   items: { name: string; size: string; quantity: number; price: number }[];
@@ -73,6 +75,8 @@ export async function createOrderAction(rawPayload: CreateOrderPayload) {
     postalCode: sanitizeString(rawPayload.postalCode, 20),
     paymentMethod: sanitizeString(rawPayload.paymentMethod, 50) || 'Cash App',
     shippingFee: sanitizeNumber(rawPayload.shippingFee, 0, 500, 5.99),
+    couponCode: sanitizeString(rawPayload.couponCode, 30) || undefined,
+    discountAmount: sanitizeNumber(rawPayload.discountAmount, 0, 10000, 0),
     totalAmount: sanitizeNumber(rawPayload.totalAmount, 0, 100000, 0),
     status: rawPayload.status || 'pending',
     items: (rawPayload.items || []).map((item) => ({

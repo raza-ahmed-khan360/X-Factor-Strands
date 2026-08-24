@@ -89,10 +89,11 @@ export async function addProduct(formData: FormData) {
     if (variantsJson) {
       const variants = JSON.parse(variantsJson);
       if (Array.isArray(variants) && variants.length > 0) {
-        const variantsToInsert = variants.map(v => ({
+        const variantsToInsert = variants.map((v: any, idx: number) => ({
+          id: v.id || `var_${id}_${idx}_${Date.now()}`,
           product_id: id,
           size: v.size,
-          price: v.price
+          price: Number(v.price) || 0
         }));
         
         const { error: variantsError } = await supabase
@@ -191,11 +192,11 @@ export async function updateProduct(formData: FormData) {
       }
 
       // Upsert incoming variants
-      const variantsToUpsert = variants.map((v: any) => ({
-        ...(v.id ? { id: v.id } : {}), // only include id if it exists
+      const variantsToUpsert = variants.map((v: any, idx: number) => ({
+        id: v.id || `var_${id}_${idx}_${Date.now()}`,
         product_id: id,
         size: v.size,
-        price: v.price
+        price: Number(v.price) || 0
       }));
 
       if (variantsToUpsert.length > 0) {

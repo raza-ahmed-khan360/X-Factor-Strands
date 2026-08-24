@@ -89,8 +89,9 @@ export async function addProduct(formData: FormData) {
     if (variantsJson) {
       const variants = JSON.parse(variantsJson);
       if (Array.isArray(variants) && variants.length > 0) {
-        const variantsToInsert = variants.map((v: any, idx: number) => ({
-          id: v.id || `var_${id}_${idx}_${Date.now()}`,
+        const isUuid = (str: any) => typeof str === 'string' && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(str);
+        const variantsToInsert = variants.map((v: any) => ({
+          id: isUuid(v.id) ? v.id : crypto.randomUUID(),
           product_id: id,
           size: v.size,
           price: Number(v.price) || 0
@@ -191,9 +192,12 @@ export async function updateProduct(formData: FormData) {
         await supabase.from('variants').delete().in('id', idsToDelete);
       }
 
-      // Upsert incoming variants
-      const variantsToUpsert = variants.map((v: any, idx: number) => ({
-        id: v.id || `var_${id}_${idx}_${Date.now()}`,
+      // Helper to check if string is valid UUID
+      const isUuid = (str: any) => typeof str === 'string' && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(str);
+
+      // Upsert incoming variants with valid UUIDs
+      const variantsToUpsert = variants.map((v: any) => ({
+        id: isUuid(v.id) ? v.id : crypto.randomUUID(),
         product_id: id,
         size: v.size,
         price: Number(v.price) || 0

@@ -1,3 +1,4 @@
+import { sortVariants } from '@/lib/utils';
 "use client";
 import * as React from 'react';
 import { Header } from '@/components/shared/Header';

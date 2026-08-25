@@ -1,3 +1,4 @@
+import { sortVariants } from '@/lib/utils';
 'use server';
 
 import { createClient } from '@supabase/supabase-js';
@@ -90,7 +91,8 @@ export async function addProduct(formData: FormData) {
       const variants = JSON.parse(variantsJson);
       if (Array.isArray(variants) && variants.length > 0) {
         const isUuid = (str: any) => typeof str === 'string' && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(str);
-        const variantsToInsert = variants.map((v: any) => ({
+        const sortedVariants = sortVariants(variants);
+        const variantsToInsert = sortedVariants.map((v: any) => ({
           id: isUuid(v.id) ? v.id : crypto.randomUUID(),
           product_id: id,
           size: v.size,
@@ -196,7 +198,8 @@ export async function updateProduct(formData: FormData) {
       const isUuid = (str: any) => typeof str === 'string' && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(str);
 
       // Upsert incoming variants with valid UUIDs
-      const variantsToUpsert = variants.map((v: any) => ({
+      const sortedVariants = sortVariants(variants);
+      const variantsToUpsert = sortedVariants.map((v: any) => ({
         id: isUuid(v.id) ? v.id : crypto.randomUUID(),
         product_id: id,
         size: v.size,

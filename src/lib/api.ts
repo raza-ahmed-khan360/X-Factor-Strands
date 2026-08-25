@@ -1,3 +1,4 @@
+import { sortVariants } from './utils';
 import { supabase } from './supabase';
 import { Product, productData } from '../components/products/ProductData';
 
@@ -30,7 +31,7 @@ export async function getProducts(): Promise<Product[]> {
       // Ensure there is at least one variant fallback if database record has no variants yet
       const finalVariants = productVariants.length > 0 
         ? productVariants 
-        : [{ size: '10mg', price: 50 }];
+        : [{ size: '10mg', price: 50, stripe_price_id: null }];
 
       return {
         id: product.id,
@@ -49,7 +50,7 @@ export async function getProducts(): Promise<Product[]> {
           rating: 5.0,
           count: 35,
         },
-        variants: finalVariants,
+        variants: sortVariants(finalVariants),
       };
     });
 

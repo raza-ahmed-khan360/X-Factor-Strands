@@ -1,5 +1,5 @@
-import { sortVariants } from '@/lib/utils';
 'use server';
+import { sortVariants } from '@/lib/utils';
 
 import { createClient } from '@supabase/supabase-js';
 

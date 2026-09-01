@@ -133,9 +133,17 @@ async function _createOrderActionInternal(payload: CreateOrderPayload): Promise<
         payment_method: payload.paymentMethod || 'Cash App',
         status: payload.status || 'pending',
         total_amount: payload.totalAmount,
+        shipping_fee: payload.shippingFee ?? globalCodShippingFee,
+        coupon_code: payload.couponCode || null,
+        discount_amount: payload.discountAmount || 0,
       })
       .select()
       .single();
+
+    if (orderError) {
+      // Surface the real error so it appears in Hostinger / server logs
+      console.error('[SUPABASE orders INSERT FAILED]', JSON.stringify(orderError));
+    }
 
     if (!orderError && orderData?.id && payload.items?.length > 0) {
       const itemsToInsert = payload.items.map((item) => ({
@@ -145,10 +153,13 @@ async function _createOrderActionInternal(payload: CreateOrderPayload): Promise<
         quantity: item.quantity,
         price: item.price,
       }));
-      await supabase.from('order_items').insert(itemsToInsert);
+      const { error: itemsError } = await supabase.from('order_items').insert(itemsToInsert);
+      if (itemsError) {
+        console.error('[SUPABASE order_items INSERT FAILED]', JSON.stringify(itemsError));
+      }
     }
   } catch (err: any) {
-    console.warn('Supabase DB order insert fallback activated:', err?.message);
+    console.error('[SUPABASE createOrder EXCEPTION]', err?.message, err?.stack);
   }
 
   // 2. Trigger Automated Pending Confirmation Email to Customer

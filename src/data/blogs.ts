@@ -5,7 +5,6 @@ export interface BlogPost {
   date: string;
   excerpt: string;
   imageUrl?: string;
-  imageUrl?: string;
   content: string;
 }
 

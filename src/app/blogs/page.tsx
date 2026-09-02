@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { blogs } from "@/data/blogs";
 import { Metadata } from "next";
+import { Header } from "@/components/shared/Header";
+import { Footer } from "@/components/shared/Footer";
 
 export const metadata: Metadata = {
   title: "Blogs",
@@ -9,7 +11,10 @@ export const metadata: Metadata = {
 
 export default function BlogsPage() {
   return (
-    <div className="container mx-auto px-4 py-16 max-w-4xl">
+    <div className="min-h-screen flex flex-col bg-background text-foreground overflow-x-hidden selection:bg-accent/20">
+      <Header />
+      <main className="flex-grow pt-24 pb-16">
+        <div className="container mx-auto px-4 max-w-4xl">
       <h1 className="text-4xl font-display font-bold mb-8 text-foreground">Blogs</h1>
       <div className="space-y-8">
         {blogs.map((blog) => (
@@ -30,6 +35,9 @@ export default function BlogsPage() {
           </article>
         ))}
       </div>
+        </div>
+      </main>
+      <Footer />
     </div>
   );
 }

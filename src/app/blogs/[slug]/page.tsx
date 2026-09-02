@@ -1,4 +1,6 @@
 import { notFound } from "next/navigation";
+import { Header } from "@/components/shared/Header";
+import { Footer } from "@/components/shared/Footer";
 import { blogs } from "@/data/blogs";
 import Link from "next/link";
 import { Metadata } from "next";

@@ -65,7 +65,7 @@ export function Footer() {
               <a href="#" className="w-8 h-8 rounded-full bg-background flex items-center justify-center text-muted-foreground hover:text-accent hover:bg-accent/10 transition-colors">
                 <FaXTwitter className="w-4 h-4" />
               </a>
-              <a href="#" className="w-8 h-8 rounded-full bg-background flex items-center justify-center text-muted-foreground hover:text-accent hover:bg-accent/10 transition-colors">
+              <a href="https://www.instagram.com/xfactorpeps?igsi=MTI2bm41NGlvcmJ4NA==" target="_blank" rel="noopener noreferrer" className="w-8 h-8 rounded-full bg-background flex items-center justify-center text-muted-foreground hover:text-accent hover:bg-accent/10 transition-colors">
                 <FaInstagram className="w-4 h-4" />
               </a>
               <a href="#" className="w-8 h-8 rounded-full bg-background flex items-center justify-center text-muted-foreground hover:text-accent hover:bg-accent/10 transition-colors">

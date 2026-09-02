@@ -48,6 +48,9 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
         ← Back to Blogs
       </Link>
       <article className="prose prose-invert max-w-none">
+        {blog.imageUrl && (
+          <img src={blog.imageUrl} alt={blog.title} className="w-full rounded-lg mb-8 shadow-md" />
+        )}
         <h1 className="text-4xl font-display font-bold mb-4 text-foreground">{blog.title}</h1>
         <p className="text-muted-foreground mb-8">{blog.date}</p>
         <div className="text-foreground leading-relaxed">

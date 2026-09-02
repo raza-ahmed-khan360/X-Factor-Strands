@@ -4,6 +4,8 @@ export interface BlogPost {
   title: string;
   date: string;
   excerpt: string;
+  imageUrl?: string;
+  imageUrl?: string;
   content: string;
 }
 
@@ -11,6 +13,7 @@ export const blogs: BlogPost[] = [
   {
     id: "1",
     slug: "peptide-therapy-near-me-how-to-choose-a-provider",
+    imageUrl: "/images/blogs/blog_provider.jpg",
     title: "Peptide Therapy Near Me: How to Choose a Provider",
     date: "September 3, 2026",
     excerpt: "Searching for \"peptide therapy near me\" is becoming increasingly common. Here is what you should look for when evaluating a provider.",
@@ -59,6 +62,7 @@ If you are searching for peptide therapy near you, prioritize qualified medical 
   {
     id: "2",
     slug: "peptides-for-better-sleep-exploring-the-science",
+    imageUrl: "/images/blogs/blog_sleep.jpg",
     title: "Peptides for Better Sleep: Exploring the Science",
     date: "September 3, 2026",
     excerpt: "Sleep affects physical recovery, mood, concentration, and overall well-being. Because of this, many people are searching for peptides for better sleep.",
@@ -99,6 +103,7 @@ If you are considering peptides for better sleep, ask about the specific compoun
   {
     id: "3",
     slug: "peptides-for-cognitive-function-what-you-need-to-know",
+    imageUrl: "/images/blogs/blog_cognitive.jpg",
     title: "Peptides for Cognitive Function: What You Need to Know",
     date: "September 3, 2026",
     excerpt: "Memory, focus, concentration, and mental performance are important parts of everyday life. As interest in peptides grows, some people are exploring peptides for cognitive function.",

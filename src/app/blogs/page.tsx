@@ -13,13 +13,20 @@ export default function BlogsPage() {
       <h1 className="text-4xl font-display font-bold mb-8 text-foreground">Blogs</h1>
       <div className="space-y-8">
         {blogs.map((blog) => (
-          <article key={blog.id} className="bg-card p-6 rounded-lg border border-border shadow-sm">
+          <article key={blog.id} className="bg-card rounded-lg border border-border shadow-sm overflow-hidden flex flex-col md:flex-row">
+            {blog.imageUrl && (
+              <div className="md:w-1/3 shrink-0">
+                <img src={blog.imageUrl} alt={blog.title} className="w-full h-full object-cover aspect-video md:aspect-square" />
+              </div>
+            )}
+            <div className="p-6 md:w-2/3 flex flex-col justify-center">
             <Link href={`/blogs/${blog.slug}`} className="block group">
               <h2 className="text-2xl font-semibold mb-2 group-hover:text-accent transition-colors">{blog.title}</h2>
               <p className="text-sm text-muted-foreground mb-4">{blog.date}</p>
               <p className="text-muted-foreground">{blog.excerpt}</p>
               <span className="inline-block mt-4 text-accent font-medium group-hover:underline">Read more →</span>
             </Link>
+            </div>
           </article>
         ))}
       </div>

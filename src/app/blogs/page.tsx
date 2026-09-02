@@ -1,0 +1,28 @@
+import Link from "next/link";
+import { blogs } from "@/data/blogs";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Blogs",
+  description: "Read the latest blogs and articles from X-Factor Peptides.",
+};
+
+export default function BlogsPage() {
+  return (
+    <div className="container mx-auto px-4 py-16 max-w-4xl">
+      <h1 className="text-4xl font-display font-bold mb-8 text-foreground">Blogs</h1>
+      <div className="space-y-8">
+        {blogs.map((blog) => (
+          <article key={blog.id} className="bg-card p-6 rounded-lg border border-border shadow-sm">
+            <Link href={`/blogs/${blog.slug}`} className="block group">
+              <h2 className="text-2xl font-semibold mb-2 group-hover:text-accent transition-colors">{blog.title}</h2>
+              <p className="text-sm text-muted-foreground mb-4">{blog.date}</p>
+              <p className="text-muted-foreground">{blog.excerpt}</p>
+              <span className="inline-block mt-4 text-accent font-medium group-hover:underline">Read more →</span>
+            </Link>
+          </article>
+        ))}
+      </div>
+    </div>
+  );
+}

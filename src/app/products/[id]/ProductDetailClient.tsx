@@ -6,7 +6,7 @@ import * as React from 'react';
 import { Header } from '@/components/shared/Header';
 import { Footer } from '@/components/shared/Footer';
 import { Product, ProductCard } from '@/components/products/ProductData';
-
+import Image from 'next/image';
 import Link from 'next/link';
 import { AlertTriangle, ChevronLeft, Star } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -84,7 +84,14 @@ export function ProductDetailClient({ productId }: { productId: string }) {
             
             {/* Product Image */}
             <div className="bg-card border border-border rounded-2xl aspect-square flex items-center justify-center relative overflow-hidden group">
-              <img src={product.imageUrl} alt={product.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+              <Image 
+                src={product.imageUrl} 
+                alt={`Vial of ${product.name} Lyophilized Peptide Powder - Premium Research Peptides`}
+                fill
+                priority
+                sizes="(max-width: 1024px) 100vw, 50vw"
+                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" 
+              />
               
               <div className="absolute bottom-6 left-6 right-6 flex justify-between items-end z-10">
                 <span className="font-mono text-xs text-white tracking-widest bg-black/50 px-2 py-1 rounded backdrop-blur-sm">{product.id.toUpperCase()}</span>

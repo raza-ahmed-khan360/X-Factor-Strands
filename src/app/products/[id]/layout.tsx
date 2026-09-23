@@ -15,6 +15,27 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   return {
     title: `${product.name} | X-Factor Peptides`,
     description: product.shortDesc,
+    openGraph: {
+      title: `${product.name} | Premium Research Peptides`,
+      description: product.shortDesc,
+      url: `https://xfactorpeptides.com/products/${id}`,
+      siteName: "X-Factor Peptides",
+      images: [
+        {
+          url: product.imageUrl,
+          width: 800,
+          height: 800,
+          alt: product.name,
+        }
+      ],
+      type: "website", // Product type requires more complex integration, website works well
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: product.name,
+      description: product.shortDesc,
+      images: [product.imageUrl],
+    }
   };
 }
 
